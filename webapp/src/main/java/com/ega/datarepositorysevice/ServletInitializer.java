@@ -1,4 +1,5 @@
-package main.java.com.ega.datarepositorysevice;
+package com.ega.datarepositorysevice;
+
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
