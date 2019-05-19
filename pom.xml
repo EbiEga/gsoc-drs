@@ -5,6 +5,8 @@
 
 	<modules>
 		<module>webapp</module>
+        <module>models</module>
+		<module>utils</module>
 	</modules>
 
 	<parent>
