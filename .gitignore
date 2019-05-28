@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### sensitive data ###
+webapp/src/main/resources/application.properties
