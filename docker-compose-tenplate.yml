@@ -7,8 +7,8 @@ services:
     image: "postgres:11"
     container_name: postgres
     environment:
-        POSTGRES_PASSWORD: password
-        POSTGRES_USER: dilshat
+        POSTGRES_PASSWORD: <your_password>
+        POSTGRES_USER: <your_name>
         POSTGRES_DB: drs_db
     volumes:
         - "db-data:/var/lib/postgresql/data" # database itself
