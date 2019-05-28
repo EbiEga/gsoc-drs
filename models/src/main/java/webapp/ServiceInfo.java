@@ -19,7 +19,5 @@ public class ServiceInfo {
     private  String contact;
     private  String licence;
 
-    public ServiceInfo(String version) {
-        version = null;
-    }
+    protected ServiceInfo() {}
 }

@@ -7,6 +7,7 @@
 		<module>webapp</module>
         <module>models</module>
 		<module>utils</module>
+		<module>repositories</module>
 	</modules>
 
 	<parent>
