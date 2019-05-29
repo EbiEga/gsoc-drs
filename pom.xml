@@ -8,9 +8,9 @@
 		<version>2.1.5.RELEASE</version>
 	</parent>
 	<groupId>com.ega</groupId>
-	<artifactId>data-repository-sevice</artifactId>
+	<artifactId>data-repository-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>data-repository-sevice</name>
+	<name>data-repository-service</name>
 	<description>Demo project for Spring Boot</description>
     <packaging>pom</packaging>
 
