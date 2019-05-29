@@ -11,8 +11,8 @@
 	<artifactId>data-repository-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>data-repository-service</name>
-	<description>Demo project for Spring Boot</description>
-    <packaging>pom</packaging>
+	<description>GSOC 2019 project</description>
+    <packaging>jar</packaging>
 
 
     <properties>
