@@ -1,4 +1,4 @@
-package webapp;
+package com.ega.datarepositorysevice.model;
 
 import org.springframework.lang.NonNull;
 

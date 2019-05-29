@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import webapp.ServiceInfo;
-import webapp.ServiceInfoRepository;
 
 @Service
 public class ServiceInfoServiceImpl implements ServiceInfoService {
 
     private final ServiceInfoRepository infoRepository;
 
+    @Autowired
     ServiceInfoServiceImpl(ServiceInfoRepository infoRepository){
         this.infoRepository = infoRepository;
     }
