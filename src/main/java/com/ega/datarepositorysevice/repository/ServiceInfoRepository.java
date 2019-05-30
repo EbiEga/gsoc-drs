@@ -4,5 +4,5 @@ import com.ega.datarepositorysevice.model.ServiceInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ServiceInfoRepository extends JpaRepository<ServiceInfo, String> {
-    ServiceInfo findDistinctFirstByVersion();
+    ServiceInfo findDistinctFirstByVersion(String version);
 }

@@ -22,7 +22,7 @@ public class ServiceInfoServiceImpl implements ServiceInfoService {
 
     @Override
     public Mono<ServiceInfo> getServiceInfo() {
-        ServiceInfo info = serviceInfoRepository.findDistinctFirstByVersion();
+        ServiceInfo info = serviceInfoRepository.findDistinctFirstByVersion("version");
         return Mono.just(info);
     }
 }
