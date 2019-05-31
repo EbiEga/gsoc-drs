@@ -1,6 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -21,10 +22,12 @@ public class Checksum {
         this.type = type;
     }
 
+    @JsonProperty("checksum")
     public String getChecksum() {
         return checksum;
     }
 
+    @JsonProperty("type")
     public String getType() {
         return type;
     }

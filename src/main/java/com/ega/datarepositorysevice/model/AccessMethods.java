@@ -1,6 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -25,18 +26,22 @@ public class AccessMethods {
         this.access_url = access_url;
     }
 
+    @JsonProperty("access_id")
     public String getAccess_id() {
         return access_id;
     }
 
+    @JsonProperty("type")
     public String getType() {
         return type;
     }
 
+    @JsonProperty("region")
     public String getRegion() {
         return region;
     }
 
+    @JsonProperty("access_url")
     public AccessURL getAccess_url() {
         return access_url;
     }
@@ -44,6 +49,24 @@ public class AccessMethods {
     private class AccessURL{
         private String url;
         private List<String> headers;
+
+        public AccessURL() {
+        }
+
+        public AccessURL(String url, List<String> headers) {
+            this.url = url;
+            this.headers = headers;
+        }
+
+        @JsonProperty("url")
+        public String getUrl() {
+            return url;
+        }
+
+        @JsonProperty("headers")
+        public List<String> getHeaders() {
+            return headers;
+        }
     }
 
 }

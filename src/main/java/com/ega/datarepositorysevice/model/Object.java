@@ -1,6 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -41,46 +42,57 @@ public class Object {
         this.aliases = aliases;
     }
 
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
+    @JsonProperty("size")
     public int getSize() {
         return size;
     }
 
+    @JsonProperty("created")
     public Date getCreated() {
         return created;
     }
 
+    @JsonProperty("updated")
     public Date getUpdated() {
         return updated;
     }
 
+    @JsonProperty("version")
     public String getVersion() {
         return version;
     }
 
+    @JsonProperty("mime_type")
     public String getMime_type() {
         return mime_type;
     }
 
+    @JsonProperty("checksums")
     public List<Checksum> getChecksums() {
         return checksums;
     }
 
+    @JsonProperty("access_methods")
     public List<AccessMethods> getAccessMethods() {
         return accessMethods;
     }
 
+    @JsonProperty("description")
     public String getDescription() {
         return description;
     }
 
+    @JsonProperty("aliases")
     public List<String> getAliaces() {
         return aliases;
     }

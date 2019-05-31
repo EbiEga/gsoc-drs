@@ -1,6 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.org.apache.xml.internal.utils.URI;
 
 import javax.persistence.Entity;
@@ -25,18 +26,22 @@ public class BundleObject {
         this.drs_uri = drs_uri;
     }
 
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
 
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
+    @JsonProperty("type")
     public String getType() {
         return type;
     }
 
+    @JsonProperty("drs_uri")
     public URI getDrs_uri() {
         return drs_uri;
     }
