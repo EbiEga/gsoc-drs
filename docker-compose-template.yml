@@ -23,6 +23,7 @@ services:
 
   webapp:
     build:
+      context: ./
       dockerfile: Dockerfile-webapp
     links:
       - "postgres"
@@ -31,7 +32,7 @@ services:
     command:
       - "java"
       - "-jar"
-      - "webapp-0.0.1-SNAPSHOT.jar"
+      - "data-repository-service-0.0.1-SNAPSHOT.jar"
 
     ports:
       - "8081:8080"
