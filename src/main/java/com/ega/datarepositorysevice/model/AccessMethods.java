@@ -3,32 +3,39 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "access_methods")
 @JsonInclude
 public class AccessMethods {
-    private String access_id;
+    @Id
+    @GeneratedValue
+    private String accessId;
+
+    @Column(nullable = false)
     private String type; //TODO make enum
+
+    @Column(nullable = false)
     private String region; //TODO check format
-    private AccessURL access_url;
+
+    @Column(nullable = false)
+    private AccessURL accessURL;
 
     public AccessMethods() {
     }
 
-    public AccessMethods(String access_id, String type, String region, AccessURL access_url) {
-        this.access_id = access_id;
+    public AccessMethods(String access_id, String type, String region, AccessURL accessURL) {
+        this.accessId = access_id;
         this.type = type;
         this.region = region;
-        this.access_url = access_url;
+        this.accessURL = accessURL;
     }
 
     @JsonProperty("access_id")
     public String getAccess_id() {
-        return access_id;
+        return accessId;
     }
 
     @JsonProperty("type")
@@ -41,11 +48,14 @@ public class AccessMethods {
         return region;
     }
 
-    @JsonProperty("access_url")
-    public AccessURL getAccess_url() {
-        return access_url;
+    @JsonProperty("accessURL")
+    public AccessURL getAccessURL() {
+        return accessURL;
     }
 
+    @Entity
+    @Table(name = "accessURL")
+    @JsonInclude
     private class AccessURL{
         private String url;
         private List<String> headers;

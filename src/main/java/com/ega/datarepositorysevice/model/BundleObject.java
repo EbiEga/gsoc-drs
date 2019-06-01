@@ -14,7 +14,7 @@ public class BundleObject {
     private String id;
     private String name;
     private String type; // TODO make enum
-    private URI drs_uri;
+    private URI drsUri;
 
     public BundleObject() {
     }
@@ -23,7 +23,7 @@ public class BundleObject {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.drs_uri = drs_uri;
+        this.drsUri = drs_uri;
     }
 
     @JsonProperty("id")
@@ -41,8 +41,8 @@ public class BundleObject {
         return type;
     }
 
-    @JsonProperty("drs_uri")
-    public URI getDrs_uri() {
-        return drs_uri;
+    @JsonProperty("drsUri")
+    public URI getDrsUri() {
+        return drsUri;
     }
 }
