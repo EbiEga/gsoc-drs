@@ -31,7 +31,7 @@ public class AccessMethods {
 
     public AccessMethods(String access_id, String type, String region, AccessURL accessURL) {
         this.accessId = access_id;
-        this.type = type;
+        this.type = AccessMethodType.valueOf(type);
         this.region = region;
         this.accessURL = accessURL;
     }
@@ -43,7 +43,7 @@ public class AccessMethods {
 
     @JsonProperty("type")
     public String getType() {
-        return type;
+        return type.toString();
     }
 
     @JsonProperty("region")

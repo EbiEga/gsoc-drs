@@ -30,7 +30,7 @@ public class BundleObject {
     public BundleObject(String id, String name, String type, URI drs_uri) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.type = BundleObjectType.valueOf(type);
         this.drsUri = drs_uri;
     }
 
@@ -46,7 +46,7 @@ public class BundleObject {
 
     @JsonProperty("type")
     public String getType() {
-        return type;
+        return type.toString();
     }
 
     @JsonProperty("drsUri")

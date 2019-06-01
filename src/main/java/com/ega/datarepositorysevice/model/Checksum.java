@@ -24,7 +24,7 @@ public class Checksum {
 
     public Checksum(String checksum, String type) {
         this.checksum = checksum;
-        this.type = type;
+        this.type = ChecksumType.valueOf(type);
     }
 
     @JsonProperty("checksum")
@@ -34,6 +34,6 @@ public class Checksum {
 
     @JsonProperty("type")
     public String getType() {
-        return type;
+        return type.toString();
     }
 }
