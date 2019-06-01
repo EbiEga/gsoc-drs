@@ -1,5 +1,6 @@
 package com.ega.datarepositorysevice.model;
 
+import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,8 @@ public class AccessMethods {
     private String accessId;
 
     @Column(nullable = false)
-    private String type; //TODO make enum
+    @Enumerated(EnumType.STRING)
+    private AccessMethodType type;
 
     @Column(nullable = false)
     private String region; //TODO check format

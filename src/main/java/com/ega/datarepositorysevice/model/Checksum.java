@@ -1,12 +1,10 @@
 package com.ega.datarepositorysevice.model;
 
+import com.ega.datarepositorysevice.model.enums.ChecksumType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "checksum")
@@ -17,7 +15,8 @@ public class Checksum {
     private String checksum;
 
     @Column(nullable = false)
-    private String type; //TODO enum for types
+    @Enumerated(EnumType.STRING)
+    private ChecksumType type;
 
 
     public Checksum() {
