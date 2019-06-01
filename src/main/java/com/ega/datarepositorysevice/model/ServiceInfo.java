@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.NonNull;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -14,11 +15,18 @@ import javax.persistence.Table;
 @JsonInclude
 public class ServiceInfo {
     @Id
-    @NonNull
     private  String version;
-    @NonNull private  String description;
+
+    @Column(nullable = false)
+    private  String description;
+
+    @Column(nullable = false)
     @NonNull private  String title;
+
+    @Column(nullable = false)
     @NonNull private  String contact;
+
+    @Column(nullable = false)
     @NonNull private  String licence;
 
     protected ServiceInfo() {}

@@ -4,16 +4,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.org.apache.xml.internal.utils.URI;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "bundle_object")
 @JsonInclude
 public class BundleObject {
+    @Id
     private String id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String type; // TODO make enum
+
+    @Column(nullable = false)
     private URI drsUri;
 
     public BundleObject() {

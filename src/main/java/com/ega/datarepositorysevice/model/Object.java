@@ -3,7 +3,9 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
@@ -12,16 +14,38 @@ import java.util.List;
 @Table(name = "object")
 @JsonInclude
 public class Object {
+
+    @Id
     private String id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private int size;
+
+    @Column(nullable = false)
     private Date created;
+
+    @Column(nullable = false)
     private Date updated;
+
+    @Column(nullable = false)
     private String version;
-    private String mime_type; //TODO enums for mediatypes
+
+    @Column(nullable = false)
+    private String mime_type;//TODO enums for mediatypes
+
+    @Column(nullable = false)
     private List<Checksum> checksums;
+
+    @Column(nullable = false)
     private List<AccessMethods> accessMethods;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private List<String> aliases;
 
     public Object() {
