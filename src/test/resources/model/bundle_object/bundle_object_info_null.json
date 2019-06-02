@@ -1,0 +1,9 @@
+{
+  "name": null,
+  "id": null,
+  "drs_uri": [
+    "drs://example.com/ga4gh/drs/v1/objects/1",
+    "drs://example.com/ga4gh/drs/v1/objects/1"
+  ],
+  "type": null
+}

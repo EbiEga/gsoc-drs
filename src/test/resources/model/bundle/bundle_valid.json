@@ -1,0 +1,26 @@
+{
+  "id": "string",
+  "name": "string",
+  "size": "23",
+  "created": "2019-06-02T13:57:12.971Z",
+  "updated": "2019-06-02T13:57:12.971Z",
+  "version": "string",
+  "checksums": [
+    {
+      "checksum": "string",
+      "type": "md5"
+    }
+  ],
+  "description": "string",
+  "aliases": [
+    "string"
+  ],
+  "contents": [
+  {
+    "name": "string",
+    "id": "string",
+    "drs_uri": "drs://example.com/ga4gh/drs/v1/objects/{object_id}",
+    "type": "object"
+  }
+]
+}

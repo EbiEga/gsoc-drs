@@ -1,0 +1,26 @@
+{
+  "id": null,
+  "name": null,
+  "size": null,
+  "created": null,
+  "updated": null,
+  "version": null,
+  "checksums": [
+    {
+      "checksum": "string",
+      "type": "md5"
+    }
+  ],
+  "description": null,
+  "aliases": [
+    "string"
+  ],
+  "contents": [
+    {
+      "name": null,
+      "id": "string",
+      "drs_uri": null,
+      "type": "object"
+    }
+  ]
+}
