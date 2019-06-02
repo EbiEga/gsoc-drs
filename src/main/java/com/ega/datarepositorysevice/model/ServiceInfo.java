@@ -26,7 +26,7 @@ public class ServiceInfo {
     private  String contact;
 
     @Column(nullable = false)
-    private  String licence;
+    private  String license;
 
     protected ServiceInfo() {}
 
@@ -35,7 +35,7 @@ public class ServiceInfo {
         this.description = description;
         this.title = title;
         this.contact = contact;
-        this.licence = licence;
+        this.license = licence;
     }
     @JsonProperty("version")
     public String getVersion() {
@@ -57,8 +57,8 @@ public class ServiceInfo {
         return contact;
     }
 
-    @JsonProperty("licence")
+    @JsonProperty("license")
     public String getLicence() {
-        return licence;
+        return license;
     }
 }
