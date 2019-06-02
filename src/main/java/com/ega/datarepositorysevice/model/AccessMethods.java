@@ -24,6 +24,8 @@ public class AccessMethods {
     private String region; //TODO check format
 
     @Column(nullable = false)
+    @OneToOne
+    @JoinColumn(name = "access_url")
     private AccessURL accessURL;
 
     public AccessMethods() {
@@ -52,8 +54,7 @@ public class AccessMethods {
     }
 
     @JsonProperty("access_url")
-    @OneToOne
-    @JoinColumn(name = "access_url")
+
     public AccessURL getAccessURL() {
         return accessURL;
     }
@@ -68,6 +69,7 @@ public class AccessMethods {
         private List<String> headers;
 
         @Column(nullable = false)
+        @OneToOne(mappedBy = "access_url")
         private AccessMethods methods;
 
         public AccessURL() {

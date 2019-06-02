@@ -3,10 +3,7 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +34,7 @@ public class Object {
     private String mime_type;//TODO enums for mediatypes
 
     @Column(nullable = false)
+    @OneToMany(mappedBy = "object_id")
     private List<Checksum> checksums;
 
     @Column(nullable = false)

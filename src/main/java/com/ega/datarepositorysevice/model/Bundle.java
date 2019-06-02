@@ -3,10 +3,7 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class Bundle {
     private int size;
 
     @Column(nullable = false)
-    private Date created;
+    private Date created;  //TODO make timestamp rfc 3399
 
     @Column(nullable = false)
     private Date updated;
@@ -33,6 +30,7 @@ public class Bundle {
     private String version;
 
     @Column(nullable = false)
+    @OneToMany(mappedBy = "bundle_object_id")
     private List<Checksum> checksum;
 
     @Column(nullable = false)
@@ -42,6 +40,7 @@ public class Bundle {
     private List<String> aliases;
 
     @Column(nullable = false)
+    @OneToMany(mappedBy = "bundle_id")
     private List<BundleObject> contents;
 
 
