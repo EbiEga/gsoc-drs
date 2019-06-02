@@ -6,8 +6,7 @@
   "updated": "2019-06-02T14:04:49.449Z",
   "version": "string",
   "mime_type": "application/json",
-  "checksums": null
-  ,
+  "checksums": null,
   "access_methods": [
     {
       "type": "s3",
