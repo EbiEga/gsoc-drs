@@ -2,12 +2,15 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
+
+import static com.ega.datarepositorysevice.utils.Constants.DATE_TIME_FORMAT;
 
 @Entity
 @Table(name = "bundle")
@@ -26,9 +29,11 @@ public class Bundle {
 
     @Column(nullable = false)
     @NonNull
-    private Date created;  //TODO make timestamp rfc 3399
+    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
+    private Date created;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private Date updated;
 
     @Column(nullable = false)

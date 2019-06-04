@@ -25,7 +25,7 @@ public class AccessMethods {
     private AccessMethodType type;
 
     @Column(nullable = false)
-    private String region; //TODO check format
+    private String region;
 
     @Column(nullable = false)
     @OneToOne
