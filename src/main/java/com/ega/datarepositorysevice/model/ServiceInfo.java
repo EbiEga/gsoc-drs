@@ -19,16 +19,9 @@ public class ServiceInfo {
     @NotEmpty
     private  String version;
 
-    @Column(nullable = false)
     private  String description;
-
-    @Column(nullable = false)
     private  String title;
-
-    @Column(nullable = false)
     private  String contact;
-
-    @Column(nullable = false)
     private  String license;
 
     protected ServiceInfo() {}

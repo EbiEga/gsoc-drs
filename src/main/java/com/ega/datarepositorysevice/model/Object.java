@@ -21,7 +21,6 @@ public class Object {
     @NotEmpty
     private String id;
 
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -33,15 +32,12 @@ public class Object {
     @DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private Date created;
 
-    @Column(nullable = false)
     @DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private Date updated;
 
-    @Column(nullable = false)
     private String version;
 
-    @Column(nullable = false)
-    private String mime_type;//TODO enums for mediatypes
+    private String mime_type;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "object_id")
@@ -52,10 +48,8 @@ public class Object {
     @NotEmpty
     private List<AccessMethods> accessMethods;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private List<String> aliases;
 
     public Object() {

@@ -28,7 +28,6 @@ public class BundleObject {
     @NotEmpty
     private BundleObjectType type;
 
-    @Column(nullable = false)
     private URI drsUri;
 
     @Column(nullable = false)

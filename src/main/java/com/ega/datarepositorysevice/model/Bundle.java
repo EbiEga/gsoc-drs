@@ -20,7 +20,6 @@ public class Bundle {
     @NotEmpty
     private String id;
 
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -36,7 +35,6 @@ public class Bundle {
     @DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private Date updated;
 
-    @Column(nullable = false)
     private String version;
 
     @Column(nullable = false)
@@ -44,10 +42,8 @@ public class Bundle {
     @NotEmpty
     private List<Checksum> checksum;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private List<String> aliases;
 
     @Column(nullable = false)
