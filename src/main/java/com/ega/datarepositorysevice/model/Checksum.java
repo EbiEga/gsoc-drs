@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "checksum")
@@ -18,7 +19,7 @@ public class Checksum {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotEmpty
+    @NotNull
     private ChecksumType type;
 
     @ManyToOne

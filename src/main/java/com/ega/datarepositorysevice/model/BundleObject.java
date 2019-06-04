@@ -8,6 +8,7 @@ import com.sun.org.apache.xml.internal.utils.URI;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Entity
@@ -25,7 +26,7 @@ public class BundleObject {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotEmpty
+    @NotNull
     private BundleObjectType type;
 
     private URI drsUri;

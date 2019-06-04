@@ -2,13 +2,13 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
@@ -17,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 public class ServiceInfo {
     @Id
     @NotEmpty
+    @NotNull
     private  String version;
 
     private  String description;
