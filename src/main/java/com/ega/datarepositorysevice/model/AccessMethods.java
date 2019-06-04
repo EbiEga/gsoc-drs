@@ -4,8 +4,11 @@ import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.URL;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity
@@ -18,6 +21,7 @@ public class AccessMethods {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NonNull
     private AccessMethodType type;
 
     @Column(nullable = false)
@@ -65,6 +69,8 @@ public class AccessMethods {
     private class AccessURL{
 
         @Id
+        @NotEmpty
+        @URL
         private String url;
         private List<String> headers;
 

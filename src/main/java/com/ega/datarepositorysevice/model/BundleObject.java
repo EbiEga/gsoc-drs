@@ -7,19 +7,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.org.apache.xml.internal.utils.URI;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "bundle_object")
 @JsonInclude
 public class BundleObject {
     @Id
+    @NotEmpty
     private String id;
 
     @Column(nullable = false)
+    @NotEmpty
+    @Pattern(regexp = "[^/]*")
     private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotEmpty
     private BundleObjectType type;
 
     @Column(nullable = false)

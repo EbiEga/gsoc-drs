@@ -2,8 +2,10 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
@@ -12,15 +14,18 @@ import java.util.List;
 @JsonInclude
 public class Bundle {
     @Id
+    @NotEmpty
     private String id;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
+    @NonNull
     private int size;
 
     @Column(nullable = false)
+    @NonNull
     private Date created;  //TODO make timestamp rfc 3399
 
     @Column(nullable = false)
@@ -31,6 +36,7 @@ public class Bundle {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "bundle_object_id")
+    @NotEmpty
     private List<Checksum> checksum;
 
     @Column(nullable = false)
@@ -41,6 +47,7 @@ public class Bundle {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "bundle_id")
+    @NotEmpty
     private List<BundleObject> contents;
 
 

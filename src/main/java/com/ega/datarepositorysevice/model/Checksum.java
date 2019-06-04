@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "checksum")
@@ -17,6 +18,7 @@ public class Checksum {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotEmpty
     private ChecksumType type;
 
     @ManyToOne

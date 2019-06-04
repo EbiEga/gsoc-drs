@@ -2,8 +2,11 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
@@ -13,15 +16,18 @@ import java.util.List;
 public class Object {
 
     @Id
+    @NotEmpty
     private String id;
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
+    @NonNull
     private int size;
 
     @Column(nullable = false)
+    @NonNull
     private Date created;
 
     @Column(nullable = false)
@@ -35,9 +41,11 @@ public class Object {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "object_id")
+    @NotEmpty
     private List<Checksum> checksums;
 
     @Column(nullable = false)
+    @NotEmpty
     private List<AccessMethods> accessMethods;
 
     @Column(nullable = false)
