@@ -1,0 +1,13 @@
+{
+  "id": "id",
+  "name": "string",
+  "size": 0,
+  "created": null,
+  "updated": "2019-06-02T13:04:49.123+0000",
+  "version": "string",
+  "mime_type": "application/json",
+  "checksums": null,
+  "access_methods": null,
+  "description": "string",
+  "aliases": null
+}
