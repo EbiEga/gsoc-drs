@@ -16,7 +16,6 @@ import java.util.List;
 @JsonInclude
 public class AccessMethods {
     @Id
-    @GeneratedValue
     private String accessId;
 
     @Column(nullable = false)
