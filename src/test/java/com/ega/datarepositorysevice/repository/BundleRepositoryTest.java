@@ -30,15 +30,12 @@ public class BundleRepositoryTest {
         df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
         Bundle bundle = new Bundle("string","string",23,df.parse("2019-06-02T14:04:49.123Z"),
                 df.parse("2019-06-02T14:04:49.123Z"), "string", null,"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject("string", "string", "object",null, null)) );
+                Arrays.asList("string"), Arrays.asList() );
 
-        bundleRepository.saveAndFlush(bundle);
+        bundleRepository.save(bundle);
         Bundle responseBundle = bundleRepository.findById("string").get();
-        Assert.assertEquals(bundle.getId(), responseBundle.getId());
-        Assert.assertEquals(bundle.getName(), responseBundle.getName());
-        Assert.assertEquals(bundle.getSize(), responseBundle.getSize());
-
-
-
+        Assert.assertEquals("string", responseBundle.getId());
+        Assert.assertEquals("string", responseBundle.getName());
+        Assert.assertEquals(23, responseBundle.getSize());
     }
 }
