@@ -34,9 +34,14 @@ public class Checksum {
     public Checksum() {
     }
 
-    public Checksum(String checksum, String type, BundleObject bundleObject, Object object) {
+    public Checksum(String checksum, String type){
         this.checksum = checksum;
         this.type = ChecksumType.valueOf(type);
+    }
+
+    public Checksum(String checksum, String type, BundleObject bundleObject, Object object) {
+        this.checksum = checksum;
+        this.type = ChecksumType.createFromString(type);
         this.bundleObject = bundleObject;
         this.object = object;
     }

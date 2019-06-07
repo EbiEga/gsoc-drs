@@ -37,7 +37,7 @@ public class AccessMethods {
 
     public AccessMethods(String access_id, String type, String region, AccessURL accessURL) {
         this.accessId = access_id;
-        this.type = AccessMethodType.valueOf(type);
+        this.type = AccessMethodType.createFromString(type);
         this.region = region;
         this.accessURL = accessURL;
     }

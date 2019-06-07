@@ -42,7 +42,7 @@ public class BundleObject {
     public BundleObject(String id, String name, String type, URI drs_uri, Bundle bundle) {
         this.id = id;
         this.name = name;
-        this.type = BundleObjectType.valueOf(type);
+        this.type = BundleObjectType.createFromString(type);
         this.drsUri = drs_uri;
         this.bundle = bundle;
     }
