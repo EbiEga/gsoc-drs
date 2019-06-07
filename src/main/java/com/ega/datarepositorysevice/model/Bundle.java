@@ -2,6 +2,7 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.api.client.util.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
 
@@ -10,7 +11,6 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
 
-import static com.ega.datarepositorysevice.utils.Constants.DATE_TIME_FORMAT;
 
 @Entity
 @Table(name = "bundle")
@@ -28,11 +28,11 @@ public class Bundle {
 
     @Column(nullable = false)
     @NonNull
-    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date created;
 
     @Column(nullable = false)
-    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date updated;
 
     private String version;
@@ -40,7 +40,7 @@ public class Bundle {
     @Column(nullable = false)
     @OneToMany(mappedBy = "bundle_object_id")
     @NotEmpty
-    private List<Checksum> checksum;
+    private List<Checksum> checksums;
 
     private String description;
 
@@ -55,7 +55,7 @@ public class Bundle {
     public Bundle() {
     }
 
-    public Bundle(String id, String name, int size, Date created, Date updated, String version,
+    public Bundle(String id, String name, int size,  Date created, Date updated, String version,
                   List<Checksum> checksum, String description, List<String> aliases, List<BundleObject> contents) {
         this.id = id;
         this.name = name;
@@ -63,7 +63,7 @@ public class Bundle {
         this.created = created;
         this.updated = updated;
         this.version = version;
-        this.checksum = checksum;
+        this.checksums = checksum;
         this.description = description;
         this.aliases = aliases;
         this.contents = contents;
@@ -99,9 +99,9 @@ public class Bundle {
         return version;
     }
 
-    @JsonProperty("checksum")
+    @JsonProperty("checksums")
     public List<Checksum> getChecksum() {
-        return checksum;
+        return checksums;
     }
 
     @JsonProperty("description")
