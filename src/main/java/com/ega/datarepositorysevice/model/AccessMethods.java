@@ -63,44 +63,6 @@ public class AccessMethods {
         return accessURL;
     }
 
-    @Entity
-    @Table(name = "access_url")
-    @JsonInclude
-    private class AccessURL{
 
-        @Id
-        @NotEmpty
-        @URL
-        private String url;
-        private List<String> headers;
-
-        @Column(nullable = false)
-        @OneToOne(mappedBy = "access_url")
-        private AccessMethods methods;
-
-        public AccessURL() {
-        }
-
-        public AccessURL(String url, List<String> headers) {
-            this.url = url;
-            this.headers = headers;
-        }
-
-        @JsonProperty("url")
-        public String getUrl() {
-            return url;
-        }
-
-        @JsonProperty("headers")
-        public List<String> getHeaders() {
-            return headers;
-        }
-
-        @JsonIgnore
-        @OneToOne(mappedBy = "accessURL")
-        public AccessMethods getMethods() {
-            return methods;
-        }
-    }
 
 }
