@@ -62,7 +62,7 @@ public class BundleObject {
         return type.toString();
     }
 
-    @JsonProperty("drsUri")
+    @JsonProperty("drs_uri")
     public URI getDrsUri() {
         return drsUri;
     }
