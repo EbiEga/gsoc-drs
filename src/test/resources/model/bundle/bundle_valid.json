@@ -1,26 +1,22 @@
 {
   "id": "string",
   "name": "string",
-  "size": "23",
-  "created": "2019-06-02T13:57:12.971Z",
-  "updated": "2019-06-02T13:57:12.971Z",
+  "size": 23,
+  "created": "2019-06-02T13:04:49.123+0000",
+  "updated": "2019-06-02T13:04:49.123+0000",
   "version": "string",
-  "checksums": [
-    {
-      "checksum": "string",
-      "type": "md5"
-    }
-  ],
+  "checksums": null,
   "description": "string",
   "aliases": [
     "string"
   ],
   "contents": [
   {
-    "name": "string",
     "id": "string",
-    "drs_uri": "drs://example.com/ga4gh/drs/v1/objects/{object_id}",
-    "type": "object"
+    "name": "string",
+    "type": "object",
+    "drs_uri": null
+
   }
 ]
 }
