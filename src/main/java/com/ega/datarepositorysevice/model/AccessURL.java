@@ -19,6 +19,7 @@ public class AccessURL{
     @NotEmpty
     @URL
     private String url;
+    @ElementCollection
     private Map<String, String> headers;
 
     @OneToOne(mappedBy = "accessURL")

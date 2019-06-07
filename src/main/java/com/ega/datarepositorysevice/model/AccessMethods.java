@@ -32,14 +32,21 @@ public class AccessMethods {
     @JoinColumn(name = "access_url")
     private AccessURL accessURL;
 
+
+
+    @ManyToOne
+    @JoinColumn(name = "object_id")
+    private Object object;
+
     public AccessMethods() {
     }
 
-    public AccessMethods(String access_id, String type, String region, AccessURL accessURL) {
+    public AccessMethods(String access_id, String type, String region, AccessURL accessURL, Object object) {
         this.accessId = access_id;
         this.type = AccessMethodType.createFromString(type);
         this.region = region;
         this.accessURL = accessURL;
+        this.object = object;
     }
 
     @JsonProperty("access_id")
@@ -58,10 +65,16 @@ public class AccessMethods {
     }
 
     @JsonProperty("access_url")
-
     public AccessURL getAccessURL() {
         return accessURL;
     }
+
+    @JsonIgnore
+    public Object getObject() {
+        return object;
+    }
+
+
 
 
 

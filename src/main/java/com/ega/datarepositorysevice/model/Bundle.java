@@ -44,6 +44,7 @@ public class Bundle {
 
     private String description;
 
+    @ElementCollection
     private List<String> aliases;
 
     @Column(nullable = false)
