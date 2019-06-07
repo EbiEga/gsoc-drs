@@ -53,10 +53,12 @@ public class Object {
 
     @Column(nullable = false)
     @NotEmpty
+    @OneToMany(mappedBy = "object")
     private List<AccessMethods> accessMethods;
 
     private String description;
 
+    @ElementCollection
     private List<String> aliases;
 
     public Object() {
