@@ -47,7 +47,7 @@ public class Object {
     private String mime_type;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "object_id")
+    @OneToMany(mappedBy = "object")
     @NotEmpty
     private List<Checksum> checksums;
 

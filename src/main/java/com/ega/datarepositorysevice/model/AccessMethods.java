@@ -27,7 +27,7 @@ public class AccessMethods {
     @Column(nullable = false)
     private String region;
 
-    @Column(nullable = false)
+
     @OneToOne
     @JoinColumn(name = "access_url")
     private AccessURL accessURL;

@@ -21,8 +21,7 @@ public class AccessURL{
     private String url;
     private Map<String, String> headers;
 
-    @Column(nullable = false)
-    @OneToOne(mappedBy = "access_url")
+    @OneToOne(mappedBy = "accessURL")
     private AccessMethods methods;
 
     public AccessURL() {

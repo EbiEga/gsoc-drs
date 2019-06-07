@@ -38,7 +38,7 @@ public class Bundle {
     private String version;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "bundle_object_id")
+    @OneToMany(mappedBy = "bundleObject")
     @NotEmpty
     private List<Checksum> checksums;
 
@@ -47,7 +47,7 @@ public class Bundle {
     private List<String> aliases;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "bundle_id")
+    @OneToMany(mappedBy = "bundle")
     @NotEmpty
     private List<BundleObject> contents;
 
