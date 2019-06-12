@@ -3,13 +3,14 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -32,11 +33,11 @@ public class Object {
 
     @Column(nullable = false)
     @NonNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date created;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime created;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date updated;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime updated;
 
     private String version;
 
@@ -60,7 +61,7 @@ public class Object {
     public Object() {
     }
 
-    public Object(String id, String name, int size, Date created, Date updated, String version, String mime_type,
+    public Object(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
         this.id = id;
         this.name = name;
@@ -91,12 +92,12 @@ public class Object {
     }
 
     @JsonProperty("created")
-    public Date getCreated() {
+    public OffsetDateTime getCreated() {
         return created;
     }
 
     @JsonProperty("updated")
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
