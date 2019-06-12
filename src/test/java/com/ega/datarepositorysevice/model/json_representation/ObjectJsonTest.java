@@ -17,6 +17,9 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
@@ -34,9 +37,9 @@ public class ObjectJsonTest {
     @Test
     public void testSerialize() throws Exception {
         File file = ResourceUtils.getFile("classpath:model/object/object_null.json");
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        Object object = new Object("id", "string", 0, null,  df.parse("2019-06-02T14:04:49.123Z"), "string", "application/json",
+        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Object object = new Object("id", "string", 0, date,  date, "string", "application/json",
                 null, null, "string", null);
         System.out.println(json.write(object));
         assertThat(json.write(object)).isEqualToJson(file);

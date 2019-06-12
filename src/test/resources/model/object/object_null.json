@@ -2,7 +2,7 @@
   "id": "id",
   "name": "string",
   "size": 0,
-  "created": null,
+  "created": "2018-12-12T12:12:12.1212+02:00",
   "updated": "2018-12-12T12:12:12.1212+02:00",
   "version": "string",
   "mime_type": "application/json",
