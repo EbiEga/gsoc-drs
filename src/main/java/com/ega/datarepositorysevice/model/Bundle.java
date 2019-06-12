@@ -2,12 +2,13 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -27,12 +28,12 @@ public class Bundle {
 
     @Column(nullable = false)
     @NonNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date created;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime created;
 
     @Column(nullable = false)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date updated;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime updated;
 
     private String version;
 
@@ -55,7 +56,7 @@ public class Bundle {
     public Bundle() {
     }
 
-    public Bundle(String id, String name, int size,  Date created, Date updated, String version,
+    public Bundle(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version,
                   List<Checksum> checksum, String description, List<String> aliases, List<BundleObject> contents) {
         this.id = id;
         this.name = name;
@@ -85,12 +86,12 @@ public class Bundle {
     }
 
     @JsonProperty("created")
-    public Date getCreated() {
+    public OffsetDateTime getCreated() {
         return created;
     }
 
     @JsonProperty("updated")
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
