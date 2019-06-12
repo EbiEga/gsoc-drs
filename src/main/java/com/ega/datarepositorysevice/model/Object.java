@@ -2,17 +2,13 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.DataStoreUtils;
+
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +32,7 @@ public class Object {
 
     @Column(nullable = false)
     @NonNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //TODO create global datetime config
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date created;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
