@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 public class ServiceInfo {
     @Id
     @NotEmpty
-    @NotNull
     private  String version;
 
     private  String description;

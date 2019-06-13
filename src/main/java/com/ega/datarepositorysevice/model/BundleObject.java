@@ -16,8 +16,8 @@ import javax.validation.constraints.Pattern;
 @JsonInclude
 public class BundleObject {
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     @Column(nullable = false)
     @NotEmpty
@@ -38,7 +38,7 @@ public class BundleObject {
     public BundleObject() {
     }
 
-    public BundleObject(String id, String name, String type, URI drs_uri, Bundle bundle) {
+    public BundleObject(Long id, String name, String type, URI drs_uri, Bundle bundle) {
         this.id = id;
         this.name = name;
         this.type = BundleObjectType.createFromString(type);
@@ -47,7 +47,7 @@ public class BundleObject {
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
