@@ -38,7 +38,7 @@ public class BundleObject {
     public BundleObject() {
     }
 
-    public BundleObject(Long id, String name, String type, URI drs_uri, Bundle bundle) {
+    public BundleObject(Long id, String name, @NotNull String type, URI drs_uri, Bundle bundle) {
         this.id = id;
         this.name = name;
         this.type = BundleObjectType.createFromString(type);

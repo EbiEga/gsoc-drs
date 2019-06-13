@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "access_methods")
@@ -18,7 +19,7 @@ public class AccessMethods {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NonNull
+    @NotNull
     private AccessMethodType type;
 
     @Column(nullable = false)
