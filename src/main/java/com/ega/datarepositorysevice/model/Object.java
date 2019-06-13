@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -28,11 +29,11 @@ public class Object {
     private String name;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     private int size;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
