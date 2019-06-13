@@ -127,7 +127,7 @@ public class Object {
     }
 
     @JsonProperty("aliases")
-    public List<String> getAliaces() {
+    public List<String> getAliases() {
         return aliases;
     }
 }
