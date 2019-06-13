@@ -47,7 +47,7 @@ public class AccessMethods {
     }
 
     @JsonProperty("access_id")
-    public Long getAccess_id() {
+    public Long getAccessId() {
         return accessId;
     }
 

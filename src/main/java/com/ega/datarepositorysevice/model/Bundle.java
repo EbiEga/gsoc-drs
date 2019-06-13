@@ -31,7 +31,7 @@ public class Bundle {
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
-    @Column(nullable = false)
+
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime updated;
 
@@ -101,7 +101,7 @@ public class Bundle {
     }
 
     @JsonProperty("checksums")
-    public List<Checksum> getChecksum() {
+    public List<Checksum> getChecksums() {
         return checksums;
     }
 
