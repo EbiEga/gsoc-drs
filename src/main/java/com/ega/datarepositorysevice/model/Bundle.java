@@ -17,8 +17,8 @@ import java.util.List;
 @JsonInclude
 public class Bundle {
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     private String name;
 
@@ -56,7 +56,7 @@ public class Bundle {
     public Bundle() {
     }
 
-    public Bundle(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version,
+    public Bundle(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version,
                   List<Checksum> checksum, String description, List<String> aliases, List<BundleObject> contents) {
         this.id = id;
         this.name = name;
@@ -71,7 +71,7 @@ public class Bundle {
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

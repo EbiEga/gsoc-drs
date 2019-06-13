@@ -22,8 +22,8 @@ import java.util.List;
 public class Object {
 
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     private String name;
 
@@ -61,7 +61,7 @@ public class Object {
     public Object() {
     }
 
-    public Object(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
+    public Object(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
         this.id = id;
         this.name = name;
@@ -77,7 +77,7 @@ public class Object {
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
