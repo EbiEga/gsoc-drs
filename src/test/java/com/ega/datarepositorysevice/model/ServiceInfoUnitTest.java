@@ -8,7 +8,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
+import java.util.Set;
 
 public class ServiceInfoUnitTest {
     @Test
@@ -58,6 +63,21 @@ public class ServiceInfoUnitTest {
 
     @Test
     public void testConstraints(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+
+        ServiceInfo validServiceInfo = new ServiceInfo("string", "string", "string", "string", "string");
+        Set<ConstraintViolation<ServiceInfo>> violations = validator.validate(validServiceInfo);
+
+        Assert.assertTrue(violations.isEmpty());
+
+        ServiceInfo wrongServiceInfo = new ServiceInfo(null, "string", "string", "string", "string");
+
+        violations = validator.validate(wrongServiceInfo);
+        for(ConstraintViolation<ServiceInfo> violation:violations){
+            Assert.assertEquals("version",violation.getPropertyPath().toString());
+        }
+
 
     }
 
