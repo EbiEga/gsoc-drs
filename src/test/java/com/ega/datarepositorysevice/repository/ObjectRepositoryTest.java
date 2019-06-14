@@ -11,13 +11,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.TimeZone;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -28,10 +25,10 @@ public class ObjectRepositoryTest {
     ObjectRepository objectRepository;
 
     @Test
-    public void getBundleByIdTest() throws ParseException {
+    public void getBundleByIdTest() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object(1L, "string", 0, null,  date, "string", "application/json",
+        Object object = new Object(1L, "string", 0, null, date, "string", "application/json",
                 null, null, "string", null);
         object = objectRepository.save(object);
         Object responseObject = objectRepository.findById(object.getId()).get();
@@ -44,7 +41,7 @@ public class ObjectRepositoryTest {
     public void getBundleByIdNullTest() throws ParseException {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object(Long.parseLong("5"), "string", 0, null,  date, "string", "application/json",
+        Object object = new Object(Long.parseLong("5"), "string", 0, null, date, "string", "application/json",
                 null, null, "string", null);
         objectRepository.save(object);
         Optional<Object> responseObject = objectRepository.findById(Long.parseLong("3"));
