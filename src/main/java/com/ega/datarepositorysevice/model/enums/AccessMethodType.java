@@ -1,5 +1,7 @@
 package com.ega.datarepositorysevice.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +42,8 @@ public enum AccessMethodType {
     }
 
 
-    public static AccessMethodType createFromString(AccessMethodType name) {
-        return ENUM_MAP.get(name);
+    @JsonCreator
+    public static AccessMethodType createFromString(String name) {
+        return ENUM_MAP.get(name.toLowerCase());
     }
 }

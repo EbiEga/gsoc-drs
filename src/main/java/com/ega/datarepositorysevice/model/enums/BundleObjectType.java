@@ -1,5 +1,7 @@
 package com.ega.datarepositorysevice.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,8 +33,9 @@ public enum BundleObjectType {
     }
 
 
-    public static BundleObjectType createFromString(BundleObjectType name) {
-        return ENUM_MAP.get(name);
+    @JsonCreator
+    public static BundleObjectType createFromString(String name) {
+        return ENUM_MAP.get(name.toLowerCase());
     }
 
     public String getName() {
