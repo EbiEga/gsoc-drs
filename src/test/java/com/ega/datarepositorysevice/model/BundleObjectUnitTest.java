@@ -11,9 +11,16 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class BundleObjectUnitTest {
     @Test
@@ -62,11 +69,37 @@ public class BundleObjectUnitTest {
 
     @Test
     public void testConstraints(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+
+        BundleObject validBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT,null, null) ;
+        Set<ConstraintViolation<BundleObject>> violations = validator.validate(validBundleObject);
+
+        Assert.assertTrue(violations.isEmpty());
+
+
+        BundleObject wrongBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT,null, null) ;
+
+        violations = validator.validate(wrongBundleObject);
+
+        List<String> constraintProperties = Arrays.asList();
+
+        for(ConstraintViolation<BundleObject> violation:violations){
+            Assert.assertEquals("version",violation.getPropertyPath().toString());
+        }
 
     }
 
     @Test
     public void testNamePattern(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        BundleObject wrongBundleObject = new BundleObject(null,"as/ada/",BundleObjectType.OBJECT,null,null);
+        Set<ConstraintViolation<BundleObject>> violations = validator.validate(wrongBundleObject);
+        for (ConstraintViolation<BundleObject> violation: violations) {
+            System.out.println(violation.toString());
+
+        }
 
     }
 }

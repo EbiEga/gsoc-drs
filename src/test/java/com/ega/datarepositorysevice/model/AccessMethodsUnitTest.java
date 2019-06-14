@@ -11,6 +11,11 @@ import org.junit.Test;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.*;
 
 public class AccessMethodsUnitTest {
     @Test
@@ -60,6 +65,25 @@ public class AccessMethodsUnitTest {
 
     @Test
     public void testConstraints(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
 
+        Map<String, String> map = new HashMap<>();
+        map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
+        AccessURL accessURL = new AccessURL("http//www.string.com",map);
+        AccessMethods validAccessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.S3,"region",accessURL, null);
+        Set<ConstraintViolation<AccessMethods>> violations = validator.validate(validAccessMethods);
+
+        Assert.assertTrue(violations.isEmpty());
+
+        AccessMethods wrongAccessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.S3,"region",accessURL, null);
+
+        violations = validator.validate(wrongAccessMethods);
+
+        List<String> constraintProperties = Arrays.asList();
+
+        for(ConstraintViolation<AccessMethods> violation:violations){
+            Assert.assertEquals("version",violation.getPropertyPath().toString());
+        }
     }
 }
