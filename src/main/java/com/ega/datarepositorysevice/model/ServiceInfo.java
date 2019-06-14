@@ -3,12 +3,11 @@ package com.ega.datarepositorysevice.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 
 @Entity
@@ -54,7 +53,24 @@ public class ServiceInfo {
     }
 
     @JsonProperty("license")
-    public String getLicence() {
+    public String getLicense() {
         return license;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ServiceInfo)) return false;
+        ServiceInfo that = (ServiceInfo) o;
+        return Objects.equals(getVersion(), that.getVersion()) &&
+                Objects.equals(getDescription(), that.getDescription()) &&
+                Objects.equals(getTitle(), that.getTitle()) &&
+                Objects.equals(getContact(), that.getContact()) &&
+                Objects.equals(getLicense(), that.getLicense());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getVersion(), getDescription(), getTitle(), getContact(), license);
     }
 }

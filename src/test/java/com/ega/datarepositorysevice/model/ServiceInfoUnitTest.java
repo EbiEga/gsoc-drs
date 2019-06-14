@@ -42,7 +42,7 @@ public class ServiceInfoUnitTest {
         AssertAnnotations.assertMethod(
                 ServiceInfo.class, "getTitle", JsonProperty.class);
         AssertAnnotations.assertMethod(
-                ServiceInfo.class, "getLicence", JsonProperty.class);
+                ServiceInfo.class, "getLicense", JsonProperty.class);
         AssertAnnotations.assertMethod(
                 ServiceInfo.class, "getContact", JsonProperty.class);
     }
