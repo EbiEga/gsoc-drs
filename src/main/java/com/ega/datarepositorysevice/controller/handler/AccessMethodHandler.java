@@ -1,7 +1,6 @@
 package com.ega.datarepositorysevice.controller.handler;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
-import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class AccessMethodHandler {
         this.accessMethodsService = accessMethodsService;
     }
 
-    public Mono<ServerResponse> getAccess(ServerRequest request){
+    public Mono<ServerResponse> getAccess(ServerRequest request) {
         String id = request.pathVariable("access_id");
         Mono<ServerResponse> notFound = ServerResponse.notFound().build();
         Mono<AccessMethods> objectMono = accessMethodsService.getAccessMethodsById(Long.parseLong(id));

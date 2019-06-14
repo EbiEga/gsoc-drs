@@ -23,7 +23,7 @@ public class ObjectHandler {
         this.objectService = objectService;
     }
 
-    public Mono<ServerResponse> getObject(ServerRequest request){
+    public Mono<ServerResponse> getObject(ServerRequest request) {
         String id = request.pathVariable("object_id");
         Mono<ServerResponse> notFound = ServerResponse.notFound().build();
         Mono<Object> objectMono = objectService.getObjectById(Long.parseLong(id));
