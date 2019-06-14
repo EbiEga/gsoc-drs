@@ -21,7 +21,6 @@ public class ObjectRouter {
 
     @Bean
     RouterFunction<ServerResponse> route(){
-        System.out.println("HERE");
         return RouterFunctions
                 .route(GET("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::getObject);
     }
