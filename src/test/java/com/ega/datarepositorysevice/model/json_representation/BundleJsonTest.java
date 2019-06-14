@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -46,6 +47,15 @@ public class BundleJsonTest {
 
     @Test
     public void testDeserialize() throws Exception {
+        File file = ResourceUtils.getFile("classpath:model/bundle/bundle_valid.json");
+        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
+                date, "string", null,"string",
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT,null, null)) );
+
+        Bundle parsedBundle = json.parseObject(new String(Files.readAllBytes(file.toPath())));
+        assertThat(parsedBundle).isEqualTo(bundle);
     }
 }
 
