@@ -77,9 +77,5 @@ public class Checksum {
                 Objects.equals(getObject(), checksum1.getObject());
     }
 
-    @Override
-    public int hashCode() {
 
-        return Objects.hash(getChecksum(), getType(), getBundleObject(), getObject());
-    }
 }
