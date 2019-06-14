@@ -4,7 +4,6 @@ import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -39,9 +38,9 @@ public class AccessMethods {
     public AccessMethods() {
     }
 
-    public AccessMethods(Long access_id, String type, String region, AccessURL accessURL, Object object) {
+    public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL, Object object) {
         this.accessId = access_id;
-        this.type = AccessMethodType.createFromString(type);
+        this.type = type;
         this.region = region;
         this.accessURL = accessURL;
         this.object = object;

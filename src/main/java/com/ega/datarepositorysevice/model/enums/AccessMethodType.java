@@ -40,7 +40,7 @@ public enum AccessMethodType {
     }
 
 
-    public static AccessMethodType createFromString(String name) {
+    public static AccessMethodType createFromString(AccessMethodType name) {
         return ENUM_MAP.get(name);
     }
 }

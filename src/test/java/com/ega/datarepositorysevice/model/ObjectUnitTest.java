@@ -1,5 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
+import com.ega.datarepositorysevice.model.enums.AccessMethodType;
+import com.ega.datarepositorysevice.model.enums.ChecksumType;
 import com.ega.datarepositorysevice.utils.AssertAnnotations;
 import com.ega.datarepositorysevice.utils.ReflectTool;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -97,10 +99,10 @@ public class ObjectUnitTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com",map);
-        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"),"s3","region",accessURL, null);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.FILE,"region",accessURL, null);
 
         Object validObject = new Object(Long.parseLong("1"), "string", 0, date,  date, "string", "application/json",
-                Arrays.asList(new Checksum("string", "md5")), Arrays.asList(accessMethods), "string", null);
+                Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)), Arrays.asList(accessMethods), "string", null);
 
         Set<ConstraintViolation<Object>> violations = validator.validate(validObject);
 

@@ -31,7 +31,7 @@ public enum BundleObjectType {
     }
 
 
-    public static BundleObjectType createFromString(String name) {
+    public static BundleObjectType createFromString(BundleObjectType name) {
         return ENUM_MAP.get(name);
     }
 

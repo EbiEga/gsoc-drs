@@ -1,5 +1,7 @@
 package com.ega.datarepositorysevice.model;
 
+import com.ega.datarepositorysevice.model.enums.BundleObjectType;
+import com.ega.datarepositorysevice.model.enums.ChecksumType;
 import com.ega.datarepositorysevice.utils.AssertAnnotations;
 import com.ega.datarepositorysevice.utils.ReflectTool;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -91,8 +93,8 @@ public class BundleUnitTest {
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Bundle validBundle = new Bundle(Long.parseLong("1"),"string",23,date,
-                date, "string", Arrays.asList(new Checksum("string", "md5")),"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", "object",null, null)) );
+                date, "string", Arrays.asList(new Checksum("string", ChecksumType.ETAG_CODE)),"string",
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.BUNDLE,null, null)) );
 
         Set<ConstraintViolation<Bundle>> violations = validator.validate(validBundle);
 
@@ -100,7 +102,7 @@ public class BundleUnitTest {
 
         Bundle wrongBundle = new Bundle(Long.parseLong("1"),"string",23,date,
                 date, "string", null,"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", "object",null, null)) );
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT,null, null)) );
 
         violations = validator.validate(wrongBundle);
 
