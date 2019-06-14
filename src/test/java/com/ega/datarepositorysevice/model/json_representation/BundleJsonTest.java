@@ -5,6 +5,7 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.BundleObject;
 import com.ega.datarepositorysevice.model.Object;
+import com.ega.datarepositorysevice.model.enums.BundleObjectType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,9 @@ public class BundleJsonTest {
         File file = ResourceUtils.getFile("classpath:model/bundle/bundle_valid.json");
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle bundle = new Bundle("string","string",23,date,
+        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
                 date, "string", null,"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject("string", "string", "object",null, null)) );
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT,null, null)) );
         System.out.println(json.write(bundle));
         assertThat(json.write(bundle)).isEqualToJson(file);
     }

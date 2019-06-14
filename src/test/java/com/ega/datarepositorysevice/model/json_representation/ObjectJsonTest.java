@@ -39,7 +39,7 @@ public class ObjectJsonTest {
         File file = ResourceUtils.getFile("classpath:model/object/object_null.json");
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object("id", "string", 0, date,  date, "string", "application/json",
+        Object object = new Object(Long.parseLong("1"), "string", 0, date,  date, "string", "application/json",
                 null, null, "string", null);
         System.out.println(json.write(object));
         assertThat(json.write(object)).isEqualToJson(file);

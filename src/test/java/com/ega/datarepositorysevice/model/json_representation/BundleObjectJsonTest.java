@@ -4,6 +4,7 @@ package com.ega.datarepositorysevice.model.json_representation;
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.BundleObject;
 import com.ega.datarepositorysevice.model.Object;
+import com.ega.datarepositorysevice.model.enums.BundleObjectType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class BundleObjectJsonTest {
     @Test
     public void testSerialize() throws Exception {
         File file = ResourceUtils.getFile("classpath:model/bundle_object/bundle_object_valid.json");
-        BundleObject bundleObject = new BundleObject("id", "name", "object",null, null) ;
+        BundleObject bundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT,null, null) ;
         assertThat(json.write(bundleObject)).isEqualToJson(file);
     }
 
