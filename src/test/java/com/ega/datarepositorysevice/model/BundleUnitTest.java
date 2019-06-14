@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.ConstraintViolation;
@@ -87,29 +86,27 @@ public class BundleUnitTest {
     }
 
     @Test
-    public void testConstraints(){
+    public void testConstraints() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle validBundle = new Bundle(Long.parseLong("1"),"string",23,date,
-                date, "string", Arrays.asList(new Checksum("string", ChecksumType.ETAG_CODE)),"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.BUNDLE,null, null)) );
+        Bundle validBundle = new Bundle(Long.parseLong("1"), "string", 23, date,
+                date, "string", Arrays.asList(new Checksum("string", ChecksumType.ETAG_CODE)), "string",
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.BUNDLE, null, null)));
 
         Set<ConstraintViolation<Bundle>> violations = validator.validate(validBundle);
 
         Assert.assertTrue(violations.isEmpty());
 
-        Bundle wrongBundle = new Bundle(Long.parseLong("1"),"string",23,date,
-                date, "string", null,"string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT,null, null)) );
-
+        Bundle wrongBundle = new Bundle(Long.parseLong("1"), "string", 23, date,
+                date, "string", null, "string",
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT, null, null)));
         violations = validator.validate(wrongBundle);
+        List<String> constraintProperties = Arrays.asList("created", "checksums", "accessMethods");
 
-        List<String> constraintProperties = Arrays.asList("created","checksums","accessMethods");
-
-        for(ConstraintViolation<Bundle> violation:violations){
+        for (ConstraintViolation<Bundle> violation : violations) {
             String property = violation.getPropertyPath().toString();
             Assert.assertTrue(constraintProperties.contains(property));
         }

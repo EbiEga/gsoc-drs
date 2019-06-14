@@ -21,7 +21,6 @@ import java.util.*;
 public class AccessMethodsUnitTest {
     @Test
     public void typeAnnotations() {
-
         AssertAnnotations.assertType(
                 Checksum.class, Entity.class, Table.class, JsonInclude.class);
     }
@@ -31,7 +30,7 @@ public class AccessMethodsUnitTest {
         AssertAnnotations.assertField(AccessMethods.class, "accessId", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(AccessMethods.class, "type", Column.class, Enumerated.class, NotNull.class);
         AssertAnnotations.assertField(AccessMethods.class, "region", Column.class);
-        AssertAnnotations.assertField(AccessMethods.class, "accessURL",JoinColumn.class, OneToOne.class);
+        AssertAnnotations.assertField(AccessMethods.class, "accessURL", JoinColumn.class, OneToOne.class);
         AssertAnnotations.assertField(AccessMethods.class, "object", JoinColumn.class, ManyToOne.class);
 
     }
@@ -65,25 +64,23 @@ public class AccessMethodsUnitTest {
     }
 
     @Test
-    public void testConstraints(){
+    public void testConstraints() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com",map);
-        AccessMethods validAccessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.S3,"region",accessURL, null);
+        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessMethods validAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL, null);
         Set<ConstraintViolation<AccessMethods>> violations = validator.validate(validAccessMethods);
 
         Assert.assertTrue(violations.isEmpty());
 
-        AccessMethods wrongAccessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.S3,"region",accessURL, null);
-
+        AccessMethods wrongAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL, null);
         violations = validator.validate(wrongAccessMethods);
-
         List<String> constraintProperties = Arrays.asList("type");
 
-        for(ConstraintViolation<AccessMethods> violation:violations){
+        for (ConstraintViolation<AccessMethods> violation : violations) {
             String property = violation.getPropertyPath().toString();
             Assert.assertTrue(constraintProperties.contains(property));
         }

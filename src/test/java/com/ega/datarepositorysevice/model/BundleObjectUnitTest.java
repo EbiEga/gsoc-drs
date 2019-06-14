@@ -25,7 +25,6 @@ import java.util.Set;
 public class BundleObjectUnitTest {
     @Test
     public void typeAnnotations() {
-
         AssertAnnotations.assertType(
                 ServiceInfo.class, Entity.class, Table.class, JsonInclude.class);
     }
@@ -44,7 +43,7 @@ public class BundleObjectUnitTest {
         AssertAnnotations.assertMethod(
                 BundleObject.class, "getId", JsonProperty.class);
         AssertAnnotations.assertMethod(
-                BundleObject.class, "getName",JsonProperty.class);
+                BundleObject.class, "getName", JsonProperty.class);
         AssertAnnotations.assertMethod(
                 BundleObject.class, "getType", JsonProperty.class);
         AssertAnnotations.assertMethod(
@@ -68,23 +67,20 @@ public class BundleObjectUnitTest {
     }
 
     @Test
-    public void testConstraints(){
+    public void testConstraints() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        BundleObject validBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT,null, null) ;
+        BundleObject validBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT, null, null);
         Set<ConstraintViolation<BundleObject>> violations = validator.validate(validBundleObject);
 
         Assert.assertTrue(violations.isEmpty());
 
-
-        BundleObject wrongBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT,null, null) ;
-
+        BundleObject wrongBundleObject = new BundleObject(Long.parseLong("1"), "name", BundleObjectType.OBJECT, null, null);
         violations = validator.validate(wrongBundleObject);
+        List<String> constraintProperties = Arrays.asList("type", "name");
 
-        List<String> constraintProperties = Arrays.asList("type","name");
-
-        for(ConstraintViolation<BundleObject> violation:violations){
+        for (ConstraintViolation<BundleObject> violation : violations) {
             String property = violation.getPropertyPath().toString();
             Assert.assertTrue(constraintProperties.contains(property));
         }
@@ -92,14 +88,13 @@ public class BundleObjectUnitTest {
     }
 
     @Test
-    public void testNamePattern(){
+    public void testNamePattern() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        BundleObject wrongBundleObject = new BundleObject(null,"as/ada/",BundleObjectType.OBJECT,null,null);
+        BundleObject wrongBundleObject = new BundleObject(null, "as/ada/", BundleObjectType.OBJECT, null, null);
         Set<ConstraintViolation<BundleObject>> violations = validator.validate(wrongBundleObject);
-        for (ConstraintViolation<BundleObject> violation: violations) {
+        for (ConstraintViolation<BundleObject> violation : violations) {
             System.out.println(violation.toString());
-
         }
 
     }

@@ -18,7 +18,6 @@ import java.util.Set;
 public class ServiceInfoUnitTest {
     @Test
     public void typeAnnotations() {
-
         AssertAnnotations.assertType(
                 ServiceInfo.class, Entity.class, Table.class, JsonInclude.class);
     }
@@ -72,7 +71,6 @@ public class ServiceInfoUnitTest {
         Assert.assertTrue(violations.isEmpty());
 
         ServiceInfo wrongServiceInfo = new ServiceInfo(null, "string", "string", "string", "string");
-
         violations = validator.validate(wrongServiceInfo);
         for(ConstraintViolation<ServiceInfo> violation:violations){
             Assert.assertEquals("version",violation.getPropertyPath().toString());

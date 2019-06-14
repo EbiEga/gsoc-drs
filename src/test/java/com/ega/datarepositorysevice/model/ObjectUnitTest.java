@@ -7,10 +7,8 @@ import com.ega.datarepositorysevice.utils.ReflectTool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.ConstraintViolation;
@@ -27,7 +25,6 @@ import java.util.*;
 public class ObjectUnitTest {
     @Test
     public void typeAnnotations() {
-
         AssertAnnotations.assertType(
                 Object.class, Entity.class, Table.class, JsonInclude.class);
     }
@@ -37,7 +34,7 @@ public class ObjectUnitTest {
         AssertAnnotations.assertField(Object.class, "id", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(Object.class, "name");
         AssertAnnotations.assertField(Object.class, "size", Column.class, NotNull.class);
-        AssertAnnotations.assertField(Object.class, "created",Column.class, NotNull.class, JsonSerialize.class);
+        AssertAnnotations.assertField(Object.class, "created", Column.class, NotNull.class, JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "version");
         AssertAnnotations.assertField(Object.class, "mime_type");
@@ -88,32 +85,31 @@ public class ObjectUnitTest {
     }
 
     @Test
-    public void testConstraints(){
+    public void testConstraints() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
 
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com",map);
-        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.FILE,"region",accessURL, null);
+        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.FILE, "region", accessURL, null);
 
-        Object validObject = new Object(Long.parseLong("1"), "string", 0, date,  date, "string", "application/json",
+        Object validObject = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/json",
                 Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)), Arrays.asList(accessMethods), "string", null);
 
         Set<ConstraintViolation<Object>> violations = validator.validate(validObject);
 
         Assert.assertTrue(violations.isEmpty());
 
-        Object wrongObject = new Object(Long.parseLong("1"), "string", 0, null,  date, "string", "application/json",
+        Object wrongObject = new Object(Long.parseLong("1"), "string", 0, null, date, "string", "application/json",
                 Arrays.asList(), Arrays.asList(), "string", null);
 
         violations = validator.validate(wrongObject);
-        List<String> constraintPaths = Arrays.asList("created","checksums","accessMethods");
-        for(ConstraintViolation<Object> violation:violations){
+        List<String> constraintPaths = Arrays.asList("created", "checksums", "accessMethods");
+        for (ConstraintViolation<Object> violation : violations) {
             String property = violation.getPropertyPath().toString();
             Assert.assertTrue(constraintPaths.contains(property));
         }
