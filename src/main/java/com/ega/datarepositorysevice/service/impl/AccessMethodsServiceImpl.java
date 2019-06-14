@@ -1,7 +1,6 @@
 package com.ega.datarepositorysevice.service.impl;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
-import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
     AccessMethodsRepository accessMethodsRepository;
 
     @Override
-    public Mono<AccessMethods> getAccessMethodsById(String id) {
+    public Mono<AccessMethods> getAccessMethodsById(Long id) {
         Optional<AccessMethods> accessMethodsOpt =  accessMethodsRepository.findById(id);
         return accessMethodsOpt.map(Mono::just).orElseGet(Mono::empty);
     }
