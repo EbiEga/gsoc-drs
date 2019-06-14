@@ -4,14 +4,20 @@ import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.service.BundleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+@Service
 public class BundleServiceImpl implements BundleService {
 
+    private final BundleRepository bundleRepository;
+
     @Autowired
-    BundleRepository bundleRepository;
+    public BundleServiceImpl(BundleRepository bundleRepository) {
+        this.bundleRepository = bundleRepository;
+    }
 
     @Override
     public Mono<Bundle> getBundletById(Long id) {
