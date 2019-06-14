@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class ChecksumUnitTsst {
+public class ChecksumUnitTest {
     @Test
     public void typeAnnotations() {
 
@@ -72,9 +72,7 @@ public class ChecksumUnitTsst {
         Assert.assertTrue(violations.isEmpty());
 
         Checksum wrongChecksum = new Checksum("string", null);
-
         violations = validator.validate(wrongChecksum);
-
         List<String> constraintProperties = Arrays.asList("type");
 
         for(ConstraintViolation<Checksum> violation:violations){

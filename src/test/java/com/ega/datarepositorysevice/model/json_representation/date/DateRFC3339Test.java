@@ -18,6 +18,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
 @JsonTest
 @AutoConfigureJsonTesters
@@ -30,7 +31,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testObjectSerializeDateTime() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Object object = new Object(Long.parseLong("1"), "string", 0, date, null, "string", "application/jsonObjectMapper",
                 null, null, "string", null);
@@ -42,7 +43,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testObjectSerializeDateTimeWithNanoSec() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Object object = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/jsonObjectMapper",
                 null, null, "string", null);
@@ -58,7 +59,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testObjectDeserializeCreatedDate() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
 
         String jsonString = "{ \"created\": \"2018-12-12T12:12:12.1212+02:00\"}";
@@ -68,7 +69,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testObjectDeserializeUpdatedDate() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
 
         String jsonString = "{ \"updated\": \"2018-12-12T12:12:12.1212+02:00\"}";
@@ -79,11 +80,11 @@ public class DateRFC3339Test {
 
     @Test
     public void testBundleSerializeDateTime() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
-                date, "string", null,"string",
-                null,null );
+        Bundle bundle = new Bundle(Long.parseLong("1"), "string", 23, date,
+                date, "string", null, "string",
+                null, null);
         assertThat(jsonBundleMapper.write(bundle))
                 .extractingJsonPathStringValue("created")
                 .isEqualTo("2018-12-12T12:12:00+02:00");
@@ -94,11 +95,11 @@ public class DateRFC3339Test {
 
     @Test
     public void testBundleSerializeDateTimeWithNanoSec() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
-                date, "string", null,"string",
-                null, null );
+        Bundle bundle = new Bundle(Long.parseLong("1"), "string", 23, date,
+                date, "string", null, "string",
+                null, null);
         System.out.println(jsonBundleMapper.write(bundle));
         assertThat(jsonBundleMapper.write(bundle))
                 .extractingJsonPathStringValue("created")
@@ -111,7 +112,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testBundleDeserializeCreatedDate() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
 
         String jsonString = "{ \"created\": \"2018-12-12T12:12:12.1212+02:00\"}";
@@ -121,7 +122,7 @@ public class DateRFC3339Test {
 
     @Test
     public void testBundleDeserializeUpdatedDate() throws IOException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
 
         String jsonString = "{ \"updated\": \"2018-12-12T12:12:12.1212+02:00\"}";

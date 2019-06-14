@@ -1,9 +1,7 @@
 package com.ega.datarepositorysevice.model.json_representation;
 
 
-import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Checksum;
-import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.model.enums.ChecksumType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
