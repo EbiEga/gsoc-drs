@@ -15,6 +15,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 public class AccessMethodsUnitTest {
@@ -28,7 +29,7 @@ public class AccessMethodsUnitTest {
     @Test
     public void fieldAnnotations() {
         AssertAnnotations.assertField(AccessMethods.class, "accessId", Id.class, GeneratedValue.class);
-        AssertAnnotations.assertField(AccessMethods.class, "type", Column.class, Enumerated.class, NonNull.class);
+        AssertAnnotations.assertField(AccessMethods.class, "type", Column.class, Enumerated.class, NotNull.class);
         AssertAnnotations.assertField(AccessMethods.class, "region", Column.class);
         AssertAnnotations.assertField(AccessMethods.class, "accessURL",JoinColumn.class, OneToOne.class);
         AssertAnnotations.assertField(AccessMethods.class, "object", JoinColumn.class, ManyToOne.class);
@@ -80,10 +81,11 @@ public class AccessMethodsUnitTest {
 
         violations = validator.validate(wrongAccessMethods);
 
-        List<String> constraintProperties = Arrays.asList();
+        List<String> constraintProperties = Arrays.asList("type");
 
         for(ConstraintViolation<AccessMethods> violation:violations){
-            Assert.assertEquals("version",violation.getPropertyPath().toString());
+            String property = violation.getPropertyPath().toString();
+            Assert.assertTrue(constraintProperties.contains(property));
         }
     }
 }

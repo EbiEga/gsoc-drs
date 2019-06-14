@@ -17,6 +17,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -37,8 +38,8 @@ public class BundleUnitTest {
     public void fieldAnnotations() {
         AssertAnnotations.assertField(Bundle.class, "id", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(Bundle.class, "name");
-        AssertAnnotations.assertField(Bundle.class, "size", Column.class, NonNull.class);
-        AssertAnnotations.assertField(Bundle.class, "created", Column.class, NonNull.class, JsonSerialize.class);
+        AssertAnnotations.assertField(Bundle.class, "size", Column.class, NotNull.class);
+        AssertAnnotations.assertField(Bundle.class, "created", Column.class, NotNull.class, JsonSerialize.class);
         AssertAnnotations.assertField(Bundle.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Bundle.class, "version");
         AssertAnnotations.assertField(Bundle.class, "checksums", Column.class, OneToMany.class, NotEmpty.class);

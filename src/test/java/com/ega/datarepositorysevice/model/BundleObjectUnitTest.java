@@ -82,10 +82,11 @@ public class BundleObjectUnitTest {
 
         violations = validator.validate(wrongBundleObject);
 
-        List<String> constraintProperties = Arrays.asList();
+        List<String> constraintProperties = Arrays.asList("type","name");
 
         for(ConstraintViolation<BundleObject> violation:violations){
-            Assert.assertEquals("version",violation.getPropertyPath().toString());
+            String property = violation.getPropertyPath().toString();
+            Assert.assertTrue(constraintProperties.contains(property));
         }
 
     }
