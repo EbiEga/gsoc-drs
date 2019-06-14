@@ -36,8 +36,8 @@ public class ObjectUnitTest {
     public void fieldAnnotations() {
         AssertAnnotations.assertField(Object.class, "id", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(Object.class, "name");
-        AssertAnnotations.assertField(Object.class, "size", Column.class, NonNull.class);
-        AssertAnnotations.assertField(Object.class, "created",Column.class, NonNull.class, JsonSerialize.class);
+        AssertAnnotations.assertField(Object.class, "size", Column.class, NotNull.class);
+        AssertAnnotations.assertField(Object.class, "created",Column.class, NotNull.class, JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "version");
         AssertAnnotations.assertField(Object.class, "mime_type");
