@@ -11,10 +11,16 @@ import org.junit.Test;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.time.ZoneOffset;
+import java.util.*;
 
 public class ObjectUnitTest {
     @Test
@@ -81,6 +87,33 @@ public class ObjectUnitTest {
 
     @Test
     public void testConstraints(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
 
+
+        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+
+        Map<String, String> map = new HashMap<>();
+        map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
+        AccessURL accessURL = new AccessURL("http//www.string.com",map);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"),"s3","region",accessURL, null);
+
+        Object validObject = new Object(Long.parseLong("1"), "string", 0, date,  date, "string", "application/json",
+                Arrays.asList(new Checksum("string", "md5")), Arrays.asList(accessMethods), "string", null);
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(validObject);
+
+        Assert.assertTrue(violations.isEmpty());
+
+        Object wrongObject = new Object(Long.parseLong("1"), "string", 0, null,  date, "string", "application/json",
+                Arrays.asList(), Arrays.asList(), "string", null);
+
+        violations = validator.validate(wrongObject);
+        List<String> constraintPaths = Arrays.asList("created","checksums","accessMethods");
+        for(ConstraintViolation<Object> violation:violations){
+            String property = violation.getPropertyPath().toString();
+            Assert.assertTrue(constraintPaths.contains(property));
+        }
     }
 }
