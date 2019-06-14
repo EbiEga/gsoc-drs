@@ -33,7 +33,7 @@ public enum ChecksumType {
     }
 
 
-    public static ChecksumType createFromString(String name) {
+    public static ChecksumType createFromString(ChecksumType name) {
         return ENUM_MAP.get(name);
     }
 

@@ -10,7 +10,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class ChecksumUnitTsst {
     @Test
@@ -31,7 +38,7 @@ public class ChecksumUnitTsst {
     @Test
     public void methodAnnotations() {
         AssertAnnotations.assertMethod(
-                Checksum.class, "getChecksums", JsonProperty.class);
+                Checksum.class, "getChecksum", JsonProperty.class);
         AssertAnnotations.assertMethod(
                 Checksum.class, "getType", JsonProperty.class);
         AssertAnnotations.assertMethod(
@@ -56,6 +63,23 @@ public class ChecksumUnitTsst {
 
     @Test
     public void testConstraints(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
 
+        Checksum validChecksum = new Checksum("string", ChecksumType.MD5_Code);
+        Set<ConstraintViolation<Checksum>> violations = validator.validate(validChecksum);
+
+        Assert.assertTrue(violations.isEmpty());
+
+        Checksum wrongChecksum = new Checksum("string", null);
+
+        violations = validator.validate(wrongChecksum);
+
+        List<String> constraintProperties = Arrays.asList("type");
+
+        for(ConstraintViolation<Checksum> violation:violations){
+            String property = violation.getPropertyPath().toString();
+            Assert.assertTrue(constraintProperties.contains(property));
+        }
     }
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -34,14 +33,14 @@ public class Checksum {
     public Checksum() {
     }
 
-    public Checksum(String checksum, String type){
+    public Checksum(String checksum, ChecksumType type){
         this.checksum = checksum;
-        this.type = ChecksumType.createFromString(type);
+        this.type = type;
     }
 
-    public Checksum(String checksum, String type, BundleObject bundleObject, Object object) {
+    public Checksum(String checksum, ChecksumType type, BundleObject bundleObject, Object object) {
         this.checksum = checksum;
-        this.type = ChecksumType.createFromString(type);
+        this.type = type;
         this.bundleObject = bundleObject;
         this.object = object;
     }
