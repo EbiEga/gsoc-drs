@@ -33,7 +33,7 @@ public class AccessMethodsJsonTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com",map);
-        AccessMethods accessMethods = new AccessMethods("access_id","s3","region",accessURL, null);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"),AccessMethodType.S3,"region",accessURL, null);
         System.out.println(json.write(accessMethods));
         assertThat(json.write(accessMethods)).isEqualToJson(file);
     }

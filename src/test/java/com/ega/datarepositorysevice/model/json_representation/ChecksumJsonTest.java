@@ -28,7 +28,7 @@ public class ChecksumJsonTest {
     @Test
     public void testSerialize() throws Exception {
         File file = ResourceUtils.getFile("classpath:model/checksum/checksum_valid.json");
-        Checksum checksum = new Checksum("string", "md5");
+        Checksum checksum = new Checksum("string", ChecksumType.MD5_Code);
         assertThat(json.write(checksum)).isEqualToJson(file);
     }
 
