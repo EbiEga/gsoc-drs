@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "checksum")
@@ -63,5 +64,22 @@ public class Checksum {
     @JsonIgnore
     public Object getObject() {
         return object;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Checksum)) return false;
+        Checksum checksum1 = (Checksum) o;
+        return Objects.equals(getChecksum(), checksum1.getChecksum()) &&
+                getType() == checksum1.getType() &&
+                Objects.equals(getBundleObject(), checksum1.getBundleObject()) &&
+                Objects.equals(getObject(), checksum1.getObject());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getChecksum(), getType(), getBundleObject(), getObject());
     }
 }

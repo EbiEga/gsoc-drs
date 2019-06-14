@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "access_methods")
@@ -71,8 +72,21 @@ public class AccessMethods {
         return object;
     }
 
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccessMethods)) return false;
+        AccessMethods that = (AccessMethods) o;
+        return Objects.equals(getAccessId(), that.getAccessId()) &&
+                getType() == that.getType() &&
+                Objects.equals(getRegion(), that.getRegion()) &&
+                Objects.equals(getAccessURL(), that.getAccessURL()) &&
+                Objects.equals(getObject(), that.getObject());
+    }
 
+    @Override
+    public int hashCode() {
 
-
-
+        return Objects.hash(getAccessId(), getType(), getRegion(), getAccessURL(), getObject());
+    }
 }

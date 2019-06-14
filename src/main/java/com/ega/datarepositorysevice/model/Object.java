@@ -13,8 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-
-
+import java.util.Objects;
 
 
 @Entity
@@ -130,5 +129,29 @@ public class Object {
     @JsonProperty("aliases")
     public List<String> getAliases() {
         return aliases;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Object)) return false;
+        Object object = (Object) o;
+        return getSize() == object.getSize() &&
+                Objects.equals(getId(), object.getId()) &&
+                Objects.equals(getName(), object.getName()) &&
+                Objects.equals(getCreated(), object.getCreated()) &&
+                Objects.equals(getUpdated(), object.getUpdated()) &&
+                Objects.equals(getVersion(), object.getVersion()) &&
+                Objects.equals(getMime_type(), object.getMime_type()) &&
+                Objects.equals(getChecksums(), object.getChecksums()) &&
+                Objects.equals(getAccessMethods(), object.getAccessMethods()) &&
+                Objects.equals(getDescription(), object.getDescription()) &&
+                Objects.equals(getAliases(), object.getAliases());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getSize(), getCreated(), getUpdated(), getVersion(), getMime_type(), getChecksums(), getAccessMethods(), getDescription(), getAliases());
     }
 }

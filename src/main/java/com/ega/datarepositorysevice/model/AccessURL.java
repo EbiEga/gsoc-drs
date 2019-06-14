@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Table(name = "access_url")
@@ -47,5 +48,21 @@ public class AccessURL{
     @OneToOne(mappedBy = "accessURL")
     public AccessMethods getMethods() {
         return methods;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccessURL)) return false;
+        AccessURL accessURL = (AccessURL) o;
+        return Objects.equals(getUrl(), accessURL.getUrl()) &&
+                Objects.equals(getHeaders(), accessURL.getHeaders()) &&
+                Objects.equals(getMethods(), accessURL.getMethods());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getUrl(), getHeaders(), getMethods());
     }
 }

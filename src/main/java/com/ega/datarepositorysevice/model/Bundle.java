@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -119,5 +120,28 @@ public class Bundle {
     @JsonProperty("contents")
     public List<BundleObject> getContents() {
         return contents;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Bundle)) return false;
+        Bundle bundle = (Bundle) o;
+        return getSize() == bundle.getSize() &&
+                Objects.equals(getId(), bundle.getId()) &&
+                Objects.equals(getName(), bundle.getName()) &&
+                Objects.equals(getCreated(), bundle.getCreated()) &&
+                Objects.equals(getUpdated(), bundle.getUpdated()) &&
+                Objects.equals(getVersion(), bundle.getVersion()) &&
+                Objects.equals(getChecksums(), bundle.getChecksums()) &&
+                Objects.equals(getDescription(), bundle.getDescription()) &&
+                Objects.equals(getAliases(), bundle.getAliases()) &&
+                Objects.equals(getContents(), bundle.getContents());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getSize(), getCreated(), getUpdated(), getVersion(), getChecksums(), getDescription(), getAliases(), getContents());
     }
 }

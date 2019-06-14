@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bundle_object")
@@ -69,5 +70,23 @@ public class BundleObject {
     @JsonIgnore
     public Bundle getBundle() {
         return bundle;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BundleObject)) return false;
+        BundleObject that = (BundleObject) o;
+        return Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getName(), that.getName()) &&
+                getType() == that.getType() &&
+                Objects.equals(getDrsUri(), that.getDrsUri()) &&
+                Objects.equals(getBundle(), that.getBundle());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getType(), getDrsUri(), getBundle());
     }
 }
