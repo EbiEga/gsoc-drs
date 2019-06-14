@@ -1,5 +1,8 @@
 package com.ega.datarepositorysevice.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.netty.util.internal.StringUtil;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,14 +35,16 @@ public enum ChecksumType {
         ENUM_MAP = Collections.unmodifiableMap(map);
     }
 
-
-    public static ChecksumType createFromString(ChecksumType name) {
-        return ENUM_MAP.get(name);
+    @JsonCreator
+    public static ChecksumType createFromString(String name) {
+        return ENUM_MAP.get(name.toLowerCase());
     }
 
     public String getName() {
         return this.type;
     }
+
+
 }
 
 
