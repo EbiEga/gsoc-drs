@@ -130,8 +130,8 @@ public class Bundle {
         return getSize() == bundle.getSize() &&
                 Objects.equals(getId(), bundle.getId()) &&
                 Objects.equals(getName(), bundle.getName()) &&
-                Objects.equals(getCreated(), bundle.getCreated()) &&
-                Objects.equals(getUpdated(), bundle.getUpdated()) &&
+                getCreated().isEqual(bundle.getCreated()) &&
+                getUpdated().isEqual(bundle.getUpdated()) &&
                 Objects.equals(getVersion(), bundle.getVersion()) &&
                 Objects.equals(getChecksums(), bundle.getChecksums()) &&
                 Objects.equals(getDescription(), bundle.getDescription()) &&
