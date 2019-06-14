@@ -139,8 +139,8 @@ public class Object {
         return getSize() == object.getSize() &&
                 Objects.equals(getId(), object.getId()) &&
                 Objects.equals(getName(), object.getName()) &&
-                Objects.equals(getCreated(), object.getCreated()) &&
-                Objects.equals(getUpdated(), object.getUpdated()) &&
+                getCreated().isEqual(object.getCreated()) &&
+                getUpdated().isEqual(object.getUpdated()) &&
                 Objects.equals(getVersion(), object.getVersion()) &&
                 Objects.equals(getMime_type(), object.getMime_type()) &&
                 Objects.equals(getChecksums(), object.getChecksums()) &&
