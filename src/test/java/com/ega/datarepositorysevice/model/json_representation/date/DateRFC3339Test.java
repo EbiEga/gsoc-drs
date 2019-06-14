@@ -32,7 +32,7 @@ public class DateRFC3339Test {
     public void testObjectSerializeDateTime() throws IOException {
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object("id", "string", 0, date, null, "string", "application/jsonObjectMapper",
+        Object object = new Object(Long.parseLong("1"), "string", 0, date, null, "string", "application/jsonObjectMapper",
                 null, null, "string", null);
         System.out.println(jsonObjectMapper.write(object));
         assertThat(jsonObjectMapper.write(object))
@@ -44,7 +44,7 @@ public class DateRFC3339Test {
     public void testObjectSerializeDateTimeWithNanoSec() throws IOException {
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object("id", "string", 0, date, date, "string", "application/jsonObjectMapper",
+        Object object = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/jsonObjectMapper",
                 null, null, "string", null);
         System.out.println(jsonObjectMapper.write(object));
         assertThat(jsonObjectMapper.write(object))
@@ -81,7 +81,7 @@ public class DateRFC3339Test {
     public void testBundleSerializeDateTime() throws IOException {
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle bundle = new Bundle("string","string",23,date,
+        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
                 date, "string", null,"string",
                 null,null );
         assertThat(jsonBundleMapper.write(bundle))
@@ -96,7 +96,7 @@ public class DateRFC3339Test {
     public void testBundleSerializeDateTimeWithNanoSec() throws IOException {
         LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Bundle bundle = new Bundle("string","string",23,date,
+        Bundle bundle = new Bundle(Long.parseLong("1"),"string",23,date,
                 date, "string", null,"string",
                 null, null );
         System.out.println(jsonBundleMapper.write(bundle));
