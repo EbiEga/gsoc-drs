@@ -1,7 +1,6 @@
 package com.ega.datarepositorysevice.service;
 
 
-import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
 import com.ega.datarepositorysevice.service.impl.ObjectServiceImpl;
@@ -9,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -32,7 +30,7 @@ public class ObjectServiceTest {
     private Object objectTestObject;
 
     @Before
-    public void prepareDatabase(){
+    public void prepareDatabase() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         objectTestObject = new Object(1L, "string", 0, null, date, "string", "application/json",
@@ -47,7 +45,7 @@ public class ObjectServiceTest {
     }
 
     @Test
-    public void testExistingValue(){
+    public void testExistingValue() {
         Mono<Object> objectMono = objectService.getObjectById(1L);
         Optional<Object> objecteOptional = objectMono.blockOptional();
 
@@ -57,7 +55,7 @@ public class ObjectServiceTest {
     }
 
     @Test
-    public void testEmptyValue(){
+    public void testEmptyValue() {
         Mono<Object> bundleMono = objectService.getObjectById(2L);
         Optional<Object> bundleOptional = bundleMono.blockOptional();
 

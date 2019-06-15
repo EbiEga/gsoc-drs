@@ -1,7 +1,6 @@
 package com.ega.datarepositorysevice.service;
 
 
-import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.service.impl.BundleServiceImpl;
@@ -27,7 +26,7 @@ public class BundleServiceTest {
 
 
     @Before
-    public void prepareDatabase(){
+    public void prepareDatabase() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         bundleTestObject = new Bundle(1L, "string", 23, date,
@@ -43,7 +42,7 @@ public class BundleServiceTest {
     }
 
     @Test
-    public void testExistingValue(){
+    public void testExistingValue() {
         Mono<Bundle> bundleMono = bundleService.getBundletById(1L);
         Optional<Bundle> bundleOptional = bundleMono.blockOptional();
 
@@ -54,7 +53,7 @@ public class BundleServiceTest {
     }
 
     @Test
-    public void testEmptyValue(){
+    public void testEmptyValue() {
         Mono<Bundle> bundleMono = bundleService.getBundletById(2L);
         Optional<Bundle> bundleOptional = bundleMono.blockOptional();
 
