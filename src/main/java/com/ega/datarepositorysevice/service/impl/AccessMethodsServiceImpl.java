@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-@Service
 public class AccessMethodsServiceImpl implements AccessMethodsService {
 
     private final AccessMethodsRepository accessMethodsRepository;
