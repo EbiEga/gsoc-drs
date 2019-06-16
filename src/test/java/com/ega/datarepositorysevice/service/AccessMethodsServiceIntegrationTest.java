@@ -19,20 +19,18 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
-
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@SpringBootTest
 public class AccessMethodsServiceIntegrationTest {
 
     @Autowired
     private AccessMethodsService accessMethodsService;
 
-    @Autowired
+     @Autowired
     private AccessMethodsRepository accessMethodsRepository;
-
-
 
     private AccessMethods accessMethodsTestObject;
 
@@ -40,7 +38,7 @@ public class AccessMethodsServiceIntegrationTest {
     public void prepareDatabase() {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
+        AccessURL accessURL = new AccessURL("http//www.string.com", map);
         accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethodsTestObject = accessMethodsRepository.save(accessMethodsTestObject);
     }
@@ -51,8 +49,7 @@ public class AccessMethodsServiceIntegrationTest {
         Optional<AccessMethods> accessMethodsOptional = accessMethod.blockOptional();
 
         Assert.assertTrue(accessMethodsOptional.isPresent());
-        AccessMethods actual = accessMethodsOptional.get();
-        Assert.assertEquals(accessMethodsTestObject, actual);
+        Assert.assertEquals(accessMethodsTestObject, accessMethodsOptional.get());
 
 
     }
