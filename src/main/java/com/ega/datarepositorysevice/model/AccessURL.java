@@ -17,6 +17,9 @@ import java.util.Objects;
 public class AccessURL{
 
     @Id
+    @GeneratedValue()
+    private Long id;
+
     @NotEmpty
     @URL
     private String url;
@@ -29,10 +32,20 @@ public class AccessURL{
     public AccessURL() {
     }
 
+
     public AccessURL(String url, Map<String, String> headers) {
         this.url = url;
         this.headers = headers;
     }
+
+    public AccessURL(Long id, String url, Map<String, String> headers) {
+        this.id = id;
+        this.url = url;
+        this.headers = headers;
+    }
+
+    @JsonIgnore
+    public Long getId() { return id;}
 
     @JsonProperty("url")
     public String getUrl() {
@@ -50,19 +63,20 @@ public class AccessURL{
         return methods;
     }
 
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
         if (!(o instanceof AccessURL)) return false;
         AccessURL accessURL = (AccessURL) o;
         return Objects.equals(getUrl(), accessURL.getUrl()) &&
-                Objects.equals(getHeaders(), accessURL.getHeaders()) &&
-                Objects.equals(getMethods(), accessURL.getMethods());
+                Objects.equals(getHeaders(), accessURL.getHeaders()
+                );
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getUrl(), getHeaders(), getMethods());
+        return Objects.hash(getId());
     }
 }
