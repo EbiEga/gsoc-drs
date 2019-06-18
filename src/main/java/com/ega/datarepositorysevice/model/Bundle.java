@@ -49,9 +49,10 @@ public class Bundle {
     @ElementCollection
     private List<String> aliases;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "bundle")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contents")
     @NotEmpty
+    @ElementCollection
     private List<BundleObject> contents;
 
 

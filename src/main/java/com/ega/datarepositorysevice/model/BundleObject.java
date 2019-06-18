@@ -35,7 +35,6 @@ public class BundleObject {
     private List<URI> drsUri;
 
     @ManyToOne
-    @JoinColumn(name = "bundle_id")
     private Bundle bundle;
 
     public BundleObject() {
