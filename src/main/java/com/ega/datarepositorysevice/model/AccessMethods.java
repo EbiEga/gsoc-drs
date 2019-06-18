@@ -26,7 +26,7 @@ public class AccessMethods {
     private String region;
 
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "access_url")
     private AccessURL accessURL;
 
@@ -38,6 +38,7 @@ public class AccessMethods {
 
     public AccessMethods() {
     }
+
 
     public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL, Object object) {
         this.accessId = access_id;
@@ -78,7 +79,7 @@ public class AccessMethods {
         if (!(o instanceof AccessMethods)) return false;
         AccessMethods that = (AccessMethods) o;
         return Objects.equals(getAccessId(), that.getAccessId()) &&
-                getType() == that.getType() &&
+                getType().equals(that.getType()) &&
                 Objects.equals(getRegion(), that.getRegion()) &&
                 Objects.equals(getAccessURL(), that.getAccessURL()) &&
                 Objects.equals(getObject(), that.getObject());
