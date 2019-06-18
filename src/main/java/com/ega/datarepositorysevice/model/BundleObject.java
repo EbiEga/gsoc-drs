@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -30,7 +31,8 @@ public class BundleObject {
     @NotNull
     private BundleObjectType type;
 
-    private URI drsUri;
+    @ElementCollection
+    private List<URI> drsUri;
 
     @ManyToOne
     @JoinColumn(name = "bundle_id")
@@ -39,7 +41,7 @@ public class BundleObject {
     public BundleObject() {
     }
 
-    public BundleObject(Long id, String name, BundleObjectType type, URI drs_uri, Bundle bundle) {
+    public BundleObject(Long id, String name, BundleObjectType type, List<URI> drs_uri, Bundle bundle) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -63,7 +65,7 @@ public class BundleObject {
     }
 
     @JsonProperty("drs_uri")
-    public URI getDrsUri() {
+    public List<URI> getDrsUri() {
         return drsUri;
     }
 
