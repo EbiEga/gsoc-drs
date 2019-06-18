@@ -24,6 +24,7 @@ public class BundleObjectJsonTest {
     @Autowired
     private JacksonTester<BundleObject> json;
 
+    //TODO change test and change data to tet drs_uri list serialization
     @Test
     public void testSerialize() throws Exception {
         File file = ResourceUtils.getFile("classpath:model/bundle_object/bundle_object_valid.json");
