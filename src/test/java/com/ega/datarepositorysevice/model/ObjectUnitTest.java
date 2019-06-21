@@ -95,7 +95,7 @@ public class ObjectUnitTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.FILE, "region", accessURL, null);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.FILE, "region", accessURL);
 
         Object validObject = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/json",
                 Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)), Arrays.asList(accessMethods), "string", null);
