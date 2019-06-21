@@ -26,7 +26,8 @@ public class AccessURL{
     @ElementCollection
     private Map<String, String> headers;
 
-    @OneToOne(mappedBy = "accessURL")
+    @OneToOne
+    @JoinColumn
     private AccessMethods methods;
 
     public AccessURL() {
@@ -58,11 +59,13 @@ public class AccessURL{
     }
 
     @JsonIgnore
-    @OneToOne(mappedBy = "accessURL")
     public AccessMethods getMethods() {
         return methods;
     }
 
+    public void setMethods(AccessMethods methods) {
+        this.methods = methods;
+    }
 
     @Override
     public boolean equals(java.lang.Object o) {
@@ -70,8 +73,8 @@ public class AccessURL{
         if (!(o instanceof AccessURL)) return false;
         AccessURL accessURL = (AccessURL) o;
         return Objects.equals(getUrl(), accessURL.getUrl()) &&
-                Objects.equals(getHeaders(), accessURL.getHeaders()
-                );
+                getHeaders().equals(accessURL.getHeaders())
+        ;
     }
 
     @Override

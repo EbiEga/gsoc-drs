@@ -15,6 +15,9 @@ import java.util.Objects;
 public class Checksum {
 
     @Id
+    @GeneratedValue
+    private Long id;
+
     private String checksum;
 
     @Column(nullable = false)
@@ -27,7 +30,7 @@ public class Checksum {
     private BundleObject bundleObject;
 
     @ManyToOne
-    @JoinColumn(name = "object_id")
+    @JoinColumn(name = "object")
     private Object object;
 
 
@@ -39,12 +42,12 @@ public class Checksum {
         this.type = type;
     }
 
-    public Checksum(String checksum, ChecksumType type, BundleObject bundleObject, Object object) {
+    public Checksum(Long id, String checksum, ChecksumType type){
+        this.id = id;
         this.checksum = checksum;
         this.type = type;
-        this.bundleObject = bundleObject;
-        this.object = object;
     }
+
 
     @JsonProperty("checksum")
     public String getChecksum() {
@@ -62,8 +65,13 @@ public class Checksum {
     }
 
     @JsonIgnore
+    @ManyToOne
     public Object getObject() {
         return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
     }
 
     @Override
@@ -72,9 +80,7 @@ public class Checksum {
         if (!(o instanceof Checksum)) return false;
         Checksum checksum1 = (Checksum) o;
         return Objects.equals(getChecksum(), checksum1.getChecksum()) &&
-                getType() == checksum1.getType() &&
-                Objects.equals(getBundleObject(), checksum1.getBundleObject()) &&
-                Objects.equals(getObject(), checksum1.getObject());
+                getType().equals(checksum1.getType());
     }
 
 
