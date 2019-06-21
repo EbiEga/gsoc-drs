@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.ConstraintViolation;
@@ -71,12 +70,12 @@ public class AccessMethodsUnitTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods validAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL, null);
+        AccessMethods validAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL);
         Set<ConstraintViolation<AccessMethods>> violations = validator.validate(validAccessMethods);
 
         Assert.assertTrue(violations.isEmpty());
 
-        AccessMethods wrongAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL, null);
+        AccessMethods wrongAccessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.S3, "region", accessURL);
         violations = validator.validate(wrongAccessMethods);
         List<String> constraintProperties = Arrays.asList("type");
 
