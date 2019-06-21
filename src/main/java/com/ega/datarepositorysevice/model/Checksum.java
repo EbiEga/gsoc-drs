@@ -26,8 +26,8 @@ public class Checksum {
     private ChecksumType type;
 
     @ManyToOne
-    @JoinColumn(name = "bundle_object_id")
-    private BundleObject bundleObject;
+    @JoinColumn(name = "bundle")
+    private Bundle bundle;
 
     @ManyToOne
     @JoinColumn(name = "object")
@@ -60,8 +60,8 @@ public class Checksum {
     }
 
     @JsonIgnore
-    public BundleObject getBundleObject() {
-        return bundleObject;
+    public Bundle getBundle() {
+        return bundle;
     }
 
     @JsonIgnore
@@ -72,6 +72,10 @@ public class Checksum {
 
     public void setObject(Object object) {
         this.object = object;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     @Override
