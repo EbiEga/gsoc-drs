@@ -28,7 +28,7 @@ public class AccessMethodsServiceTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        accessMethodsTestObject = new AccessMethods(1L, AccessMethodType.S3, "region", accessURL, null);
+        accessMethodsTestObject = new AccessMethods(1L, AccessMethodType.S3, "region", accessURL);
 
         AccessMethodsRepository accessMethodsRepository = mock(AccessMethodsRepository.class);
         when(accessMethodsRepository.findById(1L)).thenReturn(Optional.of(accessMethodsTestObject));
