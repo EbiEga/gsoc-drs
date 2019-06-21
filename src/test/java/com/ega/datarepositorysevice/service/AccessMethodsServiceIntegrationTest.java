@@ -4,25 +4,21 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.AccessURL;
 import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
-import com.ega.datarepositorysevice.service.impl.AccessMethodsServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 
-import javax.naming.ldap.PagedResultsControl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 @RunWith(SpringRunner.class)
@@ -45,7 +41,7 @@ public class AccessMethodsServiceIntegrationTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
-        accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL, null);
+        accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethodsTestObject = accessMethodsRepository.save(accessMethodsTestObject);
     }
 
