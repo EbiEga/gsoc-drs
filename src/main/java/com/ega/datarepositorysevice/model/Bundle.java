@@ -39,9 +39,10 @@ public class Bundle {
 
     private String version;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "bundleObject")
+
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     @NotEmpty
+    @ElementCollection
     private List<Checksum> checksums;
 
     private String description;
@@ -49,8 +50,7 @@ public class Bundle {
     @ElementCollection
     private List<String> aliases;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contents")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
     @NotEmpty
     @ElementCollection
     private List<BundleObject> contents;
@@ -134,10 +134,10 @@ public class Bundle {
                 getCreated().isEqual(bundle.getCreated()) &&
                 getUpdated().isEqual(bundle.getUpdated()) &&
                 Objects.equals(getVersion(), bundle.getVersion()) &&
-                Objects.equals(getChecksums(), bundle.getChecksums()) &&
+                getChecksums().containsAll(bundle.getChecksums()) &&
                 Objects.equals(getDescription(), bundle.getDescription()) &&
-                Objects.equals(getAliases(), bundle.getAliases()) &&
-                Objects.equals(getContents(), bundle.getContents());
+                getAliases().containsAll(bundle.getAliases()) &&
+                getContents().containsAll(bundle.getContents());
     }
 
     @Override

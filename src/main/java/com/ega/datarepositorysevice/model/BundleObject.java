@@ -35,6 +35,7 @@ public class BundleObject {
     private List<URI> drsUri;
 
     @ManyToOne
+    @JoinColumn
     private Bundle bundle;
 
     public BundleObject() {
@@ -73,6 +74,10 @@ public class BundleObject {
         return bundle;
     }
 
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
@@ -80,9 +85,8 @@ public class BundleObject {
         BundleObject that = (BundleObject) o;
         return Objects.equals(getId(), that.getId()) &&
                 Objects.equals(getName(), that.getName()) &&
-                getType() == that.getType() &&
-                Objects.equals(getDrsUri(), that.getDrsUri()) &&
-                Objects.equals(getBundle(), that.getBundle());
+                getType().equals(that.getType()) &&
+                getDrsUri().containsAll(that.getDrsUri());
     }
 
     @Override
