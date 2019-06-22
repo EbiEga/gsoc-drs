@@ -7,14 +7,13 @@ import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Entity
 @Table(name = "access_url")
 @JsonInclude
-public class AccessURL{
+public class AccessURL {
 
     @Id
     @GeneratedValue()
@@ -46,7 +45,9 @@ public class AccessURL{
     }
 
     @JsonIgnore
-    public Long getId() { return id;}
+    public Long getId() {
+        return id;
+    }
 
     @JsonProperty("url")
     public String getUrl() {
@@ -74,7 +75,7 @@ public class AccessURL{
         AccessURL accessURL = (AccessURL) o;
         return Objects.equals(getUrl(), accessURL.getUrl()) &&
                 getHeaders().equals(accessURL.getHeaders())
-        ;
+                ;
     }
 
     @Override

@@ -7,27 +7,27 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum BundleObjectType {
-    OBJECT ("object"),
-    BUNDLE ("bundle");
+    OBJECT("object"),
+    BUNDLE("bundle");
 
     private String type;
-    private static final Map<String,BundleObjectType> ENUM_MAP;
+    private static final Map<String, BundleObjectType> ENUM_MAP;
 
 
-    BundleObjectType(String type){
+    BundleObjectType(String type) {
         this.type = type;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return type;
     }
 
 
     static {
-        Map<String,BundleObjectType> map = new ConcurrentHashMap<String, BundleObjectType>();
+        Map<String, BundleObjectType> map = new ConcurrentHashMap<String, BundleObjectType>();
         for (BundleObjectType instance : BundleObjectType.values()) {
-            map.put(instance.getName(),instance);
+            map.put(instance.getName(), instance);
         }
         ENUM_MAP = Collections.unmodifiableMap(map);
     }

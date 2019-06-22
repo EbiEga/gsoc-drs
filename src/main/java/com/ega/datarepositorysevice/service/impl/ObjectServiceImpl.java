@@ -21,7 +21,7 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Override
     public Mono<Object> getObjectById(Long id) {
-        Optional<Object> objectOpt =  objectRepository.findById(id);
+        Optional<Object> objectOpt = objectRepository.findById(id);
         return objectOpt.map(Mono::just).orElseGet(Mono::empty);
     }
 }
