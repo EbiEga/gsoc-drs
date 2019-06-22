@@ -41,10 +41,10 @@ public class BundleUnitTest {
         AssertAnnotations.assertField(Bundle.class, "created", Column.class, NotNull.class, JsonSerialize.class);
         AssertAnnotations.assertField(Bundle.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Bundle.class, "version");
-        AssertAnnotations.assertField(Bundle.class, "checksums", Column.class, OneToMany.class, NotEmpty.class);
+        AssertAnnotations.assertField(Bundle.class, "checksums", ElementCollection.class, OneToMany.class, NotEmpty.class);
         AssertAnnotations.assertField(Bundle.class, "description");
         AssertAnnotations.assertField(Bundle.class, "aliases", ElementCollection.class);
-        AssertAnnotations.assertField(Bundle.class, "contents", Column.class, OneToMany.class, NotEmpty.class);
+        AssertAnnotations.assertField(Bundle.class, "contents", OneToMany.class, NotEmpty.class, ElementCollection.class);
     }
 
     @Test

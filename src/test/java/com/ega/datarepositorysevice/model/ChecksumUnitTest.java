@@ -29,22 +29,26 @@ public class ChecksumUnitTest {
 
     @Test
     public void fieldAnnotations() {
-        AssertAnnotations.assertField(Checksum.class, "checksum", Id.class);
+        AssertAnnotations.assertField(Checksum.class, "id", Id.class, GeneratedValue.class);
+        AssertAnnotations.assertField(Checksum.class, "checksum");
         AssertAnnotations.assertField(Checksum.class, "type", Column.class, Enumerated.class, NotNull.class);
-        AssertAnnotations.assertField(Checksum.class, "bundleObject", JoinColumn.class, ManyToOne.class);
+        AssertAnnotations.assertField(Checksum.class, "bundle", JoinColumn.class, ManyToOne.class);
         AssertAnnotations.assertField(Checksum.class, "object", JoinColumn.class, ManyToOne.class);
     }
 
     @Test
     public void methodAnnotations() {
         AssertAnnotations.assertMethod(
+                Checksum.class, "getId", JsonIgnore.class);
+        AssertAnnotations.assertMethod(
                 Checksum.class, "getChecksum", JsonProperty.class);
         AssertAnnotations.assertMethod(
                 Checksum.class, "getType", JsonProperty.class);
         AssertAnnotations.assertMethod(
-                Checksum.class, "getBundleObject", JsonIgnore.class);
+                Checksum.class, "getBundle", JsonIgnore.class);
         AssertAnnotations.assertMethod(
                 Checksum.class, "getObject", JsonIgnore.class);
+
     }
 
     @Test

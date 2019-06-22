@@ -34,7 +34,7 @@ public class BundleObjectUnitTest {
         AssertAnnotations.assertField(BundleObject.class, "id", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(BundleObject.class, "name", Column.class, NotEmpty.class, Pattern.class);
         AssertAnnotations.assertField(BundleObject.class, "type", Column.class, Enumerated.class, NotNull.class);
-        AssertAnnotations.assertField(BundleObject.class, "drsUri");
+        AssertAnnotations.assertField(BundleObject.class, "drsUri", ElementCollection.class);
         AssertAnnotations.assertField(BundleObject.class, "bundle", JoinColumn.class, ManyToOne.class);
     }
 

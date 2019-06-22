@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +35,7 @@ public class DateRFC3339Test {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Object object = new Object(Long.parseLong("1"), "string", 0, date, null, "string", "application/jsonObjectMapper",
-                null, null, "string", null);
+                new ArrayList<>(), new ArrayList<>(), "string", null);
         System.out.println(jsonObjectMapper.write(object));
         assertThat(jsonObjectMapper.write(object))
                 .extractingJsonPathStringValue("created")
@@ -46,7 +47,7 @@ public class DateRFC3339Test {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Object object = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/jsonObjectMapper",
-                null, null, "string", null);
+                new ArrayList<>(), new ArrayList<>(), "string", null);
         System.out.println(jsonObjectMapper.write(object));
         assertThat(jsonObjectMapper.write(object))
                 .extractingJsonPathStringValue("created")

@@ -29,7 +29,7 @@ public class AccessMethodsUnitTest {
         AssertAnnotations.assertField(AccessMethods.class, "accessId", Id.class, GeneratedValue.class);
         AssertAnnotations.assertField(AccessMethods.class, "type", Column.class, Enumerated.class, NotNull.class);
         AssertAnnotations.assertField(AccessMethods.class, "region", Column.class);
-        AssertAnnotations.assertField(AccessMethods.class, "accessURL", JoinColumn.class, OneToOne.class);
+        AssertAnnotations.assertField(AccessMethods.class, "accessURL", OneToOne.class);
         AssertAnnotations.assertField(AccessMethods.class, "object", JoinColumn.class, ManyToOne.class);
 
     }

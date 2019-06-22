@@ -38,8 +38,8 @@ public class ObjectUnitTest {
         AssertAnnotations.assertField(Object.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "version");
         AssertAnnotations.assertField(Object.class, "mime_type");
-        AssertAnnotations.assertField(Object.class, "checksums", Column.class, NotEmpty.class, OneToMany.class);
-        AssertAnnotations.assertField(Object.class, "accessMethods", Column.class, NotEmpty.class, OneToMany.class);
+        AssertAnnotations.assertField(Object.class, "checksums", NotEmpty.class, OneToMany.class);
+        AssertAnnotations.assertField(Object.class, "accessMethods", NotEmpty.class, OneToMany.class, ElementCollection.class);
         AssertAnnotations.assertField(Object.class, "description");
         AssertAnnotations.assertField(Object.class, "aliases", ElementCollection.class);
     }
