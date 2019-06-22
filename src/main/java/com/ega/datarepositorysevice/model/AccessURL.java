@@ -7,31 +7,46 @@ import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Entity
 @Table(name = "access_url")
 @JsonInclude
-public class AccessURL{
+public class AccessURL {
 
     @Id
+    @GeneratedValue()
+    private Long id;
+
     @NotEmpty
     @URL
     private String url;
     @ElementCollection
     private Map<String, String> headers;
 
-    @OneToOne(mappedBy = "accessURL")
+    @OneToOne
+    @JoinColumn
     private AccessMethods methods;
 
     public AccessURL() {
     }
 
+
     public AccessURL(String url, Map<String, String> headers) {
         this.url = url;
         this.headers = headers;
+    }
+
+    public AccessURL(Long id, String url, Map<String, String> headers) {
+        this.id = id;
+        this.url = url;
+        this.headers = headers;
+    }
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("url")
@@ -45,9 +60,12 @@ public class AccessURL{
     }
 
     @JsonIgnore
-    @OneToOne(mappedBy = "accessURL")
     public AccessMethods getMethods() {
         return methods;
+    }
+
+    public void setMethods(AccessMethods methods) {
+        this.methods = methods;
     }
 
     @Override
@@ -56,13 +74,13 @@ public class AccessURL{
         if (!(o instanceof AccessURL)) return false;
         AccessURL accessURL = (AccessURL) o;
         return Objects.equals(getUrl(), accessURL.getUrl()) &&
-                Objects.equals(getHeaders(), accessURL.getHeaders()) &&
-                Objects.equals(getMethods(), accessURL.getMethods());
+                getHeaders().equals(accessURL.getHeaders())
+                ;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getUrl(), getHeaders(), getMethods());
+        return Objects.hash(getId());
     }
 }

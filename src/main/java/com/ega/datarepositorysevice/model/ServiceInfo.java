@@ -16,22 +16,24 @@ import java.util.Objects;
 public class ServiceInfo {
     @Id
     @NotEmpty
-    private  String version;
+    private String version;
 
-    private  String description;
-    private  String title;
-    private  String contact;
-    private  String license;
+    private String description;
+    private String title;
+    private String contact;
+    private String license;
 
-    protected ServiceInfo() {}
+    protected ServiceInfo() {
+    }
 
-    public ServiceInfo(String version, String description, String title, String contact, String licence){
+    public ServiceInfo(String version, String description, String title, String contact, String licence) {
         this.version = version;
         this.description = description;
         this.title = title;
         this.contact = contact;
         this.license = licence;
     }
+
     @JsonProperty("version")
     public String getVersion() {
         return version;

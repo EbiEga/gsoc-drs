@@ -15,6 +15,9 @@ import java.util.Objects;
 public class Checksum {
 
     @Id
+    @GeneratedValue
+    private Long id;
+
     private String checksum;
 
     @Column(nullable = false)
@@ -23,27 +26,32 @@ public class Checksum {
     private ChecksumType type;
 
     @ManyToOne
-    @JoinColumn(name = "bundle_object_id")
-    private BundleObject bundleObject;
+    @JoinColumn(name = "bundle")
+    private Bundle bundle;
 
     @ManyToOne
-    @JoinColumn(name = "object_id")
+    @JoinColumn(name = "object")
     private Object object;
 
 
     public Checksum() {
     }
 
-    public Checksum(String checksum, ChecksumType type){
+    public Checksum(String checksum, ChecksumType type) {
         this.checksum = checksum;
         this.type = type;
     }
 
-    public Checksum(String checksum, ChecksumType type, BundleObject bundleObject, Object object) {
+    public Checksum(Long id, String checksum, ChecksumType type) {
+        this.id = id;
         this.checksum = checksum;
         this.type = type;
-        this.bundleObject = bundleObject;
-        this.object = object;
+    }
+
+
+    @JsonIgnore
+    public Long getId() {
+        return id;
     }
 
     @JsonProperty("checksum")
@@ -57,13 +65,21 @@ public class Checksum {
     }
 
     @JsonIgnore
-    public BundleObject getBundleObject() {
-        return bundleObject;
+    public Bundle getBundle() {
+        return bundle;
     }
 
     @JsonIgnore
     public Object getObject() {
         return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     @Override
@@ -72,9 +88,7 @@ public class Checksum {
         if (!(o instanceof Checksum)) return false;
         Checksum checksum1 = (Checksum) o;
         return Objects.equals(getChecksum(), checksum1.getChecksum()) &&
-                getType() == checksum1.getType() &&
-                Objects.equals(getBundleObject(), checksum1.getBundleObject()) &&
-                Objects.equals(getObject(), checksum1.getObject());
+                getType().equals(checksum1.getType());
     }
 
 

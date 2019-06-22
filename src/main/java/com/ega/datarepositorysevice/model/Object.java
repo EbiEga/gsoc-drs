@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,19 +43,19 @@ public class Object {
 
     private String mime_type;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "object")
+    @OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
     @NotEmpty
     private List<Checksum> checksums;
 
-    @Column(nullable = false)
     @NotEmpty
-    @OneToMany(mappedBy = "object")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "object")
+    @ElementCollection
     private List<AccessMethods> accessMethods;
 
     private String description;
 
     @ElementCollection
+
     private List<String> aliases;
 
     public Object() {
@@ -71,9 +71,11 @@ public class Object {
         this.version = version;
         this.mime_type = mime_type;
         this.checksums = checksums;
+        checksums.forEach(checksum -> checksum.setObject(this));
         this.accessMethods = accessMethods;
+        accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
         this.description = description;
-        this.aliases = aliases;
+        this.aliases = aliases == null ? null : new ArrayList<>();
     }
 
     @JsonProperty("id")
@@ -143,10 +145,9 @@ public class Object {
                 getUpdated().isEqual(object.getUpdated()) &&
                 Objects.equals(getVersion(), object.getVersion()) &&
                 Objects.equals(getMime_type(), object.getMime_type()) &&
-                Objects.equals(getChecksums(), object.getChecksums()) &&
-                Objects.equals(getAccessMethods(), object.getAccessMethods()) &&
-                Objects.equals(getDescription(), object.getDescription()) &&
-                Objects.equals(getAliases(), object.getAliases());
+                getChecksums().containsAll(object.getChecksums()) &&
+                getAccessMethods().containsAll(object.getAccessMethods()) &&
+                Objects.equals(getDescription(), object.getDescription());
     }
 
     @Override

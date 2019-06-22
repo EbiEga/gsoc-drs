@@ -1,6 +1,6 @@
 {
   "name": "name",
   "id": 1,
-  "drs_uri": null,
+  "drs_uri": [],
   "type": "object"
 }

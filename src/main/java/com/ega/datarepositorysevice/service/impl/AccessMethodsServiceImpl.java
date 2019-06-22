@@ -4,12 +4,12 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-@Service
+@Component
 public class AccessMethodsServiceImpl implements AccessMethodsService {
 
     private final AccessMethodsRepository accessMethodsRepository;
@@ -21,7 +21,9 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
 
     @Override
     public Mono<AccessMethods> getAccessMethodsById(Long id) {
-        Optional<AccessMethods> accessMethodsOpt =  accessMethodsRepository.findById(id);
+        Optional<AccessMethods> accessMethodsOpt = accessMethodsRepository.findById(id);
         return accessMethodsOpt.map(Mono::just).orElseGet(Mono::empty);
     }
+
+
 }

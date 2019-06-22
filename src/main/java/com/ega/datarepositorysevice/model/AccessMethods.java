@@ -26,25 +26,24 @@ public class AccessMethods {
     private String region;
 
 
-    @OneToOne
-    @JoinColumn(name = "access_url")
+    @OneToOne(mappedBy = "methods", cascade = CascadeType.ALL)
     private AccessURL accessURL;
 
 
-
     @ManyToOne
-    @JoinColumn(name = "object_id")
+    @JoinColumn
     private Object object;
 
     public AccessMethods() {
     }
 
-    public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL, Object object) {
+
+    public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL) {
         this.accessId = access_id;
         this.type = type;
         this.region = region;
         this.accessURL = accessURL;
-        this.object = object;
+        accessURL.setMethods(this);
     }
 
     @JsonProperty("access_id")
@@ -72,16 +71,19 @@ public class AccessMethods {
         return object;
     }
 
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
         if (!(o instanceof AccessMethods)) return false;
         AccessMethods that = (AccessMethods) o;
         return Objects.equals(getAccessId(), that.getAccessId()) &&
-                getType() == that.getType() &&
+                getType().equals(that.getType()) &&
                 Objects.equals(getRegion(), that.getRegion()) &&
-                Objects.equals(getAccessURL(), that.getAccessURL()) &&
-                Objects.equals(getObject(), that.getObject());
+                Objects.equals(getAccessURL(), that.getAccessURL());
     }
 
     @Override

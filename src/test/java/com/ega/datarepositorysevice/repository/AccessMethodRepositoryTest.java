@@ -31,7 +31,7 @@ public class AccessMethodRepositoryTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods accessMethods = new AccessMethods(1L, AccessMethodType.S3, "region", null, null);
+        AccessMethods accessMethods = new AccessMethods(1L, AccessMethodType.S3, "region", accessURL);
         accessMethods = accessMethodsRepository.save(accessMethods);
         AccessMethods responseAccessMethods = accessMethodsRepository.findById(accessMethods.getAccessId()).get();
         Assert.assertEquals(accessMethods.getAccessId(), responseAccessMethods.getAccessId());
@@ -46,9 +46,9 @@ public class AccessMethodRepositoryTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods accessMethods = new AccessMethods(Long.parseLong("5"), AccessMethodType.S3, "region", null, null);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("5"), AccessMethodType.S3, "region", accessURL);
         accessMethodsRepository.save(accessMethods);
-        Optional<AccessMethods> responseAccessMethods = accessMethodsRepository.findById(Long.parseLong("3"));
+        Optional<AccessMethods> responseAccessMethods = accessMethodsRepository.findById(Long.parseLong("4"));
         Assert.assertFalse(responseAccessMethods.isPresent());
     }
 }

@@ -38,8 +38,8 @@ public class ObjectUnitTest {
         AssertAnnotations.assertField(Object.class, "updated", JsonSerialize.class);
         AssertAnnotations.assertField(Object.class, "version");
         AssertAnnotations.assertField(Object.class, "mime_type");
-        AssertAnnotations.assertField(Object.class, "checksums", Column.class, NotEmpty.class, OneToMany.class);
-        AssertAnnotations.assertField(Object.class, "accessMethods", Column.class, NotEmpty.class, OneToMany.class);
+        AssertAnnotations.assertField(Object.class, "checksums", NotEmpty.class, OneToMany.class);
+        AssertAnnotations.assertField(Object.class, "accessMethods", NotEmpty.class, OneToMany.class, ElementCollection.class);
         AssertAnnotations.assertField(Object.class, "description");
         AssertAnnotations.assertField(Object.class, "aliases", ElementCollection.class);
     }
@@ -95,7 +95,7 @@ public class ObjectUnitTest {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.FILE, "region", accessURL, null);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("1"), AccessMethodType.FILE, "region", accessURL);
 
         Object validObject = new Object(Long.parseLong("1"), "string", 0, date, date, "string", "application/json",
                 Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)), Arrays.asList(accessMethods), "string", null);
