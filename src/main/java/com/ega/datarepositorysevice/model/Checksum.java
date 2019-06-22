@@ -49,6 +49,11 @@ public class Checksum {
     }
 
 
+    @JsonIgnore
+    public Long getId() {
+        return id;
+    }
+
     @JsonProperty("checksum")
     public String getChecksum() {
         return checksum;
@@ -65,7 +70,6 @@ public class Checksum {
     }
 
     @JsonIgnore
-    @ManyToOne
     public Object getObject() {
         return object;
     }
