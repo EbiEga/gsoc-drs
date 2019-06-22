@@ -6,8 +6,8 @@
   "updated": "2018-12-12T12:12:12.1212+02:00",
   "version": "string",
   "mime_type": "application/json",
-  "checksums": null,
-  "access_methods": null,
+  "checksums": [],
+  "access_methods": [],
   "description": "string",
   "aliases": null
 }
