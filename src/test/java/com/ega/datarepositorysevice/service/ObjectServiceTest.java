@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
@@ -34,7 +35,7 @@ public class ObjectServiceTest {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         objectTestObject = new Object(1L, "string", 0, null, date, "string", "application/json",
-                null, null, "string", null);
+                new ArrayList<>(), new ArrayList<>(), "string", null);
 
         ObjectRepository repository = mock(ObjectRepository.class);
         when(repository.findById(1L)).thenReturn(Optional.of(objectTestObject));
