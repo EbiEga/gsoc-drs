@@ -21,11 +21,9 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
 
     @Override
     public Mono<AccessMethods> getAccessMethodsById(Long id) {
-        Optional<AccessMethods> accessMethodsOpt =  accessMethodsRepository.findById(id);
+        Optional<AccessMethods> accessMethodsOpt = accessMethodsRepository.findById(id);
         return accessMethodsOpt.map(Mono::just).orElseGet(Mono::empty);
     }
-
-
 
 
 }

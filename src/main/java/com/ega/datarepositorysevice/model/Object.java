@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,7 +75,7 @@ public class Object {
         this.accessMethods = accessMethods;
         accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
         this.description = description;
-        this.aliases = aliases == null ? null: new ArrayList<>();
+        this.aliases = aliases == null ? null : new ArrayList<>();
     }
 
     @JsonProperty("id")
@@ -140,7 +138,7 @@ public class Object {
         if (this == o) return true;
         if (!(o instanceof Object)) return false;
         Object object = (Object) o;
-        return  getSize() == object.getSize() &&
+        return getSize() == object.getSize() &&
                 Objects.equals(getId(), object.getId()) &&
                 Objects.equals(getName(), object.getName()) &&
                 getCreated().isEqual(object.getCreated()) &&

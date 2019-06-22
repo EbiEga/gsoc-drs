@@ -37,12 +37,12 @@ public class Checksum {
     public Checksum() {
     }
 
-    public Checksum(String checksum, ChecksumType type){
+    public Checksum(String checksum, ChecksumType type) {
         this.checksum = checksum;
         this.type = type;
     }
 
-    public Checksum(Long id, String checksum, ChecksumType type){
+    public Checksum(Long id, String checksum, ChecksumType type) {
         this.id = id;
         this.checksum = checksum;
         this.type = type;
