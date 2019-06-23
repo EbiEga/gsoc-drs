@@ -38,7 +38,7 @@ public class Router {
     public RouterFunction<ServerResponse> route(){
         return RouterFunctions
                 .route(GET("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::getObject)
-                .andRoute(GET("/bundled/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::getBundle)
+                .andRoute(GET("/bundles/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::getBundle)
                 .andRoute(GET("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)),accessMethodHandler::getAccess);
     }
 
