@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
 public class BundleHandlerIntegrationTest {
 
@@ -59,7 +59,7 @@ public class BundleHandlerIntegrationTest {
     @Test
     public void okTest(){
         ServerRequest serverRequest = mock(ServerRequest.class);
-        when(serverRequest.pathVariable("bundle_id")).thenReturn("1");
+        when(serverRequest.pathVariable("bundle_id")).thenReturn(bundleTestObject.getId().toString());
         Assert.assertEquals(bundleHandler.getBundle(serverRequest).block().statusCode(),HttpStatus.OK);
     }
 

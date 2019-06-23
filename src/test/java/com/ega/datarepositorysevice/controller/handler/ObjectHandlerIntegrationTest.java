@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
 public class ObjectHandlerIntegrationTest {
 
@@ -62,7 +62,7 @@ public class ObjectHandlerIntegrationTest {
     @Test
     public void okTest(){
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("object_id")).thenReturn("1");
+        when(request.pathVariable("object_id")).thenReturn(objectTestObject.getId().toString());
 
         Assert.assertEquals(objectHandler.getObject(request).block().statusCode(),HttpStatus.OK);
     }
