@@ -10,11 +10,7 @@ import com.sun.org.apache.xml.internal.utils.URI;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
 
@@ -36,7 +32,7 @@ public class BundleHandlerTest {
         BundleService bundleService = mock(BundleService.class);
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        BundleObject bundleObject = new BundleObject(1L,"string", BundleObjectType.OBJECT,Arrays.asList(new URI("https://asdasd.com")), null);
+        BundleObject bundleObject = new BundleObject(1L, "string", BundleObjectType.OBJECT, Arrays.asList(new URI("https://asdasd.com")), null);
         bundleTestObject = new Bundle(1L, "string", 23, date,
                 date, "string", Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)
         ), "string", Arrays.asList("string"), Arrays.asList(bundleObject));
@@ -49,16 +45,16 @@ public class BundleHandlerTest {
     }
 
     @Test
-    public void okTest(){
+    public void okTest() {
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("bundle_id")).thenReturn("1");
-        Assert.assertEquals(bundleHandler.getBundle(serverRequest).block().statusCode(),HttpStatus.OK);
+        Assert.assertEquals(bundleHandler.getBundle(serverRequest).block().statusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void notFoundTest(){
+    public void notFoundTest() {
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("bundle_id")).thenReturn("2");
-        Assert.assertEquals(bundleHandler.getBundle(serverRequest).block().statusCode(),HttpStatus.NOT_FOUND);
+        Assert.assertEquals(bundleHandler.getBundle(serverRequest).block().statusCode(), HttpStatus.NOT_FOUND);
     }
 }

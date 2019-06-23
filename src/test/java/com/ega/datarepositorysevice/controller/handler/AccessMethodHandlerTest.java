@@ -7,12 +7,9 @@ import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.WebTestClient;
+
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -29,10 +26,10 @@ public class AccessMethodHandlerTest {
     private AccessMethods accessMethods;
 
     @Before
-    public void PrepareEnviroment(){
+    public void PrepareEnviroment() {
         AccessMethodsService accessMethodsService = mock(AccessMethodsService.class);
-        accessMethods = new AccessMethods(1L,AccessMethodType.S3,
-                "region",new AccessURL());
+        accessMethods = new AccessMethods(1L, AccessMethodType.S3,
+                "region", new AccessURL());
         when(accessMethodsService.getAccessMethodsById(1L)).thenReturn(Mono.just(accessMethods));
         when(accessMethodsService.getAccessMethodsById(2L)).thenReturn(Mono.empty());
         accessMethodHandler = new AccessMethodHandler(accessMethodsService);
@@ -41,7 +38,7 @@ public class AccessMethodHandlerTest {
 
 
     @Test
-    public void okTest(){
+    public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("1");
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
@@ -49,7 +46,7 @@ public class AccessMethodHandlerTest {
     }
 
     @Test
-    public void notFoundTest(){
+    public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("2");
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);

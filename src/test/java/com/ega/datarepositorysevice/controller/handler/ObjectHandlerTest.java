@@ -5,16 +5,12 @@ import com.ega.datarepositorysevice.service.ObjectService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 
@@ -25,7 +21,7 @@ public class ObjectHandlerTest {
 
 
     @Before
-    public void PrepareEnviroment(){
+    public void PrepareEnviroment() {
         ObjectService objectService = mock(ObjectService.class);
 
         Object object = mock(Object.class);
@@ -36,18 +32,18 @@ public class ObjectHandlerTest {
     }
 
     @Test
-    public void okTest(){
+    public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("1");
 
-        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(),HttpStatus.OK);
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void notFoundTest(){
+    public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("2");
 
-        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(),HttpStatus.NOT_FOUND);
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
     }
 }
