@@ -15,20 +15,27 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 @Configuration
-public class ObjectRouter {
+public class Router {
 
-    @Autowired
+    private final
     ObjectHandler objectHandler;
 
-    @Autowired
+    private final
     BundleHandler bundleHandler;
 
-    @Autowired
+    private final
     AccessMethodHandler accessMethodHandler;
+
+    @Autowired
+    public Router(ObjectHandler objectHandler, BundleHandler bundleHandler, AccessMethodHandler accessMethodHandler) {
+        this.objectHandler = objectHandler;
+        this.bundleHandler = bundleHandler;
+        this.accessMethodHandler = accessMethodHandler;
+    }
 
 
     @Bean
-    RouterFunction<ServerResponse> route(){
+    public RouterFunction<ServerResponse> route(){
         return RouterFunctions
                 .route(GET("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::getObject)
                 .andRoute(GET("/bundled/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::getBundle)
