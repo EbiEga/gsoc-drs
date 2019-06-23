@@ -17,15 +17,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class WebSecurityConfig{
 
 
-//    @Bean
-//    public MapReactiveUserDetailsService userDetailsService() {
-//        UserDetails user = User.withDefaultPasswordEncoder()
-//                .username("user")
-//                .password("user")
-//                .roles("USER")
-//                .build();
-//        return new MapReactiveUserDetailsService(user);
-//    }
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange().anyExchange().permitAll();
