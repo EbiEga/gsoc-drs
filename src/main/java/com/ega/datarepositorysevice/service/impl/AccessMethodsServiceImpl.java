@@ -5,11 +5,12 @@ import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-@Component
+@Service
 public class AccessMethodsServiceImpl implements AccessMethodsService {
 
     private final AccessMethodsRepository accessMethodsRepository;
