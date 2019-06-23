@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
 public class AccessMethodsServiceIntegrationTest {
 
