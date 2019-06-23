@@ -36,19 +36,13 @@ import static org.mockito.Mockito.when;
 public class AccessMethodHandlerIntegrationTest {
 
     @Autowired
-    public static AccessMethodsService accessMethodsService;
-
-    @Autowired
-    public static BundleService bundleService;
-
-    @Autowired
-    public static ObjectService objectService;
-    @Autowired
     private AccessMethodsRepository accessMethodsRepository;
+
+    @Autowired
+    private AccessMethodHandler accessMethodHandler;
 
     private AccessMethods accessMethodsTestObject;
 
-    private WebTestClient webTestClient;
 
     @Before
     public void PrepareEnviroment(){
@@ -57,25 +51,22 @@ public class AccessMethodHandlerIntegrationTest {
         AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethodsTestObject = accessMethodsRepository.save(accessMethodsTestObject);
-
-//        webTestClient = WebTestClient.bindToRouterFunction(TestObjectCreator.getRouter().route()).build();
-//        System.out.println(1);
     }
 
     @Test
     public void okTest(){
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("1");
-//        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
-//        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
+        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
 
     @Test
     public void notFoundTest(){
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("2");
-//        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
-//        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
+        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
 
     }
 }
