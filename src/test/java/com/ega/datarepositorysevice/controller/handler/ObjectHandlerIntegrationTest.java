@@ -7,7 +7,6 @@ import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.ega.datarepositorysevice.model.enums.ChecksumType;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
-import com.ega.datarepositorysevice.service.ObjectService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +48,7 @@ public class ObjectHandlerIntegrationTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
+        AccessURL accessURL = new AccessURL(null, "https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
 
         objectTestObject = new Object(null, "string", 0, date, date, "string", "application/json",
@@ -60,18 +59,18 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void okTest(){
+    public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn(objectTestObject.getId().toString());
 
-        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(),HttpStatus.OK);
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void notFoundTest(){
+    public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("2");
 
-        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(),HttpStatus.NOT_FOUND);
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
     }
 }

@@ -4,7 +4,6 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;

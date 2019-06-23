@@ -8,22 +8,20 @@ import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
 import com.ega.datarepositorysevice.utils.TestObjectCreator;
 import com.sun.org.apache.xml.internal.utils.URI;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 
 
 @Import(Router.class)
@@ -68,7 +66,7 @@ public class RouterTest {
     @Test
     public void testAccessMethodsPathOk() throws IOException {
         webTestClient.get()
-                .uri(String.format("/objects/%d/access/%d",object.getId(),accessMethods.getAccessId()))
+                .uri(String.format("/objects/%d/access/%d", object.getId(), accessMethods.getAccessId()))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -76,9 +74,9 @@ public class RouterTest {
     }
 
     @Test
-    public void testAccessMethodsPathNotFound(){
+    public void testAccessMethodsPathNotFound() {
         webTestClient.get()
-                .uri(String.format("/objects/%s/access/%s","0","0"))
+                .uri(String.format("/objects/%s/access/%s", "0", "0"))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -88,7 +86,7 @@ public class RouterTest {
     public void testObjectPathOk() throws IOException {
 
         webTestClient.get()
-                .uri(String.format("/objects/%s",object.getId()))
+                .uri(String.format("/objects/%s", object.getId()))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -96,24 +94,28 @@ public class RouterTest {
     }
 
     @Test
-    public void testObjectPathNotFound(){
+    public void testObjectPathNotFound() {
         webTestClient.get()
-                .uri(String.format("/objects/%d",0))
+                .uri(String.format("/objects/%d", 0))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
-    }    @Test
+    }
+
+    @Test
     public void testBundlePathOk() throws IOException {
         webTestClient.get()
-                .uri(String.format("/bundles/%d",bundle.getId()))
+                .uri(String.format("/bundles/%d", bundle.getId()))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Bundle.class).isEqualTo(bundle);
-    }    @Test
-    public void testBundlePathNotFound(){
+    }
+
+    @Test
+    public void testBundlePathNotFound() {
         webTestClient.get()
-                .uri(String.format("/bundles/%d",0))
+                .uri(String.format("/bundles/%d", 0))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();

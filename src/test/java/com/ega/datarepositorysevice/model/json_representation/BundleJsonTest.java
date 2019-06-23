@@ -37,7 +37,8 @@ public class BundleJsonTest {
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Bundle bundle = new Bundle(Long.parseLong("1"), "string", 23, date,
                 date, "string", new ArrayList<>(), "string",
-                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"), "string", BundleObjectType.OBJECT, new ArrayList<>(), null)));
+                Arrays.asList("string"), Arrays.asList(new BundleObject(Long.parseLong("1"),
+                "string", BundleObjectType.OBJECT, new ArrayList<>(), null)));
         System.out.println(json.write(bundle));
         assertThat(json.write(bundle)).isEqualToJson(file);
     }
