@@ -1,14 +1,11 @@
 package com.ega.datarepositorysevice.controller;
 
-import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Error;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
