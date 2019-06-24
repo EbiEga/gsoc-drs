@@ -11,7 +11,6 @@ import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
 import com.ega.datarepositorysevice.utils.TestObjectCreator;
-import com.sun.mail.util.MailConnectException;
 import com.sun.org.apache.xml.internal.utils.URI;
 
 import org.junit.Before;
@@ -27,8 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.server.WebHandler;
-import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+
 
 import java.io.IOException;
 
