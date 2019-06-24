@@ -1,9 +1,13 @@
 package com.ega.datarepositorysevice.controller.handler;
 
+import com.ega.datarepositorysevice.controller.HandlerUtils;
+import com.ega.datarepositorysevice.model.Bundle;
+import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.service.ObjectService;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -11,6 +15,9 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import static com.ega.datarepositorysevice.controller.HandlerUtils.BUNDLE_PATH_VARIABLE;
+import static com.ega.datarepositorysevice.controller.HandlerUtils.OBJECT_PATH_VARIABLE;
+import static com.ega.datarepositorysevice.controller.HandlerUtils.retrievePathVariable;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Component
@@ -25,13 +32,15 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> getObject(ServerRequest request) {
-        String id = request.pathVariable("object_id");
-        Mono<ServerResponse> notFound = ServerResponse.notFound().build();
-        Mono<Object> objectMono = objectService.getObjectById(Long.parseLong(id));
 
-        return objectMono.flatMap(user -> ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(user)))
-                .switchIfEmpty(notFound);
+        try {
+            Error notFoundError =  new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
+            Mono<Object> objectMono = objectService
+                    .getObjectById(retrievePathVariable(request,OBJECT_PATH_VARIABLE));
+            return HandlerUtils.returnOkResponse(objectMono, notFoundError);
+        } catch (IllegalArgumentException e){
+            return HandlerUtils.returnBadRequest(e);
+        }
+
     }
 }
