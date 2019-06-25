@@ -1,0 +1,34 @@
+{
+  "id": "string",
+  "name": "string",
+  "size": 0,
+  "created": "2019-06-02T14:04:49.449Z",
+  "updated": "2019-06-02T14:04:49.449Z",
+  "version": "string",
+  "mime_type": "application/json",
+  "checksums": [
+    {
+      "checksum": "string",
+      "type": "md5"
+    }
+  ],
+  "access_methods": [
+    {
+      "type": "s3",
+      "access_url": {
+        "url": "string",
+        "headers": {
+          "Authorization": "Basic Z2E0Z2g6ZHJz"
+        }
+      },
+      "access_id": "string",
+      "region": "us-east-1"
+    }
+  ],
+  "description": "string",
+  "aliases": [
+    "string"
+  ]
+}
+
+

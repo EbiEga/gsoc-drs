@@ -1,0 +1,11 @@
+{
+  "type": "s3",
+  "access_url": {
+    "url": "http//www.string.com",
+    "headers": {
+      "Authorization": "Basic Z2E0Z2g6ZHJz"
+    }
+  },
+  "access_id": "access_id",
+  "region": "region"
+}
