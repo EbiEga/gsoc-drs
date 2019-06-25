@@ -187,4 +187,21 @@ public class RouterTest {
         System.out.println();
     }
 
+    @Test
+    public void serviceInfoTest(){
+        webTestClient.get()
+                .uri("/service-info")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody().json("{\n" +
+                "  \"version\": \"1.0\",\n" +
+                "  \"title\": \"DRS service\",\n" +
+                "  \"description\": \"GSOC 2019 DRS project\",\n" +
+                "  \"contact\": {},\n" +
+                "  \"license\": {}\n" +
+                "}");
+    }
+
 }
