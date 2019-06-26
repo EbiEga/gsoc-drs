@@ -16,6 +16,9 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.TimeZone;
 
@@ -31,10 +34,10 @@ public class BundleJsonTest {
     @Test
     public void testSerialize() throws Exception {
         File file = ResourceUtils.getFile("classpath:model/bundle/bundle_valid.json");
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        Bundle bundle = new Bundle("string","string",23,df.parse("2019-06-02T14:04:49.123Z"),
-                df.parse("2019-06-02T14:04:49.123Z"), "string", null,"string",
+        LocalDateTime testDateTime = LocalDateTime.of(2018,12,12,12,12,12,121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Bundle bundle = new Bundle("string","string",23,date,
+                date, "string", null,"string",
                 Arrays.asList("string"), Arrays.asList(new BundleObject("string", "string", "object",null, null)) );
         System.out.println(json.write(bundle));
         assertThat(json.write(bundle)).isEqualToJson(file);

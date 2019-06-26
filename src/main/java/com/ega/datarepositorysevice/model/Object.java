@@ -2,18 +2,15 @@ package com.ega.datarepositorysevice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.DataStoreUtils;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Date;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -36,33 +33,35 @@ public class Object {
 
     @Column(nullable = false)
     @NonNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) //TODO create global datetime config
-    private Date created;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime created;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date updated;
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    private OffsetDateTime updated;
 
     private String version;
 
     private String mime_type;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "object_id")
+    @OneToMany(mappedBy = "object")
     @NotEmpty
     private List<Checksum> checksums;
 
     @Column(nullable = false)
     @NotEmpty
+    @OneToMany(mappedBy = "object")
     private List<AccessMethods> accessMethods;
 
     private String description;
 
+    @ElementCollection
     private List<String> aliases;
 
     public Object() {
     }
 
-    public Object(String id, String name, int size, Date created, Date updated, String version, String mime_type,
+    public Object(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
         this.id = id;
         this.name = name;
@@ -93,12 +92,12 @@ public class Object {
     }
 
     @JsonProperty("created")
-    public Date getCreated() {
+    public OffsetDateTime getCreated() {
         return created;
     }
 
     @JsonProperty("updated")
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
