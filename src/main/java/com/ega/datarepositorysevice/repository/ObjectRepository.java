@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ObjectRepository extends JpaRepository<Object, String> {
+public interface ObjectRepository extends JpaRepository<Object, Long> {
     @Override
-    Optional<Object> findById(String id);
+    Optional<Object> findById(Long id);
 }

@@ -11,9 +11,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -24,15 +26,26 @@ public class ObjectRepositoryTest {
     ObjectRepository objectRepository;
 
     @Test
-    public void getBundleByIdTest() throws ParseException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        Object object = new Object("id", "string", 0, null,  df.parse("2019-06-02T14:04:49.123Z"), "string", "application/json",
-                null, null, "string", null);
-        objectRepository.save(object);
-        Object responseObject = objectRepository.findById("id").get();
-        Assert.assertEquals("id", responseObject.getId());
+    public void getBundleByIdTest() {
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Object object = new Object(1L, "string", 0, null, date, "string", "application/json",
+                new ArrayList<>(), new ArrayList<>(), "string", null);
+        object = objectRepository.save(object);
+        Object responseObject = objectRepository.findById(object.getId()).get();
+        Assert.assertEquals(object.getId(), responseObject.getId());
         Assert.assertEquals("string", responseObject.getName());
         Assert.assertEquals(0, responseObject.getSize());
+    }
+
+    @Test
+    public void getBundleByIdNullTest() throws ParseException {
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Object object = new Object(Long.parseLong("5"), "string", 0, null, date, "string", "application/json",
+                new ArrayList<>(), new ArrayList<>(), "string", null);
+        objectRepository.save(object);
+        Optional<Object> responseObject = objectRepository.findById(Long.parseLong("3"));
+        Assert.assertTrue(!responseObject.isPresent());
     }
 }

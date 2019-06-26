@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -17,29 +18,30 @@ import java.util.List;
 @JsonInclude
 public class Bundle {
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     private String name;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     private int size;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
-    @Column(nullable = false)
+
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime updated;
 
     private String version;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "bundleObject")
+
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
     @NotEmpty
+    @ElementCollection
     private List<Checksum> checksums;
 
     private String description;
@@ -47,16 +49,16 @@ public class Bundle {
     @ElementCollection
     private List<String> aliases;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "bundle")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
     @NotEmpty
+    @ElementCollection
     private List<BundleObject> contents;
 
 
     public Bundle() {
     }
 
-    public Bundle(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version,
+    public Bundle(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version,
                   List<Checksum> checksum, String description, List<String> aliases, List<BundleObject> contents) {
         this.id = id;
         this.name = name;
@@ -71,7 +73,7 @@ public class Bundle {
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -101,7 +103,7 @@ public class Bundle {
     }
 
     @JsonProperty("checksums")
-    public List<Checksum> getChecksum() {
+    public List<Checksum> getChecksums() {
         return checksums;
     }
 
@@ -118,5 +120,28 @@ public class Bundle {
     @JsonProperty("contents")
     public List<BundleObject> getContents() {
         return contents;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Bundle)) return false;
+        Bundle bundle = (Bundle) o;
+        return getSize() == bundle.getSize() &&
+                Objects.equals(getId(), bundle.getId()) &&
+                Objects.equals(getName(), bundle.getName()) &&
+                getCreated().isEqual(bundle.getCreated()) &&
+                getUpdated().isEqual(bundle.getUpdated()) &&
+                Objects.equals(getVersion(), bundle.getVersion()) &&
+                getChecksums().containsAll(bundle.getChecksums()) &&
+                Objects.equals(getDescription(), bundle.getDescription()) &&
+                getAliases().containsAll(bundle.getAliases()) &&
+                getContents().containsAll(bundle.getContents());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getSize(), getCreated(), getUpdated(), getVersion(), getChecksums(), getDescription(), getAliases(), getContents());
     }
 }

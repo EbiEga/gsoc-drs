@@ -10,14 +10,16 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bundle_object")
 @JsonInclude
 public class BundleObject {
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     @Column(nullable = false)
     @NotEmpty
@@ -29,25 +31,26 @@ public class BundleObject {
     @NotNull
     private BundleObjectType type;
 
-    private URI drsUri;
+    @ElementCollection
+    private List<URI> drsUri;
 
     @ManyToOne
-    @JoinColumn(name = "bundle_id")
+    @JoinColumn
     private Bundle bundle;
 
     public BundleObject() {
     }
 
-    public BundleObject(String id, String name, String type, URI drs_uri, Bundle bundle) {
+    public BundleObject(Long id, String name, BundleObjectType type, List<URI> drs_uri, Bundle bundle) {
         this.id = id;
         this.name = name;
-        this.type = BundleObjectType.createFromString(type);
+        this.type = type;
         this.drsUri = drs_uri;
         this.bundle = bundle;
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -62,12 +65,33 @@ public class BundleObject {
     }
 
     @JsonProperty("drs_uri")
-    public URI getDrsUri() {
+    public List<URI> getDrsUri() {
         return drsUri;
     }
 
     @JsonIgnore
     public Bundle getBundle() {
         return bundle;
+    }
+
+    public void setBundle(Bundle bundle) {
+        this.bundle = bundle;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BundleObject)) return false;
+        BundleObject that = (BundleObject) o;
+        return Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getName(), that.getName()) &&
+                getType().equals(that.getType()) &&
+                getDrsUri().containsAll(that.getDrsUri());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getType(), getDrsUri(), getBundle());
     }
 }

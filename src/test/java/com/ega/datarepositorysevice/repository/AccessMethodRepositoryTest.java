@@ -2,7 +2,7 @@ package com.ega.datarepositorysevice.repository;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.AccessURL;
-import com.ega.datarepositorysevice.model.Bundle;
+import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +12,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -26,17 +25,30 @@ public class AccessMethodRepositoryTest {
     AccessMethodsRepository accessMethodsRepository;
 
     @Test
-    public void getBundleByIdTest() throws ParseException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+    public void getBundleByIdTest() {
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com",map);
-        AccessMethods accessMethods = new AccessMethods("access_id","s3","region",null, null);
-        accessMethodsRepository.save(accessMethods);
-        AccessMethods responseAccessMethods = accessMethodsRepository.findById("access_id").get();
-        Assert.assertEquals("access_id", responseAccessMethods.getAccess_id());
+        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessMethods accessMethods = new AccessMethods(1L, AccessMethodType.S3, "region", accessURL);
+        accessMethods = accessMethodsRepository.save(accessMethods);
+        AccessMethods responseAccessMethods = accessMethodsRepository.findById(accessMethods.getAccessId()).get();
+        Assert.assertEquals(accessMethods.getAccessId(), responseAccessMethods.getAccessId());
         Assert.assertEquals("region", responseAccessMethods.getRegion());
         Assert.assertEquals("s3", responseAccessMethods.getType());
+    }
+
+    @Test
+    public void getBundleByIdNullTest() throws ParseException {
+        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
+        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
+        Map<String, String> map = new HashMap<>();
+        map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
+        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessMethods accessMethods = new AccessMethods(Long.parseLong("5"), AccessMethodType.S3, "region", accessURL);
+        accessMethodsRepository.save(accessMethods);
+        Optional<AccessMethods> responseAccessMethods = accessMethodsRepository.findById(Long.parseLong("4"));
+        Assert.assertFalse(responseAccessMethods.isPresent());
     }
 }

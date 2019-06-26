@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.Objects;
 
 
 @Entity
@@ -22,17 +22,17 @@ import java.util.List;
 public class Object {
 
     @Id
-    @NotEmpty
-    private String id;
+    @GeneratedValue()
+    private Long id;
 
     private String name;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     private int size;
 
     @Column(nullable = false)
-    @NonNull
+    @NotNull
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
@@ -43,25 +43,25 @@ public class Object {
 
     private String mime_type;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "object")
+    @OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
     @NotEmpty
     private List<Checksum> checksums;
 
-    @Column(nullable = false)
     @NotEmpty
-    @OneToMany(mappedBy = "object")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "object")
+    @ElementCollection
     private List<AccessMethods> accessMethods;
 
     private String description;
 
     @ElementCollection
+
     private List<String> aliases;
 
     public Object() {
     }
 
-    public Object(String id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
+    public Object(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
         this.id = id;
         this.name = name;
@@ -71,13 +71,15 @@ public class Object {
         this.version = version;
         this.mime_type = mime_type;
         this.checksums = checksums;
+        checksums.forEach(checksum -> checksum.setObject(this));
         this.accessMethods = accessMethods;
+        accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
         this.description = description;
-        this.aliases = aliases;
+        this.aliases = aliases == null ? null : new ArrayList<>();
     }
 
     @JsonProperty("id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -127,7 +129,30 @@ public class Object {
     }
 
     @JsonProperty("aliases")
-    public List<String> getAliaces() {
+    public List<String> getAliases() {
         return aliases;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Object)) return false;
+        Object object = (Object) o;
+        return getSize() == object.getSize() &&
+                Objects.equals(getId(), object.getId()) &&
+                Objects.equals(getName(), object.getName()) &&
+                getCreated().isEqual(object.getCreated()) &&
+                getUpdated().isEqual(object.getUpdated()) &&
+                Objects.equals(getVersion(), object.getVersion()) &&
+                Objects.equals(getMime_type(), object.getMime_type()) &&
+                getChecksums().containsAll(object.getChecksums()) &&
+                getAccessMethods().containsAll(object.getAccessMethods()) &&
+                Objects.equals(getDescription(), object.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getId(), getName(), getSize(), getCreated(), getUpdated(), getVersion(), getMime_type(), getChecksums(), getAccessMethods(), getDescription(), getAliases());
     }
 }

@@ -1,21 +1,21 @@
 {
-  "id": "string",
+  "id": 1,
   "name": "string",
   "size": 23,
   "created": "2018-12-12T12:12:12.1212+02:00",
   "updated": "2018-12-12T12:12:12.1212+02:00",
   "version": "string",
-  "checksums": null,
+  "checksums": [],
   "description": "string",
   "aliases": [
     "string"
   ],
   "contents": [
   {
-    "id": "string",
+    "id": 1,
     "name": "string",
     "type": "object",
-    "drs_uri": null
+    "drs_uri": []
 
   }
 ]
