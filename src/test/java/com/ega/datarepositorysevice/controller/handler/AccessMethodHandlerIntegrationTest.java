@@ -1,9 +1,10 @@
-package com.ega.datarepositorysevice.service;
+package com.ega.datarepositorysevice.controller.handler;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.AccessURL;
 import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,12 +12,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,42 +28,41 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
-public class AccessMethodsServiceIntegrationTest {
+public class AccessMethodHandlerIntegrationTest {
 
     @Autowired
-    private AccessMethodsService accessMethodsService;
-
-     @Autowired
     private AccessMethodsRepository accessMethodsRepository;
+
+    @Autowired
+    private AccessMethodHandler accessMethodHandler;
 
     private AccessMethods accessMethodsTestObject;
 
+
     @Before
-    public void prepareDatabase() {
+    public void PrepareEnviroment() {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessURL accessURL = new AccessURL(null, "https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethodsTestObject = accessMethodsRepository.save(accessMethodsTestObject);
     }
 
     @Test
-    public void testExistingValue() {
-        Mono<AccessMethods> accessMethod = accessMethodsService.getAccessMethodsById(accessMethodsTestObject.getAccessId());
-        Optional<AccessMethods> accessMethodsOptional = accessMethod.blockOptional();
-
-        Assert.assertTrue(accessMethodsOptional.isPresent());
-        Assert.assertEquals(accessMethodsTestObject, accessMethodsOptional.get());
-
-
+    public void okTest() {
+        ServerRequest request = mock(ServerRequest.class);
+        when(request.pathVariable("access_id")).thenReturn("1");
+        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
 
     @Test
-    public void testEmptyValue() {
-        Mono<AccessMethods> accessMethod = accessMethodsService.getAccessMethodsById(accessMethodsTestObject.getAccessId()+1);
-        Optional<AccessMethods> accessMethodsOptional = accessMethod.blockOptional();
+    public void notFoundTest() {
+        ServerRequest request = mock(ServerRequest.class);
+        when(request.pathVariable("access_id")).thenReturn("2");
+        Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
 
-        Assert.assertFalse(accessMethodsOptional.isPresent());
     }
-
 }
+

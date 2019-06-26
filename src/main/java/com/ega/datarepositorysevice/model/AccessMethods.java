@@ -27,6 +27,7 @@ public class AccessMethods {
 
 
     @OneToOne(mappedBy = "methods", cascade = CascadeType.ALL)
+    @NotNull
     private AccessURL accessURL;
 
 
