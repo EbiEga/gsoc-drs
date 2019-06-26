@@ -1,7 +1,11 @@
 package com.ega.datarepositorysevice.controller;
 
+import com.ega.datarepositorysevice.controller.handler.AccessMethodHandler;
+import com.ega.datarepositorysevice.controller.handler.BundleHandler;
+import com.ega.datarepositorysevice.controller.handler.ObjectHandler;
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
+import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.repository.BundleRepository;
@@ -17,11 +21,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.ServerRequest;
+
 
 import java.io.IOException;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 @Import(Router.class)
@@ -51,7 +61,6 @@ public class RouterTest {
     @Before
     public void prepareEnvironment() throws URI.MalformedURIException {
         webTestClient = WebTestClient.bindToRouterFunction(router.route()).build();
-
 
         accessMethods = TestObjectCreator.getAccessMethods();
         object = TestObjectCreator.getObject();
@@ -119,6 +128,63 @@ public class RouterTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    public void testBadRequest(){
+        webTestClient.get()
+                .uri(String.format("/bundles/%s", "qeqw=2131"))
+                .accept()
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody().jsonPath("status_code", 400);
+    }
+
+    @Test
+    public void testNotFoundEmpty(){
+        webTestClient.get()
+                .uri(String.format("/bundles/%s", ""))
+                .accept()
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody().jsonPath("status_code", 404);
+    }
+
+    @Test
+    public void testNotFound(){
+        webTestClient.get()
+                .uri(String.format("/bundles/%s", "34"))
+                .accept()
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody().jsonPath("status_code", 404);
+    }
+
+    @Test
+    public void testInternalServerError(){
+
+        BundleHandler bundleHandler = mock(BundleHandler.class);
+        ObjectHandler objectHandler = mock(ObjectHandler.class);
+        AccessMethodHandler accessMethodHandler = mock(AccessMethodHandler.class);
+        ServerRequest request = mock(ServerRequest.class);
+        when(request.pathVariable("bundle_id")).thenReturn("1");
+        when(accessMethodHandler.getAccess(request)).thenThrow(IllegalStateException.class);
+        WebTestClient webTestClient = WebTestClient
+                .bindToRouterFunction(new Router(objectHandler,bundleHandler,accessMethodHandler).route())
+                .build();
+        webTestClient.get()
+                .uri(String.format("/bundles/%d", 1))
+                .accept()
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .expectBody().jsonPath("status_code", 500);
+        Error error = webTestClient.get()
+                .uri(String.format("/bundles/%d", 1))
+                .accept()
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .expectBody(Error.class).returnResult().getResponseBody();
+        System.out.println();
     }
 
 }
