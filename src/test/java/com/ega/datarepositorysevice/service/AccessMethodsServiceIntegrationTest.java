@@ -18,9 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
@@ -38,7 +35,7 @@ public class AccessMethodsServiceIntegrationTest {
     public void prepareDatabase() {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com", map);
+        AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethodsTestObject = accessMethodsRepository.save(accessMethodsTestObject);
     }
