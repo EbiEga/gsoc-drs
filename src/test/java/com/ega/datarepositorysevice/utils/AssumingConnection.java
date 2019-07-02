@@ -1,7 +1,5 @@
 package com.ega.datarepositorysevice.utils;
 
-
-
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
