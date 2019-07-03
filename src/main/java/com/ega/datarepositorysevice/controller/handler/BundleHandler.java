@@ -29,7 +29,7 @@ public class BundleHandler {
             Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);
 
             Mono<Bundle> bundleMono = bundleService
-                    .getBundletById(retrievePathVariable(request, BUNDLE_PATH_VARIABLE));
+                    .getBundleById(retrievePathVariable(request, BUNDLE_PATH_VARIABLE));
 
             return HandlerUtils.returnOkResponse(bundleMono, notFoundError);
         } catch (IllegalArgumentException e) {
