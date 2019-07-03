@@ -74,8 +74,7 @@ public class AccessURL {
         if (!(o instanceof AccessURL)) return false;
         AccessURL accessURL = (AccessURL) o;
         return Objects.equals(getUrl(), accessURL.getUrl()) &&
-                getHeaders().equals(accessURL.getHeaders())
-                ;
+                getHeaders().equals(accessURL.getHeaders());
     }
 
     @Override

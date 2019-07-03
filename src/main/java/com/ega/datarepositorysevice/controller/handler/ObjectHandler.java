@@ -19,8 +19,6 @@ import static com.ega.datarepositorysevice.controller.HandlerUtils.retrievePathV
 
 @Component
 public class ObjectHandler {
-    final static Logger logger = Logger.getLogger(ObjectHandler.class);
-
     private ObjectService objectService;
 
     @Autowired

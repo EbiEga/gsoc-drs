@@ -41,7 +41,7 @@ public class BundleRepositoryTest {
     }
 
     @Test
-    public void getBundleByIdNullTest() throws ParseException {
+    public void getBundleByIdNullTest() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Bundle bundle = new Bundle(Long.parseLong("5"), "string", 23, date,
