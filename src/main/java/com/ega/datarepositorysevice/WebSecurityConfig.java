@@ -14,7 +14,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 
 @EnableWebFluxSecurity
-public class WebSecurityConfig{
+public class WebSecurityConfig {
 
 
     @Bean

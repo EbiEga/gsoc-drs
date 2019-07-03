@@ -26,11 +26,13 @@ public class BundleHandler {
 
     public Mono<ServerResponse> getBundle(ServerRequest request) {
         try {
-            Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);;
+            Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);
+
             Mono<Bundle> bundleMono = bundleService
-                    .getBundletById(retrievePathVariable(request,BUNDLE_PATH_VARIABLE));
+                    .getBundletById(retrievePathVariable(request, BUNDLE_PATH_VARIABLE));
+
             return HandlerUtils.returnOkResponse(bundleMono, notFoundError);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return HandlerUtils.returnBadRequest(e);
         }
 

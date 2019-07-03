@@ -29,13 +29,12 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> getObject(ServerRequest request) {
-
         try {
-            Error notFoundError =  new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
+            Error notFoundError = new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
             Mono<Object> objectMono = objectService
-                    .getObjectById(retrievePathVariable(request,OBJECT_PATH_VARIABLE));
+                    .getObjectById(retrievePathVariable(request, OBJECT_PATH_VARIABLE));
             return HandlerUtils.returnOkResponse(objectMono, notFoundError);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return HandlerUtils.returnBadRequest(e);
         }
 

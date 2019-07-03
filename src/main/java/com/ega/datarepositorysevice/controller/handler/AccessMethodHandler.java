@@ -27,9 +27,9 @@ public class AccessMethodHandler {
         try {
             Error notFoundError = new Error("The requested AccessMethod wasn't found", HttpStatus.NOT_FOUND);
             Mono<AccessMethods> accessMethodMono = accessMethodsService
-                    .getAccessMethodsById(retrievePathVariable(request,ACCESS_METHODS_PATH_VARIABLE));
+                    .getAccessMethodsById(retrievePathVariable(request, ACCESS_METHODS_PATH_VARIABLE));
             return HandlerUtils.returnOkResponse(accessMethodMono, notFoundError);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return HandlerUtils.returnBadRequest(e);
         }
 
