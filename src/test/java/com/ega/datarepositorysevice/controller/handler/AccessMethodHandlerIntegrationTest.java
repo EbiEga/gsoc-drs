@@ -40,7 +40,7 @@ public class AccessMethodHandlerIntegrationTest {
 
 
     @Before
-    public void PrepareEnviroment() {
+    public void PrepareEnvironment() {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL(null, "https://www.youtube.com/watch?v=nsoIcQYlPxg", map);

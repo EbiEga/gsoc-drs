@@ -48,10 +48,10 @@ public class ObjectServiceTest {
     @Test
     public void testExistingValue() {
         Mono<Object> objectMono = objectService.getObjectById(1L);
-        Optional<Object> objecteOptional = objectMono.blockOptional();
+        Optional<Object> objectOptional = objectMono.blockOptional();
 
-        Assert.assertTrue(objecteOptional.isPresent());
-        Assert.assertEquals(objectTestObject, objecteOptional.get());
+        Assert.assertTrue(objectOptional.isPresent());
+        Assert.assertEquals(objectTestObject, objectOptional.get());
 
     }
 

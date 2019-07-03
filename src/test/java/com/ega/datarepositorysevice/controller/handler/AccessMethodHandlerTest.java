@@ -26,7 +26,7 @@ public class AccessMethodHandlerTest {
     private AccessMethods accessMethods;
 
     @Before
-    public void PrepareEnviroment() {
+    public void PrepareEnvironment() {
         AccessMethodsService accessMethodsService = mock(AccessMethodsService.class);
         accessMethods = new AccessMethods(1L, AccessMethodType.S3,
                 "region", new AccessURL());

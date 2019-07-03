@@ -21,7 +21,7 @@ public class ObjectHandlerTest {
 
 
     @Before
-    public void PrepareEnviroment() {
+    public void PrepareEnvironment() {
         ObjectService objectService = mock(ObjectService.class);
 
         Object object = mock(Object.class);

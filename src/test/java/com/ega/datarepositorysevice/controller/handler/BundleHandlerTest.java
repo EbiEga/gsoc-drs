@@ -28,7 +28,7 @@ public class BundleHandlerTest {
     private Bundle bundleTestObject;
 
     @Before
-    public void PrepareEnviroment() throws URI.MalformedURIException {
+    public void PrepareEnvironment() throws URI.MalformedURIException {
         BundleService bundleService = mock(BundleService.class);
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
@@ -37,8 +37,8 @@ public class BundleHandlerTest {
                 date, "string", Arrays.asList(new Checksum("string", ChecksumType.MD5_Code)
         ), "string", Arrays.asList("string"), Arrays.asList(bundleObject));
 
-        when(bundleService.getBundletById(1L)).thenReturn(Mono.just(bundleTestObject));
-        when(bundleService.getBundletById(2L)).thenReturn(Mono.empty());
+        when(bundleService.getBundleById(1L)).thenReturn(Mono.just(bundleTestObject));
+        when(bundleService.getBundleById(2L)).thenReturn(Mono.empty());
         bundleHandler = new BundleHandler(bundleService);
 
 
