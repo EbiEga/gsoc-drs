@@ -1,0 +1,14 @@
+sudo: true
+
+dist: xenial
+
+language: java
+
+jdk:
+  - openjdk8
+
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+script:
+  - mvn test -DtrimStackTrace=false
