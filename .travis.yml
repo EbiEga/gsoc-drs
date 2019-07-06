@@ -1,6 +1,6 @@
 sudo: true
 
-dist: xenial
+os: osx
 
 language: java
 
