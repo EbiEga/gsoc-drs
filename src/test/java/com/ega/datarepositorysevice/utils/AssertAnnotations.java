@@ -3,6 +3,7 @@ package com.ega.datarepositorysevice.utils;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 /**
  * @author Michael Remijan mjremijan@yahoo.com @mjremijan
  */

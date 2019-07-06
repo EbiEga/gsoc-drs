@@ -1,6 +1,6 @@
 sudo: true
 
-os: osx
+os: linux
 
 language: java
 
