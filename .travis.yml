@@ -11,8 +11,8 @@ services:
 before_install:
   - docker pull openjdk:8-jdk-alpine
 
-#install:
-#  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script:
   - cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
