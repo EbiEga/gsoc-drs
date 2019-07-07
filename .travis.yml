@@ -1,7 +1,6 @@
 sudo: true
 
-os: linux
-
+dist: xenial
 language: java
 
 jdk:
@@ -11,4 +10,5 @@ install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script:
+  - cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
   - mvn test -DtrimStackTrace=false
