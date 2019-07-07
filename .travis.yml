@@ -14,6 +14,8 @@ before_install:
   - docker cp ./ drs:./
   - docker exec drs apk add maven
   - docker exec drs cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
+
+install:
   - docker exec drs mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 
