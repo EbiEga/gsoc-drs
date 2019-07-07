@@ -20,4 +20,4 @@ install:
 
 
 script:
-  - docker exec mvn test -DtrimStackTrace=false
+  - docker exec drs mvn test -DtrimStackTrace=false
