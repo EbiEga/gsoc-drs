@@ -12,11 +12,10 @@ before_install:
   - docker pull openjdk:8-jdk-alpine
   - docker run --name drs -t -d openjdk:8-jdk-alpine
   - docker cp ./ drs:./
-  - docker exec -it drs /bin/sh
-  - apk add maven
-  - cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - docker exec apk add maven
+  - docker exec cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
+  - docker exec mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 
 script:
-  - mvn test -DtrimStackTrace=false
+  - docker exec mvn test -DtrimStackTrace=false
