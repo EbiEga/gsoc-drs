@@ -20,7 +20,7 @@ public class BundleServiceImpl implements BundleService {
     }
 
     @Override
-    public Mono<Bundle> getBundletById(Long id) {
+    public Mono<Bundle> getBundleById(Long id) {
         Optional<Bundle> bundleOpt = bundleRepository.findById(id);
         return bundleOpt.map(Mono::just).orElseGet(Mono::empty);
     }

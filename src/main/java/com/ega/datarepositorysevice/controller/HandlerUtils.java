@@ -14,12 +14,12 @@ public class HandlerUtils {
     public static final String BUNDLE_PATH_VARIABLE = "bundle_id";
     public static final String OBJECT_PATH_VARIABLE = "object_id";
 
-    public static Long retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException{
-            String id = request.pathVariable(pathVariable);
-            return Long.parseLong(id);
+    public static Long retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException {
+        String id = request.pathVariable(pathVariable);
+        return Long.parseLong(id);
     }
 
-    public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError){
+    public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError) {
         Mono<ServerResponse> notFound = ServerResponse
                 .status(HttpStatus.NOT_FOUND)
                 .body(BodyInserters.fromObject(notFoundError));
@@ -34,7 +34,7 @@ public class HandlerUtils {
                                 .body(BodyInserters.fromObject(notFoundError)));
     }
 
-    public static Mono<ServerResponse> returnBadRequest(IllegalArgumentException e){
+    public static Mono<ServerResponse> returnBadRequest(IllegalArgumentException e) {
         String errorMessage = String.format("The request is malformed. Reason: %S", e.getMessage());
         Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
         return ServerResponse.badRequest()

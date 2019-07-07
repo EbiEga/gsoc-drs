@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 public interface BundleService {
-    Mono<Bundle> getBundletById(Long id);
+    Mono<Bundle> getBundleById(Long id);
 }

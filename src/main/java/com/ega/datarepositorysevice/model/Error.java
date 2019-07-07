@@ -13,7 +13,8 @@ public class Error {
     private HttpStatus statusCode;
 
 
-    public Error(){}
+    public Error() {
+    }
 
     public Error(String msg, HttpStatus statusCode) {
         this.msg = msg;
