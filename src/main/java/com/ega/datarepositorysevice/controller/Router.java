@@ -31,7 +31,7 @@ public class Router {
     AccessMethodHandler accessMethodHandler;
 
     @Value("classpath:/static/service-info.json")
-    Resource serviceInfo;
+    private Resource serviceInfo;
 
     @Autowired
     public Router(ObjectHandler objectHandler, BundleHandler bundleHandler, AccessMethodHandler accessMethodHandler) {
