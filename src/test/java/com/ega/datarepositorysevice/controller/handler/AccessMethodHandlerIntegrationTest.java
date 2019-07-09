@@ -51,7 +51,7 @@ public class AccessMethodHandlerIntegrationTest {
     @Test
     public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("access_id")).thenReturn("1");
+        when(request.pathVariable("access_id")).thenReturn(accessMethodsTestObject.getAccessId().toString());
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
@@ -59,7 +59,7 @@ public class AccessMethodHandlerIntegrationTest {
     @Test
     public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("access_id")).thenReturn("2");
+        when(request.pathVariable("access_id")).thenReturn("-1");
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
 

@@ -131,7 +131,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testBadRequest(){
+    public void testBadRequest() {
         webTestClient.get()
                 .uri(String.format("/bundles/%s", "qeqw=2131"))
                 .accept()
@@ -141,7 +141,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testNotFoundEmpty(){
+    public void testNotFoundEmpty() {
         webTestClient.get()
                 .uri(String.format("/bundles/%s", ""))
                 .accept()
@@ -151,7 +151,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testNotFound(){
+    public void testNotFound() {
         webTestClient.get()
                 .uri(String.format("/bundles/%s", "34"))
                 .accept()
@@ -161,7 +161,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testInternalServerError(){
+    public void testInternalServerError() {
 
         BundleHandler bundleHandler = mock(BundleHandler.class);
         ObjectHandler objectHandler = mock(ObjectHandler.class);
@@ -170,7 +170,7 @@ public class RouterTest {
         when(request.pathVariable("bundle_id")).thenReturn("1");
         when(accessMethodHandler.getAccess(request)).thenThrow(IllegalStateException.class);
         WebTestClient webTestClient = WebTestClient
-                .bindToRouterFunction(new Router(objectHandler,bundleHandler,accessMethodHandler).route())
+                .bindToRouterFunction(new Router(objectHandler, bundleHandler, accessMethodHandler).route())
                 .build();
         webTestClient.get()
                 .uri(String.format("/bundles/%d", 1))
@@ -188,7 +188,7 @@ public class RouterTest {
     }
 
     @Test
-    public void serviceInfoTest(){
+    public void serviceInfoTest() {
         webTestClient.get()
                 .uri("/service-info")
                 .accept(MediaType.APPLICATION_JSON)
