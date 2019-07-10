@@ -47,7 +47,7 @@ public class BundleServiceIntegrationTest {
 
     @Test
     public void testExistingValue() {
-        Mono<Bundle> bundleMono = bundleService.getBundletById(1L);
+        Mono<Bundle> bundleMono = bundleService.getBundleById(1L);
         Optional<Bundle> bundleOptional = bundleMono.blockOptional();
 
         Assert.assertTrue(bundleOptional.isPresent());
@@ -58,7 +58,7 @@ public class BundleServiceIntegrationTest {
 
     @Test
     public void testEmptyValue() {
-        Mono<Bundle> bundleMono = bundleService.getBundletById(2L);
+        Mono<Bundle> bundleMono = bundleService.getBundleById(2L);
         Optional<Bundle> bundleOptional = bundleMono.blockOptional();
 
         Assert.assertFalse(bundleOptional.isPresent());

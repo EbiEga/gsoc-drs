@@ -1,14 +1,23 @@
 sudo: true
 
 dist: xenial
-
 language: java
 
 jdk:
   - openjdk8
 
+services:
+  - docker
+before_install:
+  - docker pull openjdk:8-jdk-alpine
+  - docker run --name drs -t -d openjdk:8-jdk-alpine
+  - docker cp ./ drs:./
+  - docker exec drs apk add maven
+  - docker exec drs cp ./src/main/resources/application.template.properties ./src/main/resources/application.properties
+
 install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - docker exec drs mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
 
 script:
-  - mvn test -DtrimStackTrace=false
+  - docker exec drs mvn test -DtrimStackTrace=false
