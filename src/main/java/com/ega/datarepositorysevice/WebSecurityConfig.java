@@ -1,42 +1,42 @@
 package com.ega.datarepositorysevice;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import reactor.core.publisher.Mono;
 
-
+//@EnableWebFluxSecurity
+//@EnableReactiveMethodSecurity
 @EnableWebFluxSecurity
-@EnableResourceServer
+@Profile({"dev","prod"})
 public class WebSecurityConfig{
+
+//    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+//    private String issuerUri;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http.authorizeExchange()
-                .anyExchange()
-                .authenticated()
+        http
+                .authorizeExchange()
+                .pathMatchers("/service-info").permitAll()
+                .anyExchange().authenticated()
                 .and()
                 .oauth2ResourceServer()
                 .jwt();
         return http.build();
     }
+//
+@Bean
+public ReactiveJwtDecoder jwtDecoder() {
+    return ReactiveJwtDecoders.fromOidcIssuerLocation("https://ega.ebi.ac.uk:8443/ega-openid-connect-server/");
+}
 
-    @Bean
-    public ReactiveJwtDecoder decoder(){
-        return new CustomDecoder();
-    }
-    public class CustomDecoder implements ReactiveJwtDecoder{
 
-        @Override
-        public Mono<Jwt> decode(String s) throws JwtException {
-            System.out.println(s);
-            return Mono.just(new Jwt(s,null,null,null,null));
-        }
-    }
+
 }
 
