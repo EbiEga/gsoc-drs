@@ -9,9 +9,9 @@ import org.junit.runners.model.Statement;
 
 
 public class AssumingConnection implements TestRule {
-    private ConnectionChecker checker;
+    private RemoteConnectionChecker checker;
 
-    public AssumingConnection(ConnectionChecker checker) {
+    public AssumingConnection(RemoteConnectionChecker checker) {
         this.checker = checker;
     }
 
