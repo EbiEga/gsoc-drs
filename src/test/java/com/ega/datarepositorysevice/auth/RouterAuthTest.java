@@ -9,7 +9,10 @@ import com.ega.datarepositorysevice.service.AccessMethodsService;
 import com.ega.datarepositorysevice.service.BundleService;
 import com.ega.datarepositorysevice.service.ObjectService;
 
+import com.ega.datarepositorysevice.utils.AssumingConnection;
+import com.ega.datarepositorysevice.utils.AuthServerConnectionChecker;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,6 +43,10 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = {Router.class, AccessMethodHandler.class, ObjectHandler.class, BundleHandler.class, WebSecurityConfig.class})
 @ActiveProfiles({"dev", "prod"})
 @WebFluxTest
+@PropertySources({
+        @PropertySource("classpath:application.properties"),
+        @PropertySource("classpath:testApplication.properties")
+})
 public class RouterAuthTest {
     @Autowired
     private ApplicationContext context;
@@ -56,8 +65,17 @@ public class RouterAuthTest {
     @Value("${security.oauth2.client.client-secret}")
     String clientSecret;
 
+    @Value("${login}")
+    String login;
+
+    @Value("${password}")
+    String password;
 
     private WebTestClient webTestClient;
+
+    @ClassRule
+    public static AssumingConnection assumingConnection =
+            new AssumingConnection(new AuthServerConnectionChecker());
 
     @Before
     public void prepareEnvironment() {
@@ -72,7 +90,7 @@ public class RouterAuthTest {
     public void testAccessMethodsPathOk() {
         webTestClient.get()
                 .uri("/objects/1/access/1")
-                .headers(h -> h.setBearerAuth(getToken("amp-dev@ebi.ac.uk", "dN9yCSbQ")))
+                .headers(h -> h.setBearerAuth(getToken(login, password)))
                 .exchange()
                 .expectStatus().isNotFound();
 
@@ -95,7 +113,7 @@ public class RouterAuthTest {
 
         webTestClient.get()
                 .uri("/objects/1")
-                .headers(h -> h.setBearerAuth(getToken("amp-dev@ebi.ac.uk", "dN9yCSbQ")))
+                .headers(h -> h.setBearerAuth(getToken(login, password)))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -117,7 +135,7 @@ public class RouterAuthTest {
     public void testBundlePathOk() {
         webTestClient.get()
                 .uri("/bundles/1")
-                .headers(h -> h.setBearerAuth(getToken("amp-dev@ebi.ac.uk", "dN9yCSbQ")))
+                .headers(h -> h.setBearerAuth(getToken(login, password)))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
