@@ -39,6 +39,7 @@ out/
 ### sensitive data ###
 application.properties
 docker-compose.yml
+testAppliaction.properties
 
 
 #logs
