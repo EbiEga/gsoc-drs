@@ -36,4 +36,29 @@ public class ObjectHandler {
         }
 
     }
+
+    public Mono<ServerResponse> saveObject(ServerRequest request) {
+        Mono<Object> objectMono = objectService.saveObject(request.bodyToMono(Object.class));
+        return HandlerUtils
+                .returnOkResponse(objectMono);
+    }
+
+    public Mono<ServerResponse> deleteObject(ServerRequest request) {
+        if(objectService.deleteObjectById(retrievePathVariable(request,OBJECT_PATH_VARIABLE))){
+            return HandlerUtils.returnOkResponse();
+        }else{
+            return HandlerUtils.returnBadRequest(new IllegalArgumentException("The Object is not found"));
+
+        }
+    }
+
+    public Mono<ServerResponse> updateObject(ServerRequest request) {
+        try {
+            Error notFoundError =  new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
+            Mono<Object> objectMono = objectService.updateObject(request.bodyToMono(Object.class));
+            return HandlerUtils.returnOkResponse(objectMono, notFoundError);
+        }catch (IllegalArgumentException e){
+            return HandlerUtils.returnBadRequest(e);
+        }
+    }
 }
