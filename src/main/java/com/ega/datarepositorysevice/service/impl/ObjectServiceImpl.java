@@ -24,4 +24,29 @@ public class ObjectServiceImpl implements ObjectService {
         Optional<Object> objectOpt = objectRepository.findById(id);
         return objectOpt.map(Mono::just).orElseGet(Mono::empty);
     }
+
+    @Override
+    public boolean deleteObjectById(Long id) {
+        try{
+            objectRepository.deleteById(id);
+            return true;
+        }catch (IllegalArgumentException e){
+            return false;
+        }
+    }
+
+    @Override
+    public Mono<Object> saveObject(Mono<Object> objectMono) {
+        return objectMono.map(objectRepository::save);
+    }
+
+    @Override
+    public Mono<Object> updateObject(Mono<Object> objectMono) {
+        return objectMono.map(object -> {
+            if(objectRepository.existsById(object.getId())){
+                return objectRepository.save(object);
+            }else {
+                throw new IllegalArgumentException("id of object is not found");
+            }
+        });    }
 }
