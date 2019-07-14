@@ -35,4 +35,30 @@ public class BundleHandler {
         }
 
     }
+
+    public Mono<ServerResponse> saveBundle(ServerRequest request) {
+        Mono<Bundle> bundleMono = bundleService.saveBundle(request.bodyToMono(Bundle.class));
+        return HandlerUtils
+                .returnOkResponse(bundleMono);
+    }
+
+    public Mono<ServerResponse> deleteBundle(ServerRequest request) {
+        if(bundleService.deleteBundleById(retrievePathVariable(request,BUNDLE_PATH_VARIABLE))){
+            return HandlerUtils.returnOkResponse();
+        }else{
+            return HandlerUtils.returnBadRequest(new IllegalArgumentException("The Bundle is not found"));
+        }
+    }
+
+    public Mono<ServerResponse> updateBundle(ServerRequest request) {
+        try {
+            Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);
+
+            Mono<Bundle> bundleMono = bundleService.updateBundle(request.bodyToMono(Bundle.class));
+            return HandlerUtils.returnOkResponse(bundleMono, notFoundError);
+        }catch (IllegalArgumentException e){
+            return HandlerUtils.returnBadRequest(e);
+        }
+    }
+
 }
