@@ -10,6 +10,7 @@ services:
   - docker
 before_install:
   - openssl aes-256-cbc -K $encrypted_5880cf525281_key -iv $encrypted_5880cf525281_iv -in secrets.tar.enc -out secrets.tar -d
+  - tar xvf secrets.tar
   - mv application.properties src/main/resources/
   - mv testApplication.properties src/test/resources/
   - docker pull openjdk:8-jdk-alpine
