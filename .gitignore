@@ -39,7 +39,10 @@ out/
 ### sensitive data ###
 application.properties
 docker-compose.yml
-testAppliaction.properties
+testApplication.properties
+secrets.tar
+
+
 
 
 #logs
