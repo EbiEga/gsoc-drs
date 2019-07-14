@@ -7,4 +7,10 @@ import reactor.core.publisher.Mono;
 
 public interface BundleService {
     Mono<Bundle> getBundleById(Long id);
+
+    boolean deleteBundleById(Long id);
+
+    Mono<Bundle> saveBundle(Mono<Bundle> bundleMono);
+
+    Mono<Bundle> updateBundle(Mono<Bundle> bundleMono);
 }
