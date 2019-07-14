@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class RouterTest {
 
     @Autowired
@@ -73,7 +75,7 @@ public class RouterTest {
 
 
     @Test
-    public void testAccessMethodsPathOk() throws IOException {
+    public void testAccessMethodsPathOk() {
         webTestClient.get()
                 .uri(String.format("/objects/%d/access/%d", object.getId(), accessMethods.getAccessId()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -92,7 +94,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testObjectPathOk() throws IOException {
+    public void testObjectPathOk() {
 
         webTestClient.get()
                 .uri(String.format("/objects/%s", object.getId()))
@@ -112,7 +114,7 @@ public class RouterTest {
     }
 
     @Test
-    public void testBundlePathOk() throws IOException {
+    public void testBundlePathOk() {
         webTestClient.get()
                 .uri(String.format("/bundles/%d", bundle.getId()))
                 .accept(MediaType.APPLICATION_JSON)

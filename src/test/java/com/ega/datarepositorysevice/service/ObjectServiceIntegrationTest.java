@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 
@@ -29,6 +30,7 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class ObjectServiceIntegrationTest {
 
     @Autowired
@@ -46,7 +48,7 @@ public class ObjectServiceIntegrationTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
+        AccessURL accessURL = new AccessURL(null, "https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
 
         objectTestObject = new Object(null, "string", 0, date, date, "string", "application/json",

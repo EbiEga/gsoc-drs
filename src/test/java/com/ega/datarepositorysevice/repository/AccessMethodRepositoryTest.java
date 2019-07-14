@@ -7,8 +7,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
@@ -20,13 +23,14 @@ import java.util.*;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
+
 public class AccessMethodRepositoryTest {
     @Autowired
     AccessMethodsRepository accessMethodsRepository;
 
     @Test
     public void getBundleByIdTest() {
-        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
@@ -39,8 +43,7 @@ public class AccessMethodRepositoryTest {
     }
 
     @Test
-    public void getBundleByIdNullTest() throws ParseException {
-        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
+    public void getBundleByIdNullTest() {
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL("http//www.string.com", map);
