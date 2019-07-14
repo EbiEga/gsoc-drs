@@ -24,4 +24,30 @@ public class BundleServiceImpl implements BundleService {
         Optional<Bundle> bundleOpt = bundleRepository.findById(id);
         return bundleOpt.map(Mono::just).orElseGet(Mono::empty);
     }
+
+    @Override
+    public boolean deleteBundleById(Long id) {
+        try {
+            bundleRepository.deleteById(id);
+            return true;
+        }catch (IllegalArgumentException e){
+            return false;
+        }
+    }
+
+    @Override
+    public Mono<Bundle> saveBundle(Mono<Bundle> bundleMono) {
+        return bundleMono.map(bundleRepository::save);
+    }
+
+    @Override
+    public Mono<Bundle> updateBundle(Mono<Bundle> bundleMono) {
+        return bundleMono.map(bundle -> {
+            if(bundleRepository.existsById(bundle.getId())){
+                return bundleRepository.save(bundle);
+            }else {
+                throw new IllegalArgumentException("id of bundle is not found");
+            }
+        });
+    }
 }
