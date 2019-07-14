@@ -1,26 +1,21 @@
 sudo: true
-
 dist: xenial
 language: java
-
 jdk:
-  - openjdk8
-
+- openjdk8
 services:
-  - docker
+- docker
 before_install:
-  - openssl aes-256-cbc -K $encrypted_a310468553e3_key -iv $encrypted_a310468553e3_iv -in secrets.tar.enc -out secrets.tar -d
-  - tar xvf secrets.tar
-  - mv application.properties src/main/resources/
-  - mv testApplication.properties src/test/resources/
-  - docker pull openjdk:8-jdk-alpine
-  - docker run --name drs -t -d openjdk:8-jdk-alpine
-  - docker cp ./ drs:./
-  - docker exec drs apk add maven
-
+- openssl aes-256-cbc -K $encrypted_a310468553e3_key -iv $encrypted_a310468553e3_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
+- mv application.properties src/main/resources/
+- mv testApplication.properties src/test/resources/
+- docker pull openjdk:8-jdk-alpine
+- docker run --name drs -t -d openjdk:8-jdk-alpine
+- docker cp ./ drs:./
+- docker exec drs apk add maven
 install:
-  - docker exec drs mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
-
+- docker exec drs mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 script:
-  - docker exec drs mvn test -DtrimStackTrace=false
+- docker exec drs mvn test -DtrimStackTrace=false
