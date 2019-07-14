@@ -38,6 +38,14 @@ public class Error {
         return statusCode.value();
     }
 
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public void setStatusCode(HttpStatus statusCode) {
+        this.statusCode = statusCode;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;

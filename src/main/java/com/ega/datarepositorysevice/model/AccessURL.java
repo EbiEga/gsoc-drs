@@ -68,6 +68,18 @@ public class AccessURL {
         this.methods = methods;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;

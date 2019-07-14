@@ -133,6 +133,50 @@ public class Object {
         return aliases;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
+    public void setUpdated(OffsetDateTime updated) {
+        this.updated = updated;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setMime_type(String mime_type) {
+        this.mime_type = mime_type;
+    }
+
+    public void setChecksums(List<Checksum> checksums) {
+        this.checksums = checksums;
+    }
+
+    public void setAccessMethods(List<AccessMethods> accessMethods) {
+        this.accessMethods = accessMethods;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;

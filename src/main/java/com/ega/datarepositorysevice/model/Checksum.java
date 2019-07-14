@@ -82,6 +82,18 @@ public class Checksum {
         this.bundle = bundle;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
+    public void setType(ChecksumType type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;

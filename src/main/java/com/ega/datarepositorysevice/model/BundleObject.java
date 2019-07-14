@@ -78,6 +78,22 @@ public class BundleObject {
         this.bundle = bundle;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(BundleObjectType type) {
+        this.type = type;
+    }
+
+    public void setDrsUri(List<URI> drsUri) {
+        this.drsUri = drsUri;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;

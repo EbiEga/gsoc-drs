@@ -72,6 +72,22 @@ public class AccessMethods {
         return object;
     }
 
+    public void setAccessId(Long accessId) {
+        this.accessId = accessId;
+    }
+
+    public void setType(AccessMethodType type) {
+        this.type = type;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAccessURL(AccessURL accessURL) {
+        this.accessURL = accessURL;
+    }
+
     public void setObject(Object object) {
         this.object = object;
     }
