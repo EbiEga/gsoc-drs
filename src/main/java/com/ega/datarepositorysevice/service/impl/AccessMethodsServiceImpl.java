@@ -25,5 +25,31 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
         return accessMethodsOpt.map(Mono::just).orElseGet(Mono::empty);
     }
 
+    @Override
+    public Mono<AccessMethods> saveAccessMethod(Mono<AccessMethods> accessMethods) {
+        return accessMethods.map(accessMethodsRepository::save);
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        try {
+            accessMethodsRepository.deleteById(id);
+            return true;
+        }catch (IllegalArgumentException e){
+            return false;
+        }
+    }
+
+    @Override
+    public Mono<AccessMethods> updateAccessMethod(Mono<AccessMethods> accessMethodsMono) {
+        return accessMethodsMono.map(accessMethods -> {
+            if(accessMethodsRepository.existsById(accessMethods.getAccessId())){
+                return accessMethodsRepository.save(accessMethods);
+            }else {
+                throw new IllegalArgumentException("id of access method is not found");
+            }
+        });
+    }
+
 
 }
