@@ -14,19 +14,16 @@ public class HandlerUtils {
     public static final String BUNDLE_PATH_VARIABLE = "bundle_id";
     public static final String OBJECT_PATH_VARIABLE = "object_id";
 
-    public static Long retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException {
+    public static Long retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException{
         String id = request.pathVariable(pathVariable);
         return Long.parseLong(id);
     }
 
-    public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError) {
+    public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError){
         Mono<ServerResponse> notFound = ServerResponse
                 .status(HttpStatus.NOT_FOUND)
                 .body(BodyInserters.fromObject(notFoundError));
-
-        return mono.flatMap(accessMethods -> ServerResponse.ok()
-                .contentType(APPLICATION_JSON)
-                .body(BodyInserters.fromObject(accessMethods)))
+        return returnOkResponse(mono)
                 .switchIfEmpty(notFound)
                 .onErrorResume(e ->
                         ServerResponse
@@ -34,12 +31,23 @@ public class HandlerUtils {
                                 .body(BodyInserters.fromObject(notFoundError)));
     }
 
-    public static Mono<ServerResponse> returnBadRequest(IllegalArgumentException e) {
+    public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono){
+        return mono.flatMap(accessMethods -> ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(accessMethods)));
+    }
+
+    public static  Mono<ServerResponse> returnOkResponse(){
+        return ServerResponse.ok().body(BodyInserters.empty());
+    }
+
+    public static Mono<ServerResponse> returnBadRequest(IllegalArgumentException e){
         String errorMessage = String.format("The request is malformed. Reason: %S", e.getMessage());
         Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
         return ServerResponse.badRequest()
                 .body(BodyInserters.fromObject(badRequestError));
     }
+
 
 
 }
