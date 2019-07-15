@@ -183,7 +183,6 @@ public class Object {
         if (!(o instanceof Object)) return false;
         Object object = (Object) o;
         return getSize() == object.getSize() &&
-                Objects.equals(getId(), object.getId()) &&
                 Objects.equals(getName(), object.getName()) &&
                 getCreated().isEqual(object.getCreated()) &&
                 getUpdated().isEqual(object.getUpdated()) &&

@@ -168,7 +168,6 @@ public class Bundle {
         if (!(o instanceof Bundle)) return false;
         Bundle bundle = (Bundle) o;
         return getSize() == bundle.getSize() &&
-                Objects.equals(getId(), bundle.getId()) &&
                 Objects.equals(getName(), bundle.getName()) &&
                 getCreated().isEqual(bundle.getCreated()) &&
                 getUpdated().isEqual(bundle.getUpdated()) &&

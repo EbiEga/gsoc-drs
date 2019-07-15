@@ -99,8 +99,7 @@ public class BundleObject {
         if (this == o) return true;
         if (!(o instanceof BundleObject)) return false;
         BundleObject that = (BundleObject) o;
-        return Objects.equals(getId(), that.getId()) &&
-                Objects.equals(getName(), that.getName()) &&
+        return Objects.equals(getName(), that.getName()) &&
                 getType().equals(that.getType()) &&
                 getDrsUri().containsAll(that.getDrsUri());
     }

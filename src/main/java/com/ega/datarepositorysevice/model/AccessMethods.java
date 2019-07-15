@@ -97,8 +97,7 @@ public class AccessMethods {
         if (this == o) return true;
         if (!(o instanceof AccessMethods)) return false;
         AccessMethods that = (AccessMethods) o;
-        return Objects.equals(getAccessId(), that.getAccessId()) &&
-                getType().equals(that.getType()) &&
+        return getType().equals(that.getType()) &&
                 Objects.equals(getRegion(), that.getRegion()) &&
                 Objects.equals(getAccessURL(), that.getAccessURL());
     }
