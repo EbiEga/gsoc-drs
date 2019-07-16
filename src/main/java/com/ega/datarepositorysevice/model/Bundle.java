@@ -70,6 +70,9 @@ public class Bundle {
         this.description = description;
         this.aliases = aliases;
         this.contents = contents;
+        if (contents!=null){
+            contents.forEach( content -> content.setBundle(this));
+        }
     }
 
     @JsonProperty("id")
@@ -160,6 +163,9 @@ public class Bundle {
 
     public void setContents(List<BundleObject> contents) {
         this.contents = contents;
+        if (contents!=null){
+            contents.forEach( content -> content.setBundle(this));
+        }
     }
 
     @Override
