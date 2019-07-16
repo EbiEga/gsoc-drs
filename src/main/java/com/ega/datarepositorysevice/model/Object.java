@@ -22,7 +22,7 @@ import java.util.Objects;
 public class Object {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -47,8 +47,8 @@ public class Object {
     @NotEmpty
     private List<Checksum> checksums;
 
+    @OneToMany(cascade = {CascadeType.ALL})
     @NotEmpty
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "object")
     @ElementCollection
     private List<AccessMethods> accessMethods;
 
@@ -61,9 +61,9 @@ public class Object {
     public Object() {
     }
 
-    public Object(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
+    public Object( String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
-        this.id = id;
+        //this.id = id;
         this.name = name;
         this.size = size;
         this.created = created;
@@ -73,11 +73,22 @@ public class Object {
         this.checksums = checksums;
         checksums.forEach(checksum -> checksum.setObject(this));
         this.accessMethods = accessMethods;
-        accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
+        if (accessMethods != null) {
+            accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
+        }
         this.description = description;
         this.aliases = aliases == null ? null : new ArrayList<>();
     }
 
+//    @PrePersist
+//    @PreUpdate
+//    public void updateAddressAssociation(){
+//        for(AccessMethods address : this.accessMethods){
+//            if(address.getObject()==null) {
+//                address.setObject(this);
+//            }
+//        }
+//    }
     @JsonProperty("id")
     public Long getId() {
         return id;
@@ -167,6 +178,9 @@ public class Object {
 
     public void setAccessMethods(List<AccessMethods> accessMethods) {
         this.accessMethods = accessMethods;
+        if(accessMethods!= null){
+            accessMethods.forEach( method -> {method.setObject(this); });
+        }
     }
 
     public void setDescription(String description) {
@@ -175,6 +189,12 @@ public class Object {
 
     public void setAliases(List<String> aliases) {
         this.aliases = aliases;
+    }
+
+    public void addAccessMethod(AccessMethods methods){
+        if (accessMethods == null && !accessMethods.contains(methods)){
+            accessMethods.add(methods);
+        }
     }
 
     @Override

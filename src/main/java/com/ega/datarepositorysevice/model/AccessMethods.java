@@ -14,7 +14,7 @@ import java.util.Objects;
 @JsonInclude
 public class AccessMethods {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accessId;
 
     @Column(nullable = false)
@@ -26,26 +26,29 @@ public class AccessMethods {
     private String region;
 
 
-    @OneToOne(mappedBy = "methods", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @NotNull
     private AccessURL accessURL;
 
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "object")
     private Object object;
+
 
     public AccessMethods() {
     }
 
 
-    public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL) {
-        this.accessId = access_id;
+    public AccessMethods( AccessMethodType type, String region, AccessURL accessURL) {
+        //this.accessId = access_id;
         this.type = type;
         this.region = region;
         this.accessURL = accessURL;
         accessURL.setMethods(this);
     }
+
+
 
     @JsonProperty("access_id")
     public Long getAccessId() {
@@ -90,6 +93,8 @@ public class AccessMethods {
 
     public void setObject(Object object) {
         this.object = object;
+        object.addAccessMethod(this);
+
     }
 
     @Override
@@ -105,6 +110,6 @@ public class AccessMethods {
     @Override
     public int hashCode() {
 
-        return Objects.hash(getAccessId(), getType(), getRegion(), getAccessURL(), getObject());
+        return Objects.hash(getAccessId(), getType(), getRegion(), getAccessURL());
     }
 }
