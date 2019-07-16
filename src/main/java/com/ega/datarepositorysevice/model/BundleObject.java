@@ -34,7 +34,7 @@ public class BundleObject {
     @ElementCollection
     private List<URI> drsUri;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn
     private Bundle bundle;
 
