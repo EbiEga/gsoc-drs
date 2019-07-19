@@ -32,7 +32,7 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
             return Mono.error(e);
         }
         Optional<AccessMethods> accessMethodsOpt = accessMethodsRepository.findById(id);
-        return accessMethodsOpt.map(Mono::just).orElseGet(Mono::empty);
+        return accessMethodsOpt.map(Mono::just).orElse(Mono.error(new IllegalAccessException("access id not found")));
     }
 
 
