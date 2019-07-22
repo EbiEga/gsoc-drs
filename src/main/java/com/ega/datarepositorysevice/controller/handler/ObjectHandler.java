@@ -6,6 +6,7 @@ import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.service.ObjectService;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -44,10 +45,11 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> deleteObject(ServerRequest request) {
-        if(objectService.deleteObjectById(retrievePathVariable(request,OBJECT_PATH_VARIABLE))){
+        try {
+            objectService.deleteObjectById(retrievePathVariable(request, OBJECT_PATH_VARIABLE)).subscribe();
             return HandlerUtils.returnOkResponse();
-        }else{
-            return HandlerUtils.returnBadRequest(new IllegalArgumentException("The Object is not found"));
+        }catch(EmptyResultDataAccessException e){
+            return HandlerUtils.returnBadRequest(e);
 
         }
     }
