@@ -1,15 +1,14 @@
 package com.ega.datarepositorysevice.service;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 public interface AccessMethodsService {
-    Mono<AccessMethods> getAccessMethodsById(Long id);
+    Mono<AccessMethods> getAccessMethodsById(Long objectId,Long id) ;
 
-    Mono<AccessMethods> saveAccessMethod(Mono<AccessMethods> accessMethods);
+    Mono<AccessMethods> saveAccessMethod(Long objectId, Mono<AccessMethods> accessMethods);
 
-    boolean deleteById(Long id);
+    Mono<Void> deleteById(Long objectId, Long id) ;
 
-    Mono<AccessMethods> updateAccessMethod(Mono<AccessMethods> accessMethodsMono);
+    Mono<AccessMethods> updateAccessMethod(Long objectId,Mono<AccessMethods> accessMethodsMono) ;
 }
