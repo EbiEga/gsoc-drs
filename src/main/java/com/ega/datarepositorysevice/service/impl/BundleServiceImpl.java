@@ -4,6 +4,7 @@ import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.service.BundleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,16 +23,16 @@ public class BundleServiceImpl implements BundleService {
     @Override
     public Mono<Bundle> getBundleById(Long id) {
         Optional<Bundle> bundleOpt = bundleRepository.findById(id);
-        return bundleOpt.map(Mono::just).orElseGet(Mono::empty);
+        return bundleOpt.map(Mono::just).orElse(Mono.error(new EmptyResultDataAccessException("id of bundle is not found",1)));
     }
 
     @Override
-    public boolean deleteBundleById(Long id) {
-        try {
+    public Mono<Void> deleteBundleById(Long id) {
+        try{
             bundleRepository.deleteById(id);
-            return true;
-        }catch (IllegalArgumentException e){
-            return false;
+            return Mono.empty();
+        }catch (EmptyResultDataAccessException e){
+            return Mono.error(e);
         }
     }
 
@@ -46,7 +47,7 @@ public class BundleServiceImpl implements BundleService {
             if(bundleRepository.existsById(bundle.getId())){
                 return bundleRepository.save(bundle);
             }else {
-                throw new IllegalArgumentException("id of bundle is not found");
+                throw new EmptyResultDataAccessException("id of bundle is not found",1);
             }
         });
     }

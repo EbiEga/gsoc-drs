@@ -4,6 +4,7 @@ import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
 import com.ega.datarepositorysevice.service.ObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,21 +23,22 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public Mono<Object> getObjectById(Long id) {
         Optional<Object> objectOpt = objectRepository.findById(id);
-        return objectOpt.map(Mono::just).orElseGet(Mono::empty);
+        return objectOpt.map(Mono::just).orElse(Mono.error(new EmptyResultDataAccessException("id of object is not found" ,1)));
     }
 
     @Override
-    public boolean deleteObjectById(Long id) {
+    public Mono<Void> deleteObjectById(Long id) {
         try{
             objectRepository.deleteById(id);
-            return true;
-        }catch (IllegalArgumentException e){
-            return false;
+            return Mono.empty();
+        }catch (EmptyResultDataAccessException e){
+            return Mono.error(e);
         }
     }
 
     @Override
-    public Mono<Object> saveObject(Mono<Object> objectMono) {
+    public Mono<Object> saveObject(Mono<Object> objectMono)
+    {
         return objectMono.map(objectRepository::save);
     }
 
@@ -46,7 +48,7 @@ public class ObjectServiceImpl implements ObjectService {
             if(objectRepository.existsById(object.getId())){
                 return objectRepository.save(object);
             }else {
-                throw new IllegalArgumentException("id of object is not found");
+                throw new EmptyResultDataAccessException("id of object is not found" ,1);
             }
         });    }
 }
