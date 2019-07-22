@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.ParseException;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class BundleRepositoryTest {
 
     @Autowired
@@ -41,7 +43,7 @@ public class BundleRepositoryTest {
     }
 
     @Test
-    public void getBundleByIdNullTest() throws ParseException {
+    public void getBundleByIdNullTest() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Bundle bundle = new Bundle(Long.parseLong("5"), "string", 23, date,

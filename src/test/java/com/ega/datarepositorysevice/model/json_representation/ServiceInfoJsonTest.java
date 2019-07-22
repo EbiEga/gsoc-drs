@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.ObjectContent;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ResourceUtils;
 
@@ -18,9 +19,9 @@ import java.nio.file.Files;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@JsonTest
 @RunWith(SpringRunner.class)
 @AutoConfigureJsonTesters
+@ActiveProfiles("test")
 public class ServiceInfoJsonTest {
     @Autowired
     private JacksonTester<ServiceInfo> json;

@@ -1,22 +1,21 @@
 package com.ega.datarepositorysevice;
 
 import com.ega.datarepositorysevice.utils.AssumingConnection;
-import com.ega.datarepositorysevice.utils.ConnectionChecker;
+import com.ega.datarepositorysevice.utils.DBConnectionChecker;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = DataRepositoryServiceApplication.class)
 public class DataRepositoryServiceApplicationTests {
 
 	@ClassRule
 	public static AssumingConnection assumingConnection =
-			new AssumingConnection(new ConnectionChecker());
+			new AssumingConnection(new DBConnectionChecker());
 
 	@Test
 	public void contextLoads() {

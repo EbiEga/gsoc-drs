@@ -26,6 +26,7 @@ Requirements: Docker
  ## How to test it:
  Requirements: Maven, JDK 8
  
+  - Add and fill(with EGA credential data) testApplication.properties(from testApplication.template.properties) to  src/test/resources/
   - Run in the root of project:  
   ```mvn test -DtrimStackTrace=false```
     

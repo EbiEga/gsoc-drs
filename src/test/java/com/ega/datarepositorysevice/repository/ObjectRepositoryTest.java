@@ -1,6 +1,5 @@
 package com.ega.datarepositorysevice.repository;
 
-import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.Object;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,9 +7,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -20,6 +19,7 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase
+@ActiveProfiles("test")
 public class ObjectRepositoryTest {
 
     @Autowired
@@ -39,7 +39,7 @@ public class ObjectRepositoryTest {
     }
 
     @Test
-    public void getBundleByIdNullTest() throws ParseException {
+    public void getBundleByIdNullTest() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
         Object object = new Object(Long.parseLong("5"), "string", 0, null, date, "string", "application/json",
