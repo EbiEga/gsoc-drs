@@ -13,12 +13,12 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import static com.ega.datarepositorysevice.controller.HandlerUtils.OBJECT_PATH_VARIABLE;
-import static com.ega.datarepositorysevice.controller.HandlerUtils.retrievePathVariable;
+import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 
 @Component
 public class ObjectHandler {
     private ObjectService objectService;
+
 
     @Autowired
     public ObjectHandler(ObjectService objectService) {
@@ -26,22 +26,17 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> getObject(ServerRequest request) {
-
-        try {
-            Error notFoundError = new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
             Mono<Object> objectMono = objectService
                     .getObjectById(retrievePathVariable(request, OBJECT_PATH_VARIABLE));
-            return HandlerUtils.returnOkResponse(objectMono, notFoundError);
-        } catch (IllegalArgumentException e) {
-            return HandlerUtils.returnBadRequest(e);
-        }
+            return objectMono
+                    .flatMap(HandlerUtils::returnOkResponse)
+                    .onErrorResume(HandlerUtils::returnBadRequest);
 
     }
 
     public Mono<ServerResponse> saveObject(ServerRequest request) {
         Mono<Object> objectMono = objectService.saveObject(request.bodyToMono(Object.class));
-        return HandlerUtils
-                .returnOkResponse(objectMono);
+        return objectMono.flatMap(HandlerUtils::returnOkResponse);
     }
 
     public Mono<ServerResponse> deleteObject(ServerRequest request) {

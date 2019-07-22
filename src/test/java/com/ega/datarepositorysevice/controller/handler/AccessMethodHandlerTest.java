@@ -30,8 +30,8 @@ public class AccessMethodHandlerTest {
         AccessMethodsService accessMethodsService = mock(AccessMethodsService.class);
         accessMethods = new AccessMethods(1L, AccessMethodType.S3,
                 "region", new AccessURL());
-        when(accessMethodsService.getAccessMethodsById(1L)).thenReturn(Mono.just(accessMethods));
-        when(accessMethodsService.getAccessMethodsById(2L)).thenReturn(Mono.empty());
+        when(accessMethodsService.getAccessMethodsById(1L, 1L)).thenReturn(Mono.just(accessMethods));
+        when(accessMethodsService.getAccessMethodsById(1L, 2L)).thenReturn(Mono.empty());
         accessMethodHandler = new AccessMethodHandler(accessMethodsService);
 
     }
@@ -41,6 +41,8 @@ public class AccessMethodHandlerTest {
     public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("1");
+        when(request.pathVariable("object_id")).thenReturn("1");
+
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
@@ -49,6 +51,8 @@ public class AccessMethodHandlerTest {
     public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("1");
+
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
     }

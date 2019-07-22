@@ -37,6 +37,12 @@ public class HandlerUtils {
                 .body(BodyInserters.fromObject(accessMethods)));
     }
 
+    public static <T> Mono<ServerResponse> returnOkResponse(T object){
+        return ServerResponse.ok()
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(object));
+    }
+
     public static  Mono<ServerResponse> returnOkResponse(){
         return ServerResponse.ok().body(BodyInserters.empty());
     }
