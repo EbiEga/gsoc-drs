@@ -41,7 +41,7 @@ public class HandlerUtils {
         return ServerResponse.ok().body(BodyInserters.empty());
     }
 
-    public static Mono<ServerResponse> returnBadRequest(IllegalArgumentException e){
+    public static Mono<ServerResponse> returnBadRequest(Throwable e){
         String errorMessage = String.format("The request is malformed. Reason: %S", e.getMessage());
         Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
         return ServerResponse.badRequest()
