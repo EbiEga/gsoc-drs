@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 
@@ -58,7 +59,7 @@ public class AccessMethodsServiceIntegrationTest {
         Assert.assertEquals(unsavedAccessMethodsTestObject,accessMethods);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testSavingError(){
         Mono<AccessMethods> accessMethodsMono = accessMethodsService.saveAccessMethod(0L,Mono.just(unsavedAccessMethodsTestObject));
         AccessMethods accessMethods = accessMethodsMono.block();
@@ -78,7 +79,7 @@ public class AccessMethodsServiceIntegrationTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testUpdatingObjectNotFound(){
         Mono<AccessMethods> accessMethodsMono = accessMethodsService.saveAccessMethod(containingObject.getId(),Mono.just(unsavedAccessMethodsTestObject));
         AccessMethods accessMethods = accessMethodsMono.block();
@@ -89,7 +90,7 @@ public class AccessMethodsServiceIntegrationTest {
         Assert.assertEquals(accessMethods,updatedAccessMethodsMono.block());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testUpdatingAccessNotFound(){
         Mono<AccessMethods> accessMethodsMono = accessMethodsService.saveAccessMethod(containingObject.getId(),Mono.just(unsavedAccessMethodsTestObject));
         AccessMethods accessMethods = accessMethodsMono.block();
@@ -105,20 +106,20 @@ public class AccessMethodsServiceIntegrationTest {
     public void testDeleting(){
         Mono<AccessMethods> accessMethodsMono = accessMethodsService.saveAccessMethod(containingObject.getId(),Mono.just(unsavedAccessMethodsTestObject));
         AccessMethods accessMethods = accessMethodsMono.block();
-        Assert.assertTrue(accessMethodsService.deleteById(containingObject.getId(),accessMethods.getAccessId()).block());
+        accessMethodsService.deleteById(containingObject.getId(),accessMethods.getAccessId());
         Assert.assertFalse(accessMethodsRepository.existsById(unsavedAccessMethodsTestObject.getAccessId()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testDeletingAccessMethodNotFound(){
-        Mono<Boolean> mono = accessMethodsService.deleteById(containingObject.getId(),0L);
+        Mono<Void> mono = accessMethodsService.deleteById(containingObject.getId(),0L);
         mono.block();
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testDeletingObjectNotFound(){
-        Mono<Boolean> mono = accessMethodsService.deleteById(0L,0L);
+        Mono<Void> mono = accessMethodsService.deleteById(0L,0L);
         mono.block();
     }
 
@@ -135,7 +136,7 @@ public class AccessMethodsServiceIntegrationTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testEmptyValue() {
         Mono<AccessMethods> accessMethod = accessMethodsService.getAccessMethodsById(containingObject.getId(), 0L);
         accessMethod.block();

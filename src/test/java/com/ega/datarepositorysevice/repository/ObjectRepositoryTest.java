@@ -1,7 +1,9 @@
 package com.ega.datarepositorysevice.repository;
 
 import com.ega.datarepositorysevice.model.Bundle;
+import com.ega.datarepositorysevice.model.Checksum;
 import com.ega.datarepositorysevice.model.Object;
+import com.ega.datarepositorysevice.utils.TestObjectCreator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,11 +12,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.validation.ConstraintViolationException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -29,16 +33,14 @@ public class ObjectRepositoryTest {
     public void getBundleByIdTest() {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-        Object object = new Object(1L, "string", 0, null, date, "string", "application/json",
-                new ArrayList<>(), new ArrayList<>(), "string", null);
+        Object object = TestObjectCreator.getObject();
         object = objectRepository.save(object);
         Object responseObject = objectRepository.findById(object.getId()).get();
-        Assert.assertEquals(object.getId(), responseObject.getId());
-        Assert.assertEquals("string", responseObject.getName());
-        Assert.assertEquals(0, responseObject.getSize());
+        Assert.assertEquals(object, responseObject);
+
     }
 
-    @Test
+    @Test(expected = ConstraintViolationException.class)
     public void getBundleByIdNullTest() throws ParseException {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));

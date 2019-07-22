@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.validation.ConstraintViolationException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -29,16 +30,15 @@ public class AccessMethodRepositoryTest {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL("http//www.string.com", map);
-        AccessMethods accessMethods = new AccessMethods(1L, AccessMethodType.S3, "region", accessURL);
+        AccessURL accessURL = new AccessURL("https://yandex.ru", map);
+        AccessMethods accessMethods = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
         accessMethods = accessMethodsRepository.save(accessMethods);
         AccessMethods responseAccessMethods = accessMethodsRepository.findById(accessMethods.getAccessId()).get();
-        Assert.assertEquals(accessMethods.getAccessId(), responseAccessMethods.getAccessId());
-        Assert.assertEquals("region", responseAccessMethods.getRegion());
-        Assert.assertEquals("s3", responseAccessMethods.getType());
+        Assert.assertEquals(accessMethods, responseAccessMethods);
+
     }
 
-    @Test
+    @Test(expected = ConstraintViolationException.class)
     public void getBundleByIdNullTest() throws ParseException {
         LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
         Map<String, String> map = new HashMap<>();

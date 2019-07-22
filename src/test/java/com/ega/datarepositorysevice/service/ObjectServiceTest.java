@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 
@@ -55,7 +56,7 @@ public class ObjectServiceTest {
 
     }
 
-    @Test
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testEmptyValue() {
         Mono<Object> bundleMono = objectService.getObjectById(2L);
         Optional<Object> bundleOptional = bundleMono.blockOptional();
