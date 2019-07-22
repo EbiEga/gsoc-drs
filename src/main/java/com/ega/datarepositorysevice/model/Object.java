@@ -61,9 +61,9 @@ public class Object {
     public Object() {
     }
 
-    public Object( String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
+    public Object(Long id, String name, int size, OffsetDateTime created, OffsetDateTime updated, String version, String mime_type,
                   List<Checksum> checksums, List<AccessMethods> accessMethods, String description, List<String> aliases) {
-        //this.id = id;
+        this.id = id;
         this.name = name;
         this.size = size;
         this.created = created;

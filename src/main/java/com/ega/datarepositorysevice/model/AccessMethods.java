@@ -40,8 +40,8 @@ public class AccessMethods {
     }
 
 
-    public AccessMethods( AccessMethodType type, String region, AccessURL accessURL) {
-        //this.accessId = access_id;
+    public AccessMethods( Long access_id, AccessMethodType type, String region, AccessURL accessURL) {
+        this.accessId = access_id;
         this.type = type;
         this.region = region;
         this.accessURL = accessURL;
