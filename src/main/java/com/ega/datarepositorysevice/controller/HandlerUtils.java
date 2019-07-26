@@ -17,8 +17,9 @@ public class HandlerUtils {
     public static final String OBJECT_PATH_VARIABLE = "object_id";
 
     public static Mono<Long> retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException{
-        String id = request.pathVariable(pathVariable);
-        return Mono.just(Long.parseLong(id));
+        return Mono.just(request.pathVariable(pathVariable))
+                .map(Long::parseLong);
+
     }
 
     public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError){
@@ -46,7 +47,7 @@ public class HandlerUtils {
     }
 
     public static  Mono<ServerResponse> returnOkResponse(){
-        return ServerResponse.ok().body(BodyInserters.empty());
+        return ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.empty());
     }
 
     public static Mono<ServerResponse> returnBadRequest(Throwable e){
