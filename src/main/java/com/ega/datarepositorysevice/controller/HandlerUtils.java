@@ -7,6 +7,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public class HandlerUtils {
@@ -14,9 +16,9 @@ public class HandlerUtils {
     public static final String BUNDLE_PATH_VARIABLE = "bundle_id";
     public static final String OBJECT_PATH_VARIABLE = "object_id";
 
-    public static Long retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException{
+    public static Mono<Long> retrievePathVariable(ServerRequest request, String pathVariable) throws IllegalArgumentException{
         String id = request.pathVariable(pathVariable);
-        return Long.parseLong(id);
+        return Mono.just(Long.parseLong(id));
     }
 
     public static <T> Mono<ServerResponse> returnOkResponse(Mono<T> mono, Error notFoundError){
@@ -52,6 +54,13 @@ public class HandlerUtils {
         Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
         return ServerResponse.badRequest()
                 .body(BodyInserters.fromObject(badRequestError));
+    }
+
+    public static Mono<ServerResponse> returnNotFound(Throwable e){
+        String errorMessage = String.format(" Reason: %S", e.getMessage());
+        Error notFoundError = new Error(errorMessage, HttpStatus.NOT_FOUND);
+        return ServerResponse.status(HttpStatus.NOT_FOUND)
+                .body(BodyInserters.fromObject(notFoundError));
     }
 
 
