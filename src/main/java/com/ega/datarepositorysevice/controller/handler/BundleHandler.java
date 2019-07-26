@@ -13,9 +13,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import static com.ega.datarepositorysevice.controller.HandlerUtils.BUNDLE_PATH_VARIABLE;
-import static com.ega.datarepositorysevice.controller.HandlerUtils.OBJECT_PATH_VARIABLE;
-import static com.ega.datarepositorysevice.controller.HandlerUtils.retrievePathVariable;
+import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 
 @Component
 public class BundleHandler {
@@ -27,42 +25,44 @@ public class BundleHandler {
     }
 
     public Mono<ServerResponse> getBundle(ServerRequest request) {
-        try {
-            Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);
+        Mono<Long> monoParameter =  retrievePathVariable(request, BUNDLE_PATH_VARIABLE);
+        return monoParameter.flatMap(parameter->{
             Mono<Bundle> bundleMono = bundleService
-                    .getBundleById(retrievePathVariable(request, BUNDLE_PATH_VARIABLE));
-            return HandlerUtils.returnOkResponse(bundleMono, notFoundError);
-        } catch (IllegalArgumentException e) {
-            return HandlerUtils.returnBadRequest(e);
-        }
+                    .getBundleById(parameter);
+            return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+                    .onErrorResume(HandlerUtils::returnNotFound);
+        }).onErrorResume(HandlerUtils::returnBadRequest);
 
     }
 
     public Mono<ServerResponse> saveBundle(ServerRequest request) {
-        Mono<Bundle> bundleMono = bundleService.saveBundle(request.bodyToMono(Bundle.class));
-        return HandlerUtils
-                .returnOkResponse(bundleMono);
+        Mono<Bundle> bundleMono = request.bodyToMono(Bundle.class);
+        return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+                .onErrorResume(HandlerUtils::returnBadRequest)
+                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Body is empty")));
+
     }
 
     public Mono<ServerResponse> deleteBundle(ServerRequest request) {
-        try {
-            bundleService.deleteBundleById(retrievePathVariable(request, OBJECT_PATH_VARIABLE)).subscribe();
-            return HandlerUtils.returnOkResponse();
-        }catch(EmptyResultDataAccessException e){
-            return HandlerUtils.returnBadRequest(e);
-
-        }
+        Mono<Long> monoParameter = retrievePathVariable(request, BUNDLE_PATH_VARIABLE);
+       return monoParameter
+                .flatMap(parameter->{
+                    Mono<Void> bundleMono = bundleService.deleteBundleById(parameter);
+                    return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+                            .onErrorResume(HandlerUtils::returnNotFound);
+                })
+                .onErrorResume(HandlerUtils::returnBadRequest);
     }
 
     public Mono<ServerResponse> updateBundle(ServerRequest request) {
-        try {
-            Error notFoundError = new Error("The requested Bundle wasn't found", HttpStatus.NOT_FOUND);
-
-            Mono<Bundle> bundleMono = bundleService.updateBundle(request.bodyToMono(Bundle.class));
-            return HandlerUtils.returnOkResponse(bundleMono, notFoundError);
-        }catch (IllegalArgumentException e){
-            return HandlerUtils.returnBadRequest(e);
-        }
+        Mono<Long> monoParameter = retrievePathVariable(request, BUNDLE_PATH_VARIABLE);
+        return monoParameter
+                .flatMap(parameter->{
+                    Mono<Bundle> bundleMono = bundleService.updateBundle(request.bodyToMono(Bundle.class));
+                    return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+                            .onErrorResume(HandlerUtils::returnNotFound);
+                })
+                .onErrorResume(HandlerUtils::returnBadRequest);
     }
 
 }
