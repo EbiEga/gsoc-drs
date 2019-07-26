@@ -13,15 +13,21 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 
 @Component
 public class BundleHandler {
     private BundleService bundleService;
-
+    private Validator validator;
     @Autowired
     public BundleHandler(BundleService bundleService) {
         this.bundleService = bundleService;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     public Mono<ServerResponse> getBundle(ServerRequest request) {

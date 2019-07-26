@@ -12,15 +12,22 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 
 @Component
 public class AccessMethodHandler {
     private AccessMethodsService accessMethodsService;
+    private Validator validator;
 
     @Autowired
     public AccessMethodHandler(AccessMethodsService accessMethodsService) {
         this.accessMethodsService = accessMethodsService;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     public Mono<ServerResponse> getAccess(ServerRequest request) {

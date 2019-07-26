@@ -13,6 +13,9 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.logging.Handler;
 
 import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
@@ -20,11 +23,15 @@ import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 @Component
 public class ObjectHandler {
     private ObjectService objectService;
+    private Validator validator;
 
 
     @Autowired
     public ObjectHandler(ObjectService objectService) {
+
         this.objectService = objectService;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     public Mono<ServerResponse> getObject(ServerRequest request) {
