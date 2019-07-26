@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.logging.Handler;
+
 import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
 
 @Component
@@ -26,36 +28,46 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> getObject(ServerRequest request) {
-            Mono<Object> objectMono = objectService
-                    .getObjectById(retrievePathVariable(request, OBJECT_PATH_VARIABLE));
-            return objectMono
-                    .flatMap(HandlerUtils::returnOkResponse)
-                    .onErrorResume(HandlerUtils::returnBadRequest);
+        Mono<Long> monoParameter = retrievePathVariable(request, OBJECT_PATH_VARIABLE);
+        return monoParameter
+                .flatMap(parameter-> {
+                    Mono<Object> objectMono = objectService.getObjectById(parameter);
+                    return objectMono
+                            .flatMap(HandlerUtils::returnOkResponse)
+                            .onErrorResume(HandlerUtils::returnNotFound);
+                })
+                .onErrorResume(HandlerUtils::returnBadRequest);
 
     }
 
     public Mono<ServerResponse> saveObject(ServerRequest request) {
-        Mono<Object> objectMono = objectService.saveObject(request.bodyToMono(Object.class));
-        return objectMono.flatMap(HandlerUtils::returnOkResponse);
+        Mono<Object> objectMono = request.bodyToMono(Object.class);
+        return objectMono.flatMap(object -> {
+            Mono<Object> savedObject = objectService.saveObject(Mono.just(object));
+            return savedObject.flatMap(HandlerUtils::returnOkResponse)
+                    .onErrorResume(HandlerUtils::returnBadRequest);
+        }).onErrorResume(HandlerUtils::returnBadRequest);
+
     }
 
     public Mono<ServerResponse> deleteObject(ServerRequest request) {
-        try {
-            objectService.deleteObjectById(retrievePathVariable(request, OBJECT_PATH_VARIABLE)).subscribe();
-            return HandlerUtils.returnOkResponse();
-        }catch(EmptyResultDataAccessException e){
-            return HandlerUtils.returnBadRequest(e);
+            Mono<Long> monoParameter = retrievePathVariable(request, OBJECT_PATH_VARIABLE);
+            return monoParameter
+                    .flatMap(parameter->{
+                        Mono<Void> objectMono = objectService.deleteObjectById(parameter);
+                        return objectMono
+                                .flatMap(HandlerUtils::returnOkResponse)
+                                .onErrorResume(HandlerUtils::returnNotFound);
+                    })
+                    .onErrorResume(HandlerUtils::returnBadRequest);
 
-        }
     }
 
     public Mono<ServerResponse> updateObject(ServerRequest request) {
-        try {
-            Error notFoundError =  new Error("The requested Object wasn't found", HttpStatus.NOT_FOUND);
             Mono<Object> objectMono = objectService.updateObject(request.bodyToMono(Object.class));
-            return HandlerUtils.returnOkResponse(objectMono, notFoundError);
-        }catch (IllegalArgumentException e){
-            return HandlerUtils.returnBadRequest(e);
-        }
+            return objectMono
+                    .flatMap(HandlerUtils::returnOkResponse)
+                    .onErrorResume(HandlerUtils::returnNotFound);
+
     }
 }
