@@ -108,8 +108,8 @@ public class ObjectHandlerIntegrationTest {
 
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn(object.getId().toString());
-
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.OK);
+        Mono<ServerResponse> responseMono = objectHandler.deleteObject(request);
+        Assert.assertEquals(responseMono.block().statusCode(), HttpStatus.OK);
         Assert.assertTrue(objectRepository.existsById(1L));
 
     }

@@ -31,6 +31,7 @@ public class ObjectHandler {
         Mono<Long> monoParameter = retrievePathVariable(request, OBJECT_PATH_VARIABLE);
         return monoParameter
                 .flatMap(parameter-> {
+
                     Mono<Object> objectMono = objectService.getObjectById(parameter);
                     return objectMono
                             .flatMap(HandlerUtils::returnOkResponse)
@@ -54,9 +55,10 @@ public class ObjectHandler {
             Mono<Long> monoParameter = retrievePathVariable(request, OBJECT_PATH_VARIABLE);
             return monoParameter
                     .flatMap(parameter->{
+                        System.out.println(parameter);
                         Mono<Void> objectMono = objectService.deleteObjectById(parameter);
                         return objectMono
-                                .flatMap(HandlerUtils::returnOkResponse)
+                                .then(HandlerUtils.returnOkResponse())
                                 .onErrorResume(HandlerUtils::returnNotFound);
                     })
                     .onErrorResume(HandlerUtils::returnBadRequest);
