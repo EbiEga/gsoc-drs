@@ -13,9 +13,11 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.Set;
 import java.util.logging.Handler;
 
 import static com.ega.datarepositorysevice.controller.HandlerUtils.*;
@@ -51,10 +53,15 @@ public class ObjectHandler {
     public Mono<ServerResponse> saveObject(ServerRequest request) {
         Mono<Object> objectMono = request.bodyToMono(Object.class);
         return objectMono.flatMap(object -> {
+            Set<ConstraintViolation<Object>> constraints = validator.validate(object);
+            if(!constraints.isEmpty()){
+                return HandlerUtils.returnBadRequest(constraints);
+            }
             Mono<Object> savedObject = objectService.saveObject(Mono.just(object));
             return savedObject.flatMap(HandlerUtils::returnOkResponse)
                     .onErrorResume(HandlerUtils::returnBadRequest);
-        }).onErrorResume(HandlerUtils::returnBadRequest);
+        }).onErrorResume(HandlerUtils::returnBadRequest)
+                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
 
     }
 
@@ -73,10 +80,21 @@ public class ObjectHandler {
     }
 
     public Mono<ServerResponse> updateObject(ServerRequest request) {
-            Mono<Object> objectMono = objectService.updateObject(request.bodyToMono(Object.class));
-            return objectMono
-                    .flatMap(HandlerUtils::returnOkResponse)
-                    .onErrorResume(HandlerUtils::returnNotFound);
+            Mono<Object> objectMono = request.bodyToMono(Object.class);
+            return objectMono.flatMap(object -> {
+                Set<ConstraintViolation<Object>> constraints = validator.validate(object);
+                if(!constraints.isEmpty()){
+                    return HandlerUtils.returnBadRequest(constraints);
+                }
+                Mono<Object> savedObjectMono = objectService.updateObject(Mono.just(object));
+                return savedObjectMono
+                        .flatMap(HandlerUtils::returnOkResponse)
+                        .onErrorResume(HandlerUtils::returnNotFound)
+                        .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+            })
+                    .onErrorResume(HandlerUtils::returnBadRequest)
+                    .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+
 
     }
 }
