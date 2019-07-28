@@ -19,10 +19,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TestObjectCreator {
 
@@ -44,7 +41,7 @@ public class TestObjectCreator {
     }
 
     public static AccessMethodHandler getAccessMethodHandler(){
-        return new AccessMethodHandler(accessMethodsService);
+        return new AccessMethodHandler(accessMethodsService, objectService);
     }
 
     public static BundleHandler getBundleHandler(){
@@ -71,9 +68,9 @@ public class TestObjectCreator {
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
         AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
         AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
-
+        ArrayList<AccessMethods> accessMethodsArrayList = new ArrayList<>(Arrays.asList(accessMethodsTestObject));
         return new Object(null, "string", 0, date, date, "string", "application/json",
-                Arrays.asList(new Checksum("s342ing", ChecksumType.MD5_Code)), Arrays.asList(accessMethodsTestObject), "string", null);
+                Arrays.asList(new Checksum("s342ing", ChecksumType.MD5_Code)), accessMethodsArrayList, "string", null);
     }
 
     public static Bundle getBundle() throws URI.MalformedURIException {

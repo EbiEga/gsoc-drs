@@ -47,7 +47,7 @@ public class Object {
     @NotEmpty
     private List<Checksum> checksums;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
     @NotEmpty
     @ElementCollection
     private List<AccessMethods> accessMethods;
@@ -192,8 +192,14 @@ public class Object {
     }
 
     public void addAccessMethod(AccessMethods methods){
-        if (accessMethods == null && !accessMethods.contains(methods)){
+        if (accessMethods != null && !accessMethods.contains(methods)){
             accessMethods.add(methods);
+        }
+    }
+
+    public void deleteAccessMethod(Long id){
+        if (accessMethods != null){
+            accessMethods.removeIf(accessMethod -> accessMethod.getAccessId().equals(id));
         }
     }
 
