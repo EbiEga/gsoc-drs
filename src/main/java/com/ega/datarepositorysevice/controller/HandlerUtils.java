@@ -7,7 +7,10 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import javax.validation.ConstraintViolation;
+import java.net.URI;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -64,6 +67,24 @@ public class HandlerUtils {
                 .body(BodyInserters.fromObject(notFoundError));
     }
 
+    public static <T> Mono<ServerResponse> returnBadRequest(Set<ConstraintViolation<T>> constraintViolations){
+        String errorMessage = String.format("The request is malformed. Reason: %S", constraintViolations.toString());
+        Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
+        return ServerResponse.badRequest()
+                .body(BodyInserters.fromObject(badRequestError));
+    }
+
+    public static <T> Mono<ServerResponse> returnCreatedResponse(Mono<T> mono){
+        return mono.flatMap(accessMethods -> ServerResponse.created(URI.create(""))
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(accessMethods)));
+    }
+
+    public static <T> Mono<ServerResponse> returnCreatedResponse(T mono){
+        return ServerResponse.created(URI.create(""))
+                .contentType(APPLICATION_JSON)
+                .body(BodyInserters.fromObject(mono));
+    }
 
 
 }
