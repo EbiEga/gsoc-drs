@@ -73,7 +73,7 @@ public class ObjectHandlerIntegrationTest {
     @Test
     public void getNotFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("object_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("0");
         ServerResponse response = objectHandler.getObject(request).block();
         Assert.assertEquals(response.statusCode(), HttpStatus.NOT_FOUND);
     }
@@ -121,7 +121,7 @@ public class ObjectHandlerIntegrationTest {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn(object.getId().toString());
         when(request.bodyToMono(Object.class)).thenReturn(Mono.just(object));
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(objectHandler.updateObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -130,17 +130,21 @@ public class ObjectHandlerIntegrationTest {
 
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn(object.getId().toString());
+        when(request.bodyToMono(Object.class)).thenReturn(Mono.empty());
 
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(objectHandler.updateObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
 
     }
 
     @Test
     public void updateNotFoundTest(){
+        Object object = saveObject();
+        object.setId(0L);
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("object_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("0");
+        when(request.bodyToMono(Object.class)).thenReturn(Mono.just(object));
 
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(objectHandler.updateObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
 
     }
 
@@ -158,32 +162,33 @@ public class ObjectHandlerIntegrationTest {
 
     @Test
     public void saveOkTest(){
-        Object object = saveObject();
+        Object object = TestObjectCreator.getObject();
 
         ServerRequest request = mock(ServerRequest.class);
         when(request.bodyToMono(Object.class)).thenReturn(Mono.just(object));
 
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.OK);
+        Assert.assertEquals(objectHandler.saveObject(request).block().statusCode(), HttpStatus.OK);
 
     }
 
     @Test
     public void saveBadRequestTest() {
-        Object object = saveObject();
+        Object object = TestObjectCreator.getObject();
         object.setAccessMethods(new ArrayList<>());
 
         ServerRequest request = mock(ServerRequest.class);
         when(request.bodyToMono(Object.class)).thenReturn(Mono.just(object));
 
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(objectHandler.saveObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
 
     }
 
     @Test
     public void saveEmptyBodyTest() {
         ServerRequest request = mock(ServerRequest.class);
+        when(request.bodyToMono(Object.class)).thenReturn(Mono.empty());
 
-        Assert.assertEquals(objectHandler.deleteObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(objectHandler.saveObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
 
     }
 

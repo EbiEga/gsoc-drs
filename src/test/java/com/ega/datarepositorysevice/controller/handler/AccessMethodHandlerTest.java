@@ -2,8 +2,10 @@ package com.ega.datarepositorysevice.controller.handler;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.AccessURL;
+import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
+import com.ega.datarepositorysevice.service.ObjectService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +30,12 @@ public class AccessMethodHandlerTest {
     @Before
     public void PrepareEnviroment() {
         AccessMethodsService accessMethodsService = mock(AccessMethodsService.class);
+        ObjectService objectService = mock(ObjectService.class);
         accessMethods = new AccessMethods(1L, AccessMethodType.S3,
                 "region", new AccessURL());
         when(accessMethodsService.getAccessMethodsById(1L, 1L)).thenReturn(Mono.just(accessMethods));
         when(accessMethodsService.getAccessMethodsById(1L, 2L)).thenReturn(Mono.empty());
-        accessMethodHandler = new AccessMethodHandler(accessMethodsService);
+        accessMethodHandler = new AccessMethodHandler(accessMethodsService, objectService);
 
     }
 

@@ -128,6 +128,7 @@ public class BundleHandlerIntegrationTest {
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("bundle_id")).thenReturn("id");
+        when(serverRequest.bodyToMono(Bundle.class)).thenReturn(Mono.empty());
 
         Assert.assertEquals(bundleHandler.updateBundle(serverRequest).block().statusCode(), HttpStatus.BAD_REQUEST);
 
@@ -166,6 +167,7 @@ public class BundleHandlerIntegrationTest {
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("bundle_id")).thenReturn(bundle.getId().toString());
+        when(serverRequest.bodyToMono(Bundle.class)).thenReturn(Mono.just(bundle));
 
         Assert.assertEquals(bundleHandler.updateBundle(serverRequest).block().statusCode(), HttpStatus.OK);
 

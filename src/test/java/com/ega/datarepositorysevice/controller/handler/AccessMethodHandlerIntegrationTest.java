@@ -116,7 +116,7 @@ public class AccessMethodHandlerIntegrationTest {
         Object object = saveObjectWIthAccessMethod();
 
         ServerRequest serverRequest = mock(ServerRequest.class);
-        when(serverRequest.pathVariable("access_id")).thenReturn("id");
+        when(serverRequest.pathVariable("access_id")).thenReturn("0");
         when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
 
         Mono<ServerResponse> actualMono = accessMethodHandler.deleteAccess(serverRequest);
@@ -126,15 +126,15 @@ public class AccessMethodHandlerIntegrationTest {
     @Test
     public void deleteObjectNotFoundTest(){
         ServerRequest serverRequest = mock(ServerRequest.class);
-        when(serverRequest.pathVariable("access_id")).thenReturn("id");
-        when(serverRequest.pathVariable("object_id")).thenReturn("id");
+        when(serverRequest.pathVariable("access_id")).thenReturn("0");
+        when(serverRequest.pathVariable("object_id")).thenReturn("0");
 
         Mono<ServerResponse> actualMono = accessMethodHandler.deleteAccess(serverRequest);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void deleteOkTest(){
+    public void deleteLastAccessMethodTest(){
         Object object = saveObjectWIthAccessMethod();
         AccessMethods accessMethods = object.getAccessMethods().get(0);
 
@@ -143,7 +143,25 @@ public class AccessMethodHandlerIntegrationTest {
         when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods.getAccessId().toString());
 
         Mono<ServerResponse> actualMono = accessMethodHandler.deleteAccess(serverRequest);
-        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void deleteOkTest(){
+        Object unsavedObject = TestObjectCreator.getObject();
+        unsavedObject.addAccessMethod(TestObjectCreator.getAccessMethods());
+        AccessMethods secondAccessMethods = TestObjectCreator.getAccessMethods();
+        secondAccessMethods.setRegion("new region");
+        unsavedObject.addAccessMethod(secondAccessMethods);
+        Object object = objectRepository.save(unsavedObject);
+        AccessMethods accessMethods = object.getAccessMethods().get(0);
+
+        ServerRequest serverRequest = mock(ServerRequest.class);
+        when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
+        when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods.getAccessId().toString());
+
+        Mono<ServerResponse> actualMono = accessMethodHandler.deleteAccess(serverRequest);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -192,7 +210,6 @@ public class AccessMethodHandlerIntegrationTest {
     public void updateOkTest(){
         Object object = saveObjectWIthAccessMethod();
         AccessMethods accessMethods = object.getAccessMethods().get(0);
-        accessMethods.setAccessURL(null);
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
@@ -239,7 +256,6 @@ public class AccessMethodHandlerIntegrationTest {
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
     }
 
-    @Test
     public Object saveObjectWIthAccessMethod(){
         Object object = TestObjectCreator.getObject();
         return objectRepository.save(object);
