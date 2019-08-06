@@ -10,6 +10,7 @@ import com.sun.org.apache.xml.internal.utils.URI;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
@@ -38,7 +39,7 @@ public class BundleHandlerTest {
         ), "string", Arrays.asList("string"), Arrays.asList(bundleObject));
 
         when(bundleService.getBundleById(1L)).thenReturn(Mono.just(bundleTestObject));
-        when(bundleService.getBundleById(2L)).thenReturn(Mono.empty());
+        when(bundleService.getBundleById(2L)).thenReturn(Mono.error(new EmptyResultDataAccessException(1)));
         bundleHandler = new BundleHandler(bundleService);
 
 

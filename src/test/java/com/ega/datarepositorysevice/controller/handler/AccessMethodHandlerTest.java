@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -34,7 +35,7 @@ public class AccessMethodHandlerTest {
         accessMethods = new AccessMethods(1L, AccessMethodType.S3,
                 "region", new AccessURL());
         when(accessMethodsService.getAccessMethodsById(1L, 1L)).thenReturn(Mono.just(accessMethods));
-        when(accessMethodsService.getAccessMethodsById(1L, 2L)).thenReturn(Mono.empty());
+        when(accessMethodsService.getAccessMethodsById(1L, 2L)).thenReturn(Mono.error(new EmptyResultDataAccessException(1)));
         accessMethodHandler = new AccessMethodHandler(accessMethodsService, objectService);
 
     }
