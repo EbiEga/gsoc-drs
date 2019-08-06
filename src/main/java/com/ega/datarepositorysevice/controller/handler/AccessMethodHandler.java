@@ -55,12 +55,14 @@ public class AccessMethodHandler {
             Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body->{
                 Set<ConstraintViolation<AccessMethods>> constraintViolations = validator.validate(body);
                 if(!constraintViolations.isEmpty()){
-                    return Mono.error(new IllegalArgumentException(constraintViolations.toString()));
+                    return Mono.error(new IllegalArgumentException(HandlerUtils.generateErrorMessageFromConstraints(constraintViolations)));
                 }
                 return accessMethodsService.saveAccessMethod(parameter, Mono.just(body));
-            });
-            return accessMethodsMono.flatMap(HandlerUtils::returnOkResponse)
-                    .onErrorResume(HandlerUtils::returnNotFound);
+            }).switchIfEmpty(Mono.empty());
+            return accessMethodsMono.flatMap(HandlerUtils::returnCreatedResponse)
+                    .onErrorResume(HandlerUtils::handleError)
+                    .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+
         })
                 .onErrorResume(HandlerUtils::returnBadRequest);
 
@@ -72,35 +74,22 @@ public class AccessMethodHandler {
         return requestParameters.flatMap(parameters -> {
             Long objectId = parameters.getT1();
             Long accessId = parameters.getT2();
-            Mono<AccessMethods> accessMethodsMono = accessMethodsService.getAccessMethodsById(objectId,accessId);
-            Mono<AccessMethods> a = accessMethodsMono.flatMap((accessMethods1 ->{
-                Object getObject = accessMethods1.getObject();
-                getObject.deleteAccessMethod(accessId);
-                accessMethods1.setObject(getObject);
-                System.out.println("________");
-                System.out.println(accessMethods1.getObject().getAccessMethods().size());
-                System.out.println("________");
-
-                return accessMethodsService.updateAccessMethod(objectId,Mono.just(accessMethods1));
-            })).onErrorResume(e->{
-                System.out.println(e);
-                return Mono.error(e);
-            });
             Mono<Object> object = objectService.getObjectById(objectId);
-            Mono<Object> cObject = objectService.updateObject(object.map(object1 -> {object1.deleteAccessMethod(accessId);
-            return object1;}));
-            Object test = cObject.block();
-            test.deleteAccessMethod(accessId);
-            Mono<Object> testMono = objectService.updateObject(Mono.just(test));
+            Object test = object.block();
+            if(test.getAccessMethods().size()<=1){
+                return HandlerUtils.returnBadRequest(new IllegalArgumentException("AccessMethods list of given object can't be empty"));
 
-            Mono<Void> accessMethods = accessMethodsService.deleteById(objectId,accessId);
+            }
+            boolean deleted = test.deleteAccessMethod(accessId);
+            if (!deleted){
+                return HandlerUtils.returnNotFound(new IllegalArgumentException("id not found"));
+            }
+            Mono<Object> testMono = objectService.updateObject(Mono.just(test));
             return testMono
                     .then(HandlerUtils.returnOkResponse())
                     .onErrorResume(HandlerUtils::returnNotFound);
         })
-                .onErrorResume(e->{
-                    System.out.println(e.getMessage());
-                    return HandlerUtils.returnBadRequest(e);});
+                .onErrorResume(HandlerUtils::handleError);
     }
 
     public Mono<ServerResponse> updateAccess(ServerRequest request) {
@@ -110,16 +99,18 @@ public class AccessMethodHandler {
             Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body->{
                 Set<ConstraintViolation<AccessMethods>> constraintViolations = validator.validate(body);
                 if(!constraintViolations.isEmpty()){
-                    return Mono.error(new IllegalArgumentException(constraintViolations.toString()));
+                    return Mono.error(new IllegalArgumentException(HandlerUtils.generateErrorMessageFromConstraints(constraintViolations)));
                 }
+                body.setAccessId(parameters.getT2());
                 return accessMethodsService
                         .updateAccessMethod(parameters.getT1(), Mono.just(body));
-            });
+            })
+                    .switchIfEmpty(Mono.error(new IllegalArgumentException("Request body is empty")));
 
             return accessMethodsMono.flatMap(HandlerUtils::returnOkResponse)
-                    .onErrorResume(HandlerUtils::returnNotFound);
+                    .onErrorResume(HandlerUtils::handleError);
         })
-                .onErrorResume(HandlerUtils::returnBadRequest);
+                .onErrorResume(HandlerUtils::handleError);
 
 
     }
