@@ -48,6 +48,7 @@ public class Error {
 
     @Override
     public boolean equals(java.lang.Object o) {
+        System.out.println("jkafsdf");
         if (this == o) return true;
         if (!(o instanceof Error)) return false;
         Error error = (Error) o;

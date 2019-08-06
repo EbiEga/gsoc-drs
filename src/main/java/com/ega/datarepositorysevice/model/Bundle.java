@@ -24,11 +24,11 @@ public class Bundle {
     private String name;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "size must not be null")
     private int size;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "created must not be null")
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
@@ -40,7 +40,7 @@ public class Bundle {
 
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
-    @NotEmpty
+    @NotEmpty(message = "checksums must contains at least one element")
     @ElementCollection
     private List<Checksum> checksums;
 
@@ -50,7 +50,7 @@ public class Bundle {
     private List<String> aliases;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
-    @NotEmpty
+    @NotEmpty(message = "contents must contains at least one element")
     @ElementCollection
     private List<BundleObject> contents;
 

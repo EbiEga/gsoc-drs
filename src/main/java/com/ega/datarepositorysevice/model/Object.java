@@ -28,11 +28,11 @@ public class Object {
     private String name;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "size must not be null")
     private int size;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "created must not be null")
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
@@ -44,11 +44,11 @@ public class Object {
     private String mime_type;
 
     @OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
-    @NotEmpty
+    @NotEmpty(message = "checksums must contains at least one element")
     private List<Checksum> checksums;
 
     @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
-    @NotEmpty
+    @NotEmpty(message = "accessMethods must contains at least one element")
     @ElementCollection
     private List<AccessMethods> accessMethods;
 
@@ -197,10 +197,11 @@ public class Object {
         }
     }
 
-    public void deleteAccessMethod(Long id){
+    public boolean deleteAccessMethod(Long id){
         if (accessMethods != null){
-            accessMethods.removeIf(accessMethod -> accessMethod.getAccessId().equals(id));
+            return accessMethods.removeIf(accessMethod -> accessMethod.getAccessId().equals(id));
         }
+        return false;
     }
 
     @Override

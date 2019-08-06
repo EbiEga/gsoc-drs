@@ -22,13 +22,13 @@ public class BundleObject {
     private Long id;
 
     @Column(nullable = false)
-    @NotEmpty
+    @NotEmpty(message = "name must not be empty")
     @Pattern(regexp = "[^/]*")
     private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private BundleObjectType type;
 
     @ElementCollection

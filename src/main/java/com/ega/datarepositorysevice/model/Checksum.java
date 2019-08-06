@@ -22,7 +22,7 @@ public class Checksum {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private ChecksumType type;
 
     @ManyToOne

@@ -19,15 +19,16 @@ public class AccessMethods {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private AccessMethodType type;
 
     @Column(nullable = false)
     private String region;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @NotNull
+    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name = "accessURL_id")
+    @NotNull(message = "accessURL must not be null")
     private AccessURL accessURL;
 
 
@@ -56,8 +57,8 @@ public class AccessMethods {
     }
 
     @JsonProperty("type")
-    public String getType() {
-        return type.toString();
+    public AccessMethodType getType() {
+        return type;
     }
 
     @JsonProperty("region")

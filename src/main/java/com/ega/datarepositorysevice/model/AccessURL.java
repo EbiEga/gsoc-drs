@@ -16,7 +16,7 @@ import java.util.Objects;
 public class AccessURL {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
@@ -25,8 +25,7 @@ public class AccessURL {
     @ElementCollection
     private Map<String, String> headers;
 
-    @OneToOne
-    @JoinColumn
+    @OneToOne(mappedBy = "accessURL")
     private AccessMethods methods;
 
     public AccessURL() {
