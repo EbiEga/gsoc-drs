@@ -1,6 +1,7 @@
 package com.ega.datarepositorysevice.controller;
 
 import com.ega.datarepositorysevice.model.Error;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolation;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -67,8 +69,17 @@ public class HandlerUtils {
                 .body(BodyInserters.fromObject(notFoundError));
     }
 
+    public static Mono<ServerResponse> returnInternalError(Throwable e){
+        String errorMessage = String.format(" Reason: %S", e.getMessage());
+        Error notFoundError = new Error(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(BodyInserters.fromObject(notFoundError));
+    }
+
     public static <T> Mono<ServerResponse> returnBadRequest(Set<ConstraintViolation<T>> constraintViolations){
-        String errorMessage = String.format("The request is malformed. Reason: %S", constraintViolations.toString());
+        String constraintsErrorMessage = generateErrorMessageFromConstraints(constraintViolations);
+
+        String errorMessage = String.format("The request is malformed. Reason: %S\n", constraintsErrorMessage);
         Error badRequestError = new Error(errorMessage, HttpStatus.BAD_REQUEST);
         return ServerResponse.badRequest()
                 .body(BodyInserters.fromObject(badRequestError));
@@ -86,5 +97,31 @@ public class HandlerUtils {
                 .body(BodyInserters.fromObject(mono));
     }
 
+    public static Mono<ServerResponse> handleError(Throwable e){
+        if(e instanceof IllegalArgumentException){
+            return returnBadRequest(e);
+        }else if (e instanceof EmptyResultDataAccessException){
+            return returnNotFound(e);
+        }else{
+            return returnInternalError(e);
+        }
+    }
+
+    public static Mono<ServerResponse> returnNotFound(){
+        String errorMessage = String.format(" Reason: Path is not found");
+        Error notFoundError = new Error(errorMessage, HttpStatus.NOT_FOUND);
+        return ServerResponse.status(HttpStatus.NOT_FOUND)
+                .body(BodyInserters.fromObject(notFoundError));
+    }
+
+    public static <T> String generateErrorMessageFromConstraints(Set<ConstraintViolation<T>> constraintViolations ){
+        String constraintsErrorMessage = "";
+        for(Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator(); iterator.hasNext();){
+            ConstraintViolation<T> constraintViolation = iterator.next();
+            constraintsErrorMessage = constraintsErrorMessage
+                    .concat(String.format("Error in attribute: %s, Error value: %s, Error cause: %s \n",constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(),constraintViolation.getMessage()));
+        }
+        return constraintsErrorMessage;
+    }
 
 }

@@ -43,25 +43,6 @@ public class ObjectHandlerIntegrationTest {
     @Autowired
     private ObjectRepository objectRepository;
 
-    private Object objectTestObject;
-
-    @Before
-    public void prepareDatabase() {
-        LocalDateTime testDateTime = LocalDateTime.of(2018, 12, 12, 12, 12, 12, 121200000);
-        OffsetDateTime date = OffsetDateTime.of(testDateTime, ZoneOffset.ofHours(2));
-
-        Map<String, String> map = new HashMap<>();
-        map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL(null, "https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
-        AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
-
-        objectTestObject = new Object( null,"string", 0, date, date, "string", "application/json",
-                Arrays.asList(new Checksum("s342ing", ChecksumType.MD5_Code)), Arrays.asList(accessMethodsTestObject), "string", null);
-
-        objectTestObject = objectRepository.save(objectTestObject);
-
-    }
-
     @Test
     public void getOkTest() {
         Object object = saveObject();
@@ -79,14 +60,20 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void getBadRequestTest(){
+    public void getBadRequestTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("id");
-        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.BAD_REQUEST );
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    public void deleteBadRequestTest(){
+    public void getEmptyRequestTest() {
+        ServerRequest request = mock(ServerRequest.class);
+        Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void deleteBadRequestTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("id");
 
@@ -94,7 +81,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void deleteNotFoundTest(){
+    public void deleteNotFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("object_id")).thenReturn("0");
 
@@ -103,7 +90,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void deleteOkTest(){
+    public void deleteOkTest() {
         Object object = saveObject();
 
         ServerRequest request = mock(ServerRequest.class);
@@ -115,7 +102,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void updateBadRequestTest(){
+    public void updateBadRequestTest() {
         Object object = saveObject();
         object.setAccessMethods(new ArrayList<>());
         ServerRequest request = mock(ServerRequest.class);
@@ -125,7 +112,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void updateEmptyBodyTest(){
+    public void updateEmptyBodyTest() {
         Object object = saveObject();
 
         ServerRequest request = mock(ServerRequest.class);
@@ -137,7 +124,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void updateNotFoundTest(){
+    public void updateNotFoundTest() {
         Object object = saveObject();
         object.setId(0L);
         ServerRequest request = mock(ServerRequest.class);
@@ -149,7 +136,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void updateOkTest(){
+    public void updateOkTest() {
         Object object = saveObject();
 
         ServerRequest request = mock(ServerRequest.class);
@@ -161,7 +148,7 @@ public class ObjectHandlerIntegrationTest {
     }
 
     @Test
-    public void saveOkTest(){
+    public void saveOkTest() {
         Object object = TestObjectCreator.getObject();
 
         ServerRequest request = mock(ServerRequest.class);
@@ -192,7 +179,7 @@ public class ObjectHandlerIntegrationTest {
 
     }
 
-    private Object saveObject(){
+    private Object saveObject() {
         return objectRepository.save(TestObjectCreator.getObject());
     }
 }

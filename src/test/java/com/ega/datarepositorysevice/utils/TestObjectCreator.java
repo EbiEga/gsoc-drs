@@ -66,9 +66,13 @@ public class TestObjectCreator {
 
         Map<String, String> map = new HashMap<>();
         map.put("Authorization", "Basic Z2E0Z2g6ZHJz");
-        AccessURL accessURL = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
-        AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL);
-        ArrayList<AccessMethods> accessMethodsArrayList = new ArrayList<>(Arrays.asList(accessMethodsTestObject));
+        AccessURL accessURL1 = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
+        AccessURL accessURL2 = new AccessURL(null,"https://www.youtube.com/watch?v=nsoIcQYlPxg", map);
+
+        AccessMethods accessMethodsTestObject = new AccessMethods(null, AccessMethodType.S3, "region", accessURL1);
+        AccessMethods accessMethodsTestObject1 = new AccessMethods(null, AccessMethodType.S3, "region1", accessURL2);
+
+        ArrayList<AccessMethods> accessMethodsArrayList = new ArrayList<>(Arrays.asList(accessMethodsTestObject, accessMethodsTestObject1));
         return new Object(null, "string", 0, date, date, "string", "application/json",
                 Arrays.asList(new Checksum("s342ing", ChecksumType.MD5_Code)), accessMethodsArrayList, "string", null);
     }

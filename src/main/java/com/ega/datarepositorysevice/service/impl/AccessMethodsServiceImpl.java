@@ -43,7 +43,7 @@ public class AccessMethodsServiceImpl implements AccessMethodsService {
                             methods.setObject(object);
                             return object;
                         })
-                        .orElseThrow(() -> new EmptyResultDataAccessException("a",1));
+                        .orElseThrow(() -> new EmptyResultDataAccessException("Object not found",1));
                 return accessMethodsRepository.save(methods);
         });
 

@@ -113,7 +113,12 @@ public class AccessMethodHandlerIntegrationTest {
 
     @Test
     public void deleteAccessNotFoundTest(){
-        Object object = saveObjectWIthAccessMethod();
+        Object unsavedObject = TestObjectCreator.getObject();
+        unsavedObject.addAccessMethod(TestObjectCreator.getAccessMethods());
+        AccessMethods secondAccessMethods = TestObjectCreator.getAccessMethods();
+        secondAccessMethods.setRegion("new region");
+        unsavedObject.addAccessMethod(secondAccessMethods);
+        Object object = objectRepository.save(unsavedObject);
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("access_id")).thenReturn("0");
@@ -135,7 +140,7 @@ public class AccessMethodHandlerIntegrationTest {
 
     @Test
     public void deleteLastAccessMethodTest(){
-        Object object = saveObjectWIthAccessMethod();
+        Object object= saveObjectWIthAccessMethod();
         AccessMethods accessMethods = object.getAccessMethods().get(0);
 
         ServerRequest serverRequest = mock(ServerRequest.class);
@@ -175,15 +180,14 @@ public class AccessMethodHandlerIntegrationTest {
         when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods.getAccessId().toString());
         when(serverRequest.bodyToMono(AccessMethods.class)).thenReturn(Mono.just(accessMethods));
         Mono<ServerResponse> actualMono = accessMethodHandler.updateAccess(serverRequest);
-        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
     public void updateAccessNotFoundTest(){
         Object object = saveObjectWIthAccessMethod();
         AccessMethods accessMethods = object.getAccessMethods().get(0);
-        accessMethods.setAccessURL(null);
-
+        accessMethods.setAccessId(0L);
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
         when(serverRequest.pathVariable("access_id")).thenReturn("0");
@@ -196,7 +200,6 @@ public class AccessMethodHandlerIntegrationTest {
     public void updateObjectNotFoundTest(){
         Object object = saveObjectWIthAccessMethod();
         AccessMethods accessMethods = object.getAccessMethods().get(0);
-        accessMethods.setAccessURL(null);
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("object_id")).thenReturn("0");

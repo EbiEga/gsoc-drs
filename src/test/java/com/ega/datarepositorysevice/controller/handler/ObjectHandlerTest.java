@@ -42,7 +42,7 @@ public class ObjectHandlerTest {
     @Test
     public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("object_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("0");
 
         Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
     }
