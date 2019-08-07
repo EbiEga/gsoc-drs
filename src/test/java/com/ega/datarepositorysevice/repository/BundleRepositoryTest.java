@@ -49,7 +49,7 @@ public class BundleRepositoryTest {
                 Arrays.asList("string"), Arrays.asList());
 
         bundleRepository.save(bundle);
-        Optional<Bundle> responseBundle = bundleRepository.findById(3L);
+        Optional<Bundle> responseBundle = bundleRepository.findById(0L);
         Assert.assertFalse(responseBundle.isPresent());
     }
 }

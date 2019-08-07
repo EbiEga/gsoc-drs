@@ -184,7 +184,7 @@ public class RouterUpdateTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(Error.class).returnResult().getResponseBody();
-        Assert.assertEquals(new Error("The request is malformed. Reason: BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
+        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
