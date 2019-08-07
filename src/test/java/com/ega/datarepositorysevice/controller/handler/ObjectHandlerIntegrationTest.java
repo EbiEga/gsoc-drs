@@ -69,6 +69,8 @@ public class ObjectHandlerIntegrationTest {
     @Test
     public void getEmptyRequestTest() {
         ServerRequest request = mock(ServerRequest.class);
+        when(request.pathVariable("object_id")).thenReturn("");
+
         Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -154,7 +156,7 @@ public class ObjectHandlerIntegrationTest {
         ServerRequest request = mock(ServerRequest.class);
         when(request.bodyToMono(Object.class)).thenReturn(Mono.just(object));
 
-        Assert.assertEquals(objectHandler.saveObject(request).block().statusCode(), HttpStatus.OK);
+        Assert.assertEquals(objectHandler.saveObject(request).block().statusCode(), HttpStatus.CREATED);
 
     }
 

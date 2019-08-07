@@ -141,14 +141,23 @@ public class AccessMethodHandlerIntegrationTest {
     @Test
     public void deleteLastAccessMethodTest(){
         Object object= saveObjectWIthAccessMethod();
-        AccessMethods accessMethods = object.getAccessMethods().get(0);
+        AccessMethods accessMethods1 = object.getAccessMethods().get(0);
+        AccessMethods accessMethods2 = object.getAccessMethods().get(1);
+
 
         ServerRequest serverRequest = mock(ServerRequest.class);
         when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
-        when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods.getAccessId().toString());
+        when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods1.getAccessId().toString());
 
         Mono<ServerResponse> actualMono = accessMethodHandler.deleteAccess(serverRequest);
-        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
+
+        serverRequest = mock(ServerRequest.class);
+        when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
+        when(serverRequest.pathVariable("access_id")).thenReturn(accessMethods2.getAccessId().toString());
+
+        Mono<ServerResponse> actualMono1 = accessMethodHandler.deleteAccess(serverRequest);
+        Assert.assertEquals(Objects.requireNonNull(actualMono1.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -231,7 +240,7 @@ public class AccessMethodHandlerIntegrationTest {
         when(serverRequest.pathVariable("object_id")).thenReturn(object.getId().toString());
         when(serverRequest.bodyToMono(AccessMethods.class)).thenReturn(Mono.just(accessMethods));
         Mono<ServerResponse> actualMono = accessMethodHandler.saveAccess(serverRequest);
-        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
+        Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.CREATED);
     }
 
     @Test

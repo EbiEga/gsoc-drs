@@ -1,5 +1,5 @@
 {
-  "type": "s3",
+  "type": "S3",
   "access_url": {
     "url": "http//www.string.com",
     "headers": {
