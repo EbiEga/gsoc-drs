@@ -35,7 +35,8 @@ public class BundleHandler {
         Mono<Long> monoParameter = retrievePathVariable(request, BUNDLE_PATH_VARIABLE);
         return monoParameter.flatMap(parameter -> {
             Mono<Bundle> bundleMono = bundleService.getBundleById(parameter);
-            return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+            return bundleMono
+                    .flatMap(HandlerUtils::returnOkResponse)
                     .onErrorResume(HandlerUtils::handleError);
         })
                 .onErrorResume(HandlerUtils::returnBadRequest);
@@ -50,11 +51,12 @@ public class BundleHandler {
                 return HandlerUtils.returnBadRequest(constraints);
             }
             Mono<Bundle> savedBundle = bundleService.saveBundle(Mono.just(bundle));
-            return savedBundle.flatMap(HandlerUtils::returnCreatedResponse)
+            return savedBundle
+                    .flatMap(HandlerUtils::returnCreatedResponse)
                     .onErrorResume(HandlerUtils::handleError);
         })
                 .onErrorResume(HandlerUtils::returnBadRequest)
-                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+                .switchIfEmpty(HandlerUtils.returnEmptyBody());
 
     }
 
@@ -63,14 +65,14 @@ public class BundleHandler {
         return monoParameter
                 .flatMap(parameter -> {
                     Mono<Void> bundleMono = bundleService.deleteBundleById(parameter);
-                    return bundleMono.then(HandlerUtils.returnOkResponse())
+                    return bundleMono
+                            .then(HandlerUtils.returnOkResponse())
                             .onErrorResume(HandlerUtils::handleError);
                 })
                 .onErrorResume(HandlerUtils::returnBadRequest);
     }
 
     public Mono<ServerResponse> updateBundle(ServerRequest request) {
-
         Mono<Bundle> monoBundle = request.bodyToMono(Bundle.class);
         return monoBundle
                 .flatMap(bundle -> {
@@ -81,11 +83,12 @@ public class BundleHandler {
                         return HandlerUtils.returnBadRequest(constraints);
                     }
                     Mono<Bundle> bundleMono = bundleService.updateBundle(Mono.just(bundle));
-                    return bundleMono.flatMap(HandlerUtils::returnOkResponse)
+                    return bundleMono.
+                            flatMap(HandlerUtils::returnOkResponse)
                             .onErrorResume(HandlerUtils::returnNotFound);
                 })
                 .onErrorResume(HandlerUtils::returnBadRequest)
-                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Body is empty")));
+                .switchIfEmpty(HandlerUtils.returnEmptyBody());
     }
 
 }

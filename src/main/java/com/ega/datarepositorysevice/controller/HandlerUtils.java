@@ -113,6 +113,10 @@ public class HandlerUtils {
                 .body(BodyInserters.fromObject(notFoundError));
     }
 
+    public static Mono<ServerResponse> returnEmptyBody() {
+        return HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty"));
+    }
+
     public static <T> String generateErrorMessageFromConstraints(Set<ConstraintViolation<T>> constraintViolations) {
         String constraintsErrorMessage = "";
         for (Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator(); iterator.hasNext(); ) {
