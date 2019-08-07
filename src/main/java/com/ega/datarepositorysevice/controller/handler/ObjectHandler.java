@@ -58,7 +58,7 @@ public class ObjectHandler {
                             .onErrorResume(HandlerUtils::handleError);
                 })
                 .onErrorResume(HandlerUtils::handleError)
-                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+                .switchIfEmpty(HandlerUtils.returnEmptyBody());
 
     }
 
@@ -91,7 +91,7 @@ public class ObjectHandler {
                     .onErrorResume(HandlerUtils::handleError);
         })
                 .onErrorResume(HandlerUtils::handleError)
-                .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
+                .switchIfEmpty(HandlerUtils.returnEmptyBody());
 
 
     }

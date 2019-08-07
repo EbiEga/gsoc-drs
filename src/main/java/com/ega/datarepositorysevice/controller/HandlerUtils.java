@@ -107,7 +107,7 @@ public class HandlerUtils {
     }
 
     public static Mono<ServerResponse> returnNotFound() {
-        String errorMessage = String.format(" Reason: Path is not found");
+        String errorMessage = " Reason: Path is not found";
         Error notFoundError = new Error(errorMessage, HttpStatus.NOT_FOUND);
         return ServerResponse.status(HttpStatus.NOT_FOUND)
                 .body(BodyInserters.fromObject(notFoundError));
@@ -119,8 +119,7 @@ public class HandlerUtils {
 
     public static <T> String generateErrorMessageFromConstraints(Set<ConstraintViolation<T>> constraintViolations) {
         String constraintsErrorMessage = "";
-        for (Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator(); iterator.hasNext(); ) {
-            ConstraintViolation<T> constraintViolation = iterator.next();
+        for (ConstraintViolation<T> constraintViolation : constraintViolations) {
             constraintsErrorMessage = constraintsErrorMessage
                     .concat(String.format("Error in attribute: %s, Error value: %s, Error cause: %s \n", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
         }

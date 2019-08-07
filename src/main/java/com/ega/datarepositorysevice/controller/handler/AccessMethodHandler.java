@@ -80,11 +80,9 @@ public class AccessMethodHandler {
                     Long accessId = parameters.getT2();
                     Mono<Object> objectMono = objectService.getObjectById(objectId);
                     Object object = objectMono.block();
-
                     if (object.getAccessMethods().size() <= 1) {
                         return HandlerUtils.returnBadRequest(new IllegalArgumentException("AccessMethods list of given object can't be empty"));
                     }
-
                     boolean deleted = object.deleteAccessMethod(accessId);
                     if (!deleted) {
                         return HandlerUtils.returnNotFound(new IllegalArgumentException("id not found"));
@@ -111,11 +109,12 @@ public class AccessMethodHandler {
                             body.setAccessId(parameters.getT2());
                             return accessMethodsService.updateAccessMethod(parameters.getT1(), Mono.just(body));
                         }
-            }).switchIfEmpty(Mono.error(new IllegalArgumentException("Request body is empty")));
+                    }).switchIfEmpty(Mono.empty());
 
             return accessMethodsMono
                     .flatMap(HandlerUtils::returnOkResponse)
-                    .onErrorResume(HandlerUtils::handleError);
+                    .onErrorResume(HandlerUtils::handleError)
+                    .switchIfEmpty(HandlerUtils.returnEmptyBody());
         })
                 .onErrorResume(HandlerUtils::handleError);
     }
