@@ -22,19 +22,19 @@ public class BundleObject {
     private Long id;
 
     @Column(nullable = false)
-    @NotEmpty
+    @NotEmpty(message = "name must not be empty")
     @Pattern(regexp = "[^/]*")
     private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private BundleObjectType type;
 
     @ElementCollection
     private List<URI> drsUri;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn
     private Bundle bundle;
 
@@ -78,13 +78,28 @@ public class BundleObject {
         this.bundle = bundle;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(BundleObjectType type) {
+        this.type = type;
+    }
+
+    public void setDrsUri(List<URI> drsUri) {
+        this.drsUri = drsUri;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
         if (!(o instanceof BundleObject)) return false;
         BundleObject that = (BundleObject) o;
-        return Objects.equals(getId(), that.getId()) &&
-                Objects.equals(getName(), that.getName()) &&
+        return Objects.equals(getName(), that.getName()) &&
                 getType().equals(that.getType()) &&
                 getDrsUri().containsAll(that.getDrsUri());
     }

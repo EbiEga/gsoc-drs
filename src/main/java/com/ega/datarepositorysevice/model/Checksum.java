@@ -22,7 +22,7 @@ public class Checksum {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private ChecksumType type;
 
     @ManyToOne
@@ -80,6 +80,18 @@ public class Checksum {
 
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
+    public void setType(ChecksumType type) {
+        this.type = type;
     }
 
     @Override

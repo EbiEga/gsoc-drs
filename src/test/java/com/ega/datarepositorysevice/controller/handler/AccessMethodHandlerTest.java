@@ -2,12 +2,15 @@ package com.ega.datarepositorysevice.controller.handler;
 
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.AccessURL;
+import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.model.enums.AccessMethodType;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
+import com.ega.datarepositorysevice.service.ObjectService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -28,11 +31,12 @@ public class AccessMethodHandlerTest {
     @Before
     public void PrepareEnviroment() {
         AccessMethodsService accessMethodsService = mock(AccessMethodsService.class);
+        ObjectService objectService = mock(ObjectService.class);
         accessMethods = new AccessMethods(1L, AccessMethodType.S3,
                 "region", new AccessURL());
-        when(accessMethodsService.getAccessMethodsById(1L)).thenReturn(Mono.just(accessMethods));
-        when(accessMethodsService.getAccessMethodsById(2L)).thenReturn(Mono.empty());
-        accessMethodHandler = new AccessMethodHandler(accessMethodsService);
+        when(accessMethodsService.getAccessMethodsById(1L, 1L)).thenReturn(Mono.just(accessMethods));
+        when(accessMethodsService.getAccessMethodsById(1L, 2L)).thenReturn(Mono.error(new EmptyResultDataAccessException(1)));
+        accessMethodHandler = new AccessMethodHandler(accessMethodsService, objectService);
 
     }
 
@@ -41,6 +45,8 @@ public class AccessMethodHandlerTest {
     public void okTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("1");
+        when(request.pathVariable("object_id")).thenReturn("1");
+
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.OK);
     }
@@ -49,6 +55,8 @@ public class AccessMethodHandlerTest {
     public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
         when(request.pathVariable("access_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("1");
+
         Mono<ServerResponse> actualMono = accessMethodHandler.getAccess(request);
         Assert.assertEquals(Objects.requireNonNull(actualMono.block()).statusCode(), HttpStatus.NOT_FOUND);
     }
