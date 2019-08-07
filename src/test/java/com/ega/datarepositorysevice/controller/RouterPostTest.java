@@ -64,7 +64,7 @@ public class RouterPostTest {
         badBundle = TestObjectCreator.getBundle();
         badBundle.setCreated(null);
 
-        badObject =  TestObjectCreator.getObject();
+        badObject = TestObjectCreator.getObject();
         badObject.setAccessMethods(new ArrayList<>());
 
         badAccessMethods = TestObjectCreator.getAccessMethods();
@@ -74,7 +74,7 @@ public class RouterPostTest {
     }
 
     @Test
-    public void objectSaveCreatedTest(){
+    public void objectSaveCreatedTest() {
         webTestClient.post()
                 .uri("/objects")
                 .body(BodyInserters.fromObject(object))
@@ -85,34 +85,34 @@ public class RouterPostTest {
     }
 
     @Test
-    public void objectSaveEmptyBodyTest(){
+    public void objectSaveEmptyBodyTest() {
         Error error = webTestClient.post()
                 .uri("/objects")
                 .body(BodyInserters.empty())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
     }
 
     @Test
-    public void objectSaveBadBodyTest(){
+    public void objectSaveBadBodyTest() {
         Error error = webTestClient.post()
                 .uri("/objects")
                 .body(BodyInserters.fromObject(badObject))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: ACCESSMETHODS, ERROR VALUE: [], ERROR CAUSE: ACCESSMETHODS MUST CONTAINS AT LEAST ONE ELEMENT \n" +
-                "\n", HttpStatus.BAD_REQUEST),error);
+                "\n", HttpStatus.BAD_REQUEST), error);
 
     }
 
 
     @Test
-    public void bundleSaveCreatedTest(){
+    public void bundleSaveCreatedTest() {
         webTestClient.post()
                 .uri("/bundles")
                 .body(BodyInserters.fromObject(bundle))
@@ -123,38 +123,38 @@ public class RouterPostTest {
     }
 
     @Test
-    public void bundleSaveEmptyBodyTest(){
+    public void bundleSaveEmptyBodyTest() {
         Error error = webTestClient.post()
                 .uri("/bundles")
                 .body(BodyInserters.empty())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void bundleSaveBadBodyTest(){
+    public void bundleSaveBadBodyTest() {
         Error error = webTestClient.post()
                 .uri("/bundles")
                 .body(BodyInserters.fromObject(badBundle))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: CREATED, ERROR VALUE: NULL, ERROR CAUSE: CREATED MUST NOT BE NULL \n" +
-                "\n", HttpStatus.BAD_REQUEST),error);
+                "\n", HttpStatus.BAD_REQUEST), error);
 
     }
 
 
     @Test
-    public void accessSaveCreatedTest(){
+    public void accessSaveCreatedTest() {
         Object savedObject = objectRepository.save(TestObjectCreator.getObject());
         webTestClient.post()
-                .uri(String.format("/objects/%d/access",savedObject.getId()))
+                .uri(String.format("/objects/%d/access", savedObject.getId()))
                 .body(BodyInserters.fromObject(accessMethods))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -164,65 +164,61 @@ public class RouterPostTest {
 
 
     @Test
-    public void accessSaveBadBodyTest(){
+    public void accessSaveBadBodyTest() {
         Object savedObject = objectRepository.save(TestObjectCreator.getObject());
         Error error = webTestClient.post()
-                .uri(String.format("/objects/%d/access",savedObject.getId()))
+                .uri(String.format("/objects/%d/access", savedObject.getId()))
                 .body(BodyInserters.fromObject(badAccessMethods))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: ACCESSURL, ERROR VALUE: NULL, ERROR CAUSE: ACCESSURL MUST NOT BE NULL \n", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: ACCESSURL, ERROR VALUE: NULL, ERROR CAUSE: ACCESSURL MUST NOT BE NULL \n", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void accessSaveEmptyBodyTest(){
+    public void accessSaveEmptyBodyTest() {
         Object savedObject = objectRepository.save(TestObjectCreator.getObject());
 
         Error error = webTestClient.post()
-                .uri(String.format("/objects/%d/access",savedObject.getId()))
+                .uri(String.format("/objects/%d/access", savedObject.getId()))
                 .body(BodyInserters.empty())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void accessSaveObjectNotFoundTest(){
+    public void accessSaveObjectNotFoundTest() {
         Object savedObject = objectRepository.save(TestObjectCreator.getObject());
         Error error = webTestClient.post()
-                .uri(String.format("/objects/%s/access","0"))
+                .uri(String.format("/objects/%s/access", "0"))
                 .body(BodyInserters.fromObject(accessMethods))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.NOT_FOUND));
-        Assert.assertEquals(new Error(" Reason: OBJECT NOT FOUND", HttpStatus.NOT_FOUND),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error(" Reason: OBJECT NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
 
-
     @Test
-    public void accessSaveObjectBadParameterTest(){
-        Object savedObject = objectRepository.save(TestObjectCreator.getObject());
-
+    public void accessSaveObjectBadParameterTest() {
         Error error = webTestClient.post()
-                .uri(String.format("/objects/%s/access","id"))
+                .uri(String.format("/objects/%s/access", "id"))
                 .body(BodyInserters.fromObject(accessMethods))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }
-
 
 
 }

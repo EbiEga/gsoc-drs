@@ -1,8 +1,6 @@
 package com.ega.datarepositorysevice.controller;
 
-import com.ega.datarepositorysevice.controller.handler.AccessMethodHandler;
-import com.ega.datarepositorysevice.controller.handler.BundleHandler;
-import com.ega.datarepositorysevice.controller.handler.ObjectHandler;
+
 import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.Error;
@@ -10,7 +8,6 @@ import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.repository.AccessMethodsRepository;
 import com.ega.datarepositorysevice.repository.BundleRepository;
 import com.ega.datarepositorysevice.repository.ObjectRepository;
-//import com.ega.datarepositorysevice.utils.TestObjectCreator;
 import com.ega.datarepositorysevice.utils.TestObjectCreator;
 import com.sun.org.apache.xml.internal.utils.URI;
 
@@ -27,14 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.server.ServerRequest;
 
 
 import java.io.IOException;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 
 @Import(Router.class)
 @RunWith(SpringRunner.class)
@@ -74,7 +66,7 @@ public class RouterGetTest {
 
 
     @Test
-    public void testAccessMethodsPathOk() throws IOException {
+    public void testAccessMethodsPathOk() {
         webTestClient.get()
                 .uri(String.format("/objects/%d/access/%d", object.getId(), accessMethods.getAccessId()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -90,7 +82,7 @@ public class RouterGetTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The access method is not found", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: ACCESS ID NOT FOUND", HttpStatus.NOT_FOUND), error);
     }
 
@@ -101,19 +93,19 @@ public class RouterGetTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The object is not found", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: OBJECT BY GIVEN ID NOT FOUND", HttpStatus.NOT_FOUND), error);
     }
 
     @Test
     public void testAccessMethodsObjectPathBad() {
-       Error error = webTestClient.get()
+        Error error = webTestClient.get()
                 .uri(String.format("/objects/%s/access/%s", "id", accessMethods.getAccessId()))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The id of object given using wrong format", HttpStatus.BAD_REQUEST));
-        Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST),error);
+                .expectBody(Error.class).returnResult().getResponseBody();
+        Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
     }
 
     @Test
@@ -123,12 +115,12 @@ public class RouterGetTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The id of access method given using wrong format", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
     }
 
     @Test
-    public void testObjectPathOk() throws IOException {
+    public void testObjectPathOk() {
 
         webTestClient.get()
                 .uri(String.format("/objects/%s", object.getId()))
@@ -145,19 +137,19 @@ public class RouterGetTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The object is not found", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: ID OF OBJECT IS NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
     public void testObjectPathBad() {
-        Error error =webTestClient.get()
+        Error error = webTestClient.get()
                 .uri(String.format("/objects/%s", "id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The id of object given using wrong format", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }
@@ -175,30 +167,27 @@ public class RouterGetTest {
 
     @Test
     public void testBundlePathNotFound() {
-        Error error =webTestClient.get()
+        Error error = webTestClient.get()
                 .uri(String.format("/bundles/%d", 0))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The bundle is not found", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: ID OF BUNDLE IS NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
     public void testBundlePathBad() {
-        Error error =webTestClient.get()
-                .uri(String.format("/bundles/%s","id"))
+        Error error = webTestClient.get()
+                .uri(String.format("/bundles/%s", "id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("The id of bundle given using wrong format", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }
-
-
-
 
 
     @Test

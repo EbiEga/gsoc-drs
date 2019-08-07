@@ -31,7 +31,8 @@ public class Router {
     private final
     AccessMethodHandler accessMethodHandler;
 
-    @Value("classpath:/static/service-info.json") Resource serviceInfo;
+    @Value("classpath:/static/service-info.json")
+    Resource serviceInfo;
 
     @Autowired
     public Router(ObjectHandler objectHandler, BundleHandler bundleHandler, AccessMethodHandler accessMethodHandler) {
@@ -42,7 +43,7 @@ public class Router {
 
 
     @Bean
-    public RouterFunction<ServerResponse> route(){
+    public RouterFunction<ServerResponse> route() {
         return RouterFunctions.route()
                 .add(getRouter())
                 .add(postRouter())
@@ -53,32 +54,32 @@ public class Router {
 
     }
 
-    private RouterFunction<ServerResponse> getRouter(){
+    private RouterFunction<ServerResponse> getRouter() {
         return RouterFunctions
                 .route(GET("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::getObject)
                 .andRoute(GET("/bundles/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::getBundle)
-                .andRoute(GET("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)),accessMethodHandler::getAccess);
+                .andRoute(GET("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)), accessMethodHandler::getAccess);
     }
 
-    private RouterFunction<ServerResponse> postRouter(){
+    private RouterFunction<ServerResponse> postRouter() {
         return RouterFunctions
                 .route(POST("/objects").and(accept(APPLICATION_JSON)), objectHandler::saveObject)
                 .andRoute(POST("/bundles").and(accept(APPLICATION_JSON)), bundleHandler::saveBundle)
-                .andRoute(POST("/objects/{object_id}/access").and(accept(APPLICATION_JSON)),accessMethodHandler::saveAccess);
+                .andRoute(POST("/objects/{object_id}/access").and(accept(APPLICATION_JSON)), accessMethodHandler::saveAccess);
     }
 
-    private RouterFunction<ServerResponse> updateRouter(){
+    private RouterFunction<ServerResponse> updateRouter() {
         return RouterFunctions
                 .route(PUT("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::updateObject)
                 .andRoute(PUT("/bundles/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::updateBundle)
-                .andRoute(PUT("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)),accessMethodHandler::updateAccess);
+                .andRoute(PUT("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)), accessMethodHandler::updateAccess);
     }
 
-    private RouterFunction<ServerResponse> deleteRouter(){
+    private RouterFunction<ServerResponse> deleteRouter() {
         return RouterFunctions
                 .route(DELETE("/objects/{object_id}").and(accept(APPLICATION_JSON)), objectHandler::deleteObject)
                 .andRoute(DELETE("/bundles/{bundle_id}").and(accept(APPLICATION_JSON)), bundleHandler::deleteBundle)
-                .andRoute(DELETE("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)),accessMethodHandler::deleteAccess);
+                .andRoute(DELETE("/objects/{object_id}/access/{access_id}").and(accept(APPLICATION_JSON)), accessMethodHandler::deleteAccess);
     }
 
     private RouterFunction<ServerResponse> staticRouter() {

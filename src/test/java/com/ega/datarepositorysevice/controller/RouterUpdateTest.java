@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.common.util.SerializationUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -88,9 +87,9 @@ public class RouterUpdateTest {
     }
 
     @Test
-    public void updateObjectOk(){
+    public void updateObjectOk() {
         webTestClient.put()
-                .uri(String.format("/objects/%d",object.getId()))
+                .uri(String.format("/objects/%d", object.getId()))
                 .body(BodyInserters.fromObject(newObject))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -99,9 +98,9 @@ public class RouterUpdateTest {
     }
 
     @Test
-    public void updateObjectBadBody(){
+    public void updateObjectBadBody() {
         Error error = webTestClient.put()
-                .uri(String.format("/objects/%d",object.getId()))
+                .uri(String.format("/objects/%d", object.getId()))
                 .body(BodyInserters.fromObject(badObject))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -112,53 +111,49 @@ public class RouterUpdateTest {
     }
 
     @Test
-    public void updateObjectEmptyBody(){
+    public void updateObjectEmptyBody() {
         Error error = webTestClient.put()
-                .uri(String.format("/objects/%d",object.getId()))
+                .uri(String.format("/objects/%d", object.getId()))
                 .body(BodyInserters.empty())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void updateObjectNotFound(){
+    public void updateObjectNotFound() {
         Error error = webTestClient.put()
-                .uri(String.format("/objects/%s","0"))
+                .uri(String.format("/objects/%s", "0"))
                 .body(BodyInserters.fromObject(newObject))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: ID OF OBJECT IS NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
-    public void updateObjectBadId(){
+    public void updateObjectBadId() {
         Error error = webTestClient.put()
-                .uri(String.format("/objects/%s","id"))
+                .uri(String.format("/objects/%s", "id"))
                 .body(BodyInserters.fromObject(newObject))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("",  HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }
 
 
-
-
-
-
     @Test
-    public void updateBundleOk(){
+    public void updateBundleOk() {
         webTestClient.put()
-                .uri(String.format("/bundles/%d",bundle.getId()))
+                .uri(String.format("/bundles/%d", bundle.getId()))
                 .body(BodyInserters.fromObject(newBundle))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -167,137 +162,135 @@ public class RouterUpdateTest {
     }
 
     @Test
-    public  void updateBundleBadBody(){
+    public void updateBundleBadBody() {
         Error error = webTestClient.put()
-                .uri(String.format("/bundles/%d",bundle.getId()))
+                .uri(String.format("/bundles/%d", bundle.getId()))
                 .body(BodyInserters.fromObject(badBundle))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(badBundle);
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: CREATED, ERROR VALUE: NULL, ERROR CAUSE: CREATED MUST NOT BE NULL \n" +
                 "\n", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void updateBundleEmptyBody(){
+    public void updateBundleEmptyBody() {
         Error error = webTestClient.put()
-                .uri(String.format("/bundles/%d",bundle.getId()))
+                .uri(String.format("/bundles/%d", bundle.getId()))
                 .body(BodyInserters.empty())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
 
     @Test
-    public void updateBundleNotFound(){
+    public void updateBundleNotFound() {
         Error error = webTestClient.put()
-                .uri(String.format("/bundles/%d",0L))
+                .uri(String.format("/bundles/%d", 0L))
                 .body(BodyInserters.fromObject(newBundle))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.NOT_FOUND));
+                .expectBody(Error.class).returnResult().getResponseBody();
 
         Assert.assertEquals(new Error(" Reason: ID OF BUNDLE IS NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
-    public void updateBundleBadId(){
+    public void updateBundleBadId() {
         Error error = webTestClient.put()
-        .uri(String.format("/bundles/%s","id"))
-        .body(BodyInserters.fromObject(newBundle))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .uri(String.format("/bundles/%s", "id"))
+                .body(BodyInserters.fromObject(newBundle))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }
 
 
-
-
     @Test
-    public void updateAccessOk(){
+    public void updateAccessOk() {
         webTestClient.put()
-        .uri(String.format("/objects/%d/access/%d",object.getId(), newAccessMethods.getAccessId()))
-        .body(BodyInserters.fromObject(newAccessMethods))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody(AccessMethods.class).isEqualTo(newAccessMethods);
+                .uri(String.format("/objects/%d/access/%d", object.getId(), newAccessMethods.getAccessId()))
+                .body(BodyInserters.fromObject(newAccessMethods))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AccessMethods.class).isEqualTo(newAccessMethods);
 
-}
-    
+    }
+
 
     @Test
-    public void updateAccessBadBody(){
-        Error error =  webTestClient.put()
-        .uri(String.format("/objects/%d/access/%d",object.getId(),newAccessMethods.getAccessId()))
-        .body(BodyInserters.fromObject(badAccessMethods))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+    public void updateAccessBadBody() {
+        Error error = webTestClient.put()
+                .uri(String.format("/objects/%d/access/%d", object.getId(), newAccessMethods.getAccessId()))
+                .body(BodyInserters.fromObject(badAccessMethods))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: ERROR IN ATTRIBUTE: TYPE, ERROR VALUE: NULL, ERROR CAUSE: TYPE MUST NOT BE NULL \n", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public void updateAccessEmptyBody(){
+    public void updateAccessEmptyBody() {
         Error error = webTestClient.put()
-        .uri(String.format("/objects/%d/access/%d",object.getId(), accessMethods.getAccessId()))
-        .body(BodyInserters.empty())
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .uri(String.format("/objects/%d/access/%d", object.getId(), accessMethods.getAccessId()))
+                .body(BodyInserters.empty())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: REQUEST BODY IS EMPTY", HttpStatus.BAD_REQUEST), error);
 
     }
 
     @Test
-    public  void updateAccessNotFound(){
+    public void updateAccessNotFound() {
         Error error = webTestClient.put()
-        .uri(String.format("/objects/%d/access/%s",object.getId(),"0"))
-        .body(BodyInserters.fromObject(accessMethods))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isNotFound()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.NOT_FOUND));
+                .uri(String.format("/objects/%d/access/%s", object.getId(), "0"))
+                .body(BodyInserters.fromObject(accessMethods))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: ACCESS ID NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
-    public void updateAccessObjectParameterNotFound(){
-        Error error =  webTestClient.put()
-        .uri(String.format("/objects/%s/access/%d","0", accessMethods.getAccessId()))
-        .body(BodyInserters.fromObject(accessMethods))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isNotFound()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.NOT_FOUND));
+    public void updateAccessObjectParameterNotFound() {
+        Error error = webTestClient.put()
+                .uri(String.format("/objects/%s/access/%d", "0", accessMethods.getAccessId()))
+                .body(BodyInserters.fromObject(accessMethods))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error(" Reason: OBJECT BY GIVEN ID NOT FOUND", HttpStatus.NOT_FOUND), error);
 
     }
 
     @Test
-    public void updateAccessObjectBadId(){
+    public void updateAccessObjectBadId() {
         Error error = webTestClient.put()
-        .uri(String.format("/objects/%s/access/%d","id",accessMethods.getAccessId()))
-        .body(BodyInserters.fromObject(accessMethods))
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody(Error.class).returnResult().getResponseBody();//.isEqualTo(new Error("", HttpStatus.BAD_REQUEST));
+                .uri(String.format("/objects/%s/access/%d", "id", accessMethods.getAccessId()))
+                .body(BodyInserters.fromObject(accessMethods))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Error.class).returnResult().getResponseBody();
         Assert.assertEquals(new Error("The request is malformed. Reason: FOR INPUT STRING: \"ID\"", HttpStatus.BAD_REQUEST), error);
 
     }

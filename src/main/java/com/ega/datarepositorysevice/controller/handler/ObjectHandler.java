@@ -56,7 +56,7 @@ public class ObjectHandler {
                     return savedObject
                             .flatMap(HandlerUtils::returnCreatedResponse)
                             .onErrorResume(HandlerUtils::handleError);
-        })
+                })
                 .onErrorResume(HandlerUtils::handleError)
                 .switchIfEmpty(HandlerUtils.returnBadRequest(new IllegalArgumentException("Request body is empty")));
 

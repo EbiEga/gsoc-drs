@@ -26,7 +26,7 @@ public class AccessMethods {
     private String region;
 
 
-    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "accessURL_id")
     @NotNull(message = "accessURL must not be null")
     private AccessURL accessURL;
@@ -41,14 +41,13 @@ public class AccessMethods {
     }
 
 
-    public AccessMethods( Long access_id, AccessMethodType type, String region, AccessURL accessURL) {
+    public AccessMethods(Long access_id, AccessMethodType type, String region, AccessURL accessURL) {
         this.accessId = access_id;
         this.type = type;
         this.region = region;
         this.accessURL = accessURL;
         accessURL.setMethods(this);
     }
-
 
 
     @JsonProperty("access_id")

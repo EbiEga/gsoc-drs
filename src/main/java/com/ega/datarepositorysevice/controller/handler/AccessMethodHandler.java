@@ -2,12 +2,10 @@ package com.ega.datarepositorysevice.controller.handler;
 
 import com.ega.datarepositorysevice.controller.HandlerUtils;
 import com.ega.datarepositorysevice.model.AccessMethods;
-import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
 import com.ega.datarepositorysevice.service.AccessMethodsService;
 import com.ega.datarepositorysevice.service.ObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -52,9 +50,9 @@ public class AccessMethodHandler {
         return monoLong.flatMap(parameter -> {
             Mono<AccessMethods> bodyMono = request.bodyToMono(AccessMethods.class);
 
-            Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body->{
+            Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body -> {
                 Set<ConstraintViolation<AccessMethods>> constraintViolations = validator.validate(body);
-                if(!constraintViolations.isEmpty()){
+                if (!constraintViolations.isEmpty()) {
                     return Mono.error(new IllegalArgumentException(HandlerUtils.generateErrorMessageFromConstraints(constraintViolations)));
                 }
                 return accessMethodsService.saveAccessMethod(parameter, Mono.just(body));
@@ -76,12 +74,12 @@ public class AccessMethodHandler {
             Long accessId = parameters.getT2();
             Mono<Object> object = objectService.getObjectById(objectId);
             Object test = object.block();
-            if(test.getAccessMethods().size()<=1){
+            if (test.getAccessMethods().size() <= 1) {
                 return HandlerUtils.returnBadRequest(new IllegalArgumentException("AccessMethods list of given object can't be empty"));
 
             }
             boolean deleted = test.deleteAccessMethod(accessId);
-            if (!deleted){
+            if (!deleted) {
                 return HandlerUtils.returnNotFound(new IllegalArgumentException("id not found"));
             }
             Mono<Object> testMono = objectService.updateObject(Mono.just(test));
@@ -96,9 +94,9 @@ public class AccessMethodHandler {
         Mono<Tuple2<Long, Long>> requestParameters = Mono.zip(retrievePathVariable(request, OBJECT_PATH_VARIABLE), retrievePathVariable(request, ACCESS_METHODS_PATH_VARIABLE));
         return requestParameters.flatMap(parameters -> {
             Mono<AccessMethods> bodyMono = request.bodyToMono(AccessMethods.class);
-            Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body->{
+            Mono<AccessMethods> accessMethodsMono = bodyMono.flatMap(body -> {
                 Set<ConstraintViolation<AccessMethods>> constraintViolations = validator.validate(body);
-                if(!constraintViolations.isEmpty()){
+                if (!constraintViolations.isEmpty()) {
                     return Mono.error(new IllegalArgumentException(HandlerUtils.generateErrorMessageFromConstraints(constraintViolations)));
                 }
                 body.setAccessId(parameters.getT2());
