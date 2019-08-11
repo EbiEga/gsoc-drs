@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import java.util.Objects;
 
 @JsonInclude
-public class Error {
+public class Error extends Throwable {
     private String msg;
     private HttpStatus statusCode;
 
