@@ -5,24 +5,56 @@ import com.ega.datarepositorysevice.model.Object;
 import com.sun.org.apache.xml.internal.utils.URI;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.FieldSetter;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ClientUnitTest {
     private String host = "";
-    private ClientDRS clientDRS = new ClientDRS(host);
+
+    private ClientDRS clientDRS;
+    private String defaultToken = "token";
+    private String defaultHost = "host";
+
 
     @Test
-    public void getObjectOkTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedObject = savedObjectMono.block();
+    public void getObjectOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK,TestObjectCreator.getObject()));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
 
-        Mono responseObjectMono = clientDRS.getObject(savedObject.getId());
+        Mono responseObjectMono = clientDRS.getObject(1L);
         Assert.assertTrue( responseObjectMono.block() instanceof Object);
 
     }
 
     @Test
-    public void getObjectNotFoundTest(){
+    public void getObjectNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono responseObjectMono = clientDRS.getObject(0L);
         try {
             responseObjectMono.block();
@@ -34,8 +66,17 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void getObjectBadRequestTest(){
+    public void getObjectBadRequestTest() throws NoSuchFieldException {
 
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
 
         Mono responseObjectMono = clientDRS.getObject(0L);
         try {
@@ -46,16 +87,34 @@ public class ClientUnitTest {
         }    }
 
     @Test
-    public void getBundleTest() throws URI.MalformedURIException {
-        Mono<Bundle> savedBundleMono = clientDRS.saveBundle(Mono.just(TestObjectCreator.getBundle()));
-        Bundle savedBundle = savedBundleMono.block();
+    public void getBundleTest() throws URI.MalformedURIException, NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getBundle()));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
 
-        Mono responseBundleMono = clientDRS.getBundle(savedBundle.getId());
+        Mono responseBundleMono = clientDRS.getBundle(1L);
         Assert.assertTrue( responseBundleMono.block() instanceof Bundle);
     }
 
     @Test
-    public void getBundleNotFoundTest(){
+    public void getBundleNotFoundTest() throws NoSuchFieldException {
+
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono responseBundleMono = clientDRS.getBundle(0L);
         try {
             responseBundleMono.block();
@@ -65,7 +124,18 @@ public class ClientUnitTest {
         }    }
 
     @Test
-    public void getBundleBadRequestTest(){
+    public void getBundleBadRequestTest() throws NoSuchFieldException {
+
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono responseBundleMono = clientDRS.getBundle(0L);
         try {
             responseBundleMono.block();
@@ -75,17 +145,35 @@ public class ClientUnitTest {
         }       }
 
     @Test
-    public void getAccessTest(){
-        Mono<Object> savedAccessMethodsMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedAccessMethods = savedAccessMethodsMono.block();
-        AccessMethods methods = savedAccessMethods.getAccessMethods().get(0);
-        Mono responseAccessMethodsMono = clientDRS.getAccessMethod(savedAccessMethods.getId(), methods.getAccessId());
+    public void getAccessTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getAccessMethods()));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono responseAccessMethodsMono = clientDRS.getAccessMethod(1L, 1L);
         Assert.assertTrue( responseAccessMethodsMono.block() instanceof AccessMethods);
     }
 
     @Test
-    public void getAccessNotFoundTest(){
-        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(0L,0L);
+    public void getAccessNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus. NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(1L,1L);
         try {
             responseAccessMethodstMono.block();
             throw new Error("", 0);
@@ -95,7 +183,17 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void getAccessBadRequestTest(){
+    public void getAccessBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.GET)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono responseAccessMethodstMono = clientDRS.getAccessMethod(0L,1L);
         try {
             responseAccessMethodstMono.block();
@@ -112,7 +210,18 @@ public class ClientUnitTest {
 
 
     @Test
-    public void saveObjectOkTest(){
+    public void saveObjectOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getObject() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
         Assert.assertTrue(savedObjectMono.block() instanceof Object);
 
@@ -120,10 +229,21 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveObjectBadRequestTest(){
+    public void saveObjectBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
         try {
-            responseAccessMethodstMono.block();
+            savedObjectMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -131,16 +251,38 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveBundleOkTest() throws URI.MalformedURIException {
+    public void saveBundleOkTest() throws URI.MalformedURIException, NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getObject() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono savedBundleMono = clientDRS.saveBundle(Mono.just(TestObjectCreator.getBundle()));
         Assert.assertTrue(savedBundleMono.block() instanceof Bundle);
     }
 
     @Test
-    public void saveBundleBadRequestTest(){
+    public void saveBundleBadRequestTest() throws NoSuchFieldException, URI.MalformedURIException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono savedBundleMono = clientDRS.saveBundle(Mono.just(TestObjectCreator.getBundle()));
         try {
-            responseAccessMethodstMono.block();
+            savedBundleMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -148,39 +290,97 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveAccessOkTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Mono savedAccessMono = clientDRS.saveAccessMethod(savedObjectMono.block().getId(),Mono.just(TestObjectCreator.getAccessMethods()));
+    public void saveAccessOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getAccessMethods()));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono savedAccessMono = clientDRS.saveAccessMethod(1L, Mono.just(TestObjectCreator.getAccessMethods()));
         Assert.assertTrue(savedAccessMono.block() instanceof AccessMethods);
     }
 
     @Test
-    public void saveAccessBadRequestTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
+    public void saveAccessBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.POST)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromObject(TestObjectCreator.getAccessMethods()))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, TestObjectCreator.getAccessMethods()));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono<AccessMethods> savedAccessMono = clientDRS.saveAccessMethod(1L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
-            responseAccessMethodstMono.block();
+            savedAccessMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
-
-
-
-
     @Test
-    public void deleteObjectOkTest(){
+    public void deleteObjectOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
        Mono<Void> deleted =  clientDRS.deleteObject(0L);
        deleted.block();
 
     }
 
     @Test
-    public void deleteObjectNotFoundTest(){
+    public void deleteObjectNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono<Void> deleted =  clientDRS.deleteObject(0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),404);
+        }
+    }
+
+    @Test
+    public void deleteObjectBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono<Void> deleted =  clientDRS.deleteObject(0L);
+        try {
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -188,27 +388,57 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void deleteObjectBadRequestTest(){
-        Mono<Void> deleted =  clientDRS.deleteObject(0L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
+    public void deleteBundleOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
 
-    @Test
-    public void deleteBundleOkTest(){
         Mono<Void> deleted =  clientDRS.deleteBundle(0L);
         deleted.block();
     }
 
     @Test
-    public void deleteBundleNotFoundTest(){
+    public void deleteBundleNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono<Void> deleted =  clientDRS.deleteBundle(0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),404);
+        }
+    }
+
+    @Test
+    public void deleteBundleBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
+        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
+        try {
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -216,38 +446,56 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void deleteBundleBadRequestTest(){
-        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
+    public void deleteAccessOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
 
-    @Test
-    public void deleteAccessOkTest(){
         Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
         deleted.block();
     }
 
     @Test
-    public void deleteAccessNotFoundTest(){
+    public void deleteAccessNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
+
         Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+            Assert.assertEquals(error.getStatusCode(),404);
         }
     }
 
     @Test
-    public void deleteAccessBadRequestTest(){
+    public void deleteAccessBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.DELETE)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+        clientDRS.updateAccessToken(defaultToken);
         Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -259,68 +507,60 @@ public class ClientUnitTest {
 
 
     @Test
-    public void updateObjectOkTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
+    public void updateObjectOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getObject() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Object> updatedObject = clientDRS.updateObject(1L, Mono.just(TestObjectCreator.getObject()));
         Assert.assertTrue(updatedObject.block() instanceof  Object);
     }
 
     @Test
-    public void updateObjectNotFoundTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
+    public void updateObjectNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Object> updatedObject = clientDRS.updateObject(1L, Mono.just(TestObjectCreator.getObject()));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+            Assert.assertEquals(error.getStatusCode(),404);
         }
     }
 
     @Test
-    public void updateObjectBadRequestTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
+    public void updateObjectBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Object> updatedObject = clientDRS.updateObject(1L, Mono.just(TestObjectCreator.getObject()));
         try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
-
-
-    @Test
-    public void updateBundleOkTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
-        Assert.assertTrue(updatedObject.block() instanceof  Object);
-    }
-
-    @Test
-    public void updateBundleNotFoundTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
-
-    @Test
-    public void updateBundleBadRequestTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
-        try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -329,33 +569,122 @@ public class ClientUnitTest {
 
 
     @Test
-    public void updateAccessOkTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
-        Assert.assertTrue(updatedObject.block() instanceof  Object);
+    public void updateBundleOkTest() throws NoSuchFieldException, URI.MalformedURIException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getBundle()), Bundle.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getBundle() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Bundle> updatedBundle = clientDRS.updateBundle(1L, Mono.just(TestObjectCreator.getBundle()));
+        Assert.assertTrue(updatedBundle.block() instanceof  Bundle);
     }
 
     @Test
-    public void updateAccessNotFoundTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
+    public void updateBundleNotFoundTest() throws NoSuchFieldException, URI.MalformedURIException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getBundle()), Bundle.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, TestObjectCreator.getBundle() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Bundle> updatedObject = clientDRS.updateBundle(1L, Mono.just(TestObjectCreator.getBundle()));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),404);
+        }
+    }
+
+    @Test
+    public void updateBundleBadRequestTest() throws NoSuchFieldException, URI.MalformedURIException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, TestObjectCreator.getBundle() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<Bundle> updatedObject = clientDRS.updateBundle(1L, Mono.just(TestObjectCreator.getBundle()));
+        try {
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
+
     @Test
-    public void updateAccessBadRequestTest(){
-        Object object = TestObjectCreator.getObject();
-        object.setId(0L);
-        Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
+    public void updateAccessOkTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getAccessMethods() ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<AccessMethods> updatedAccess =  clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Assert.assertTrue(updatedAccess.block() instanceof  AccessMethods);
+    }
+
+    @Test
+    public void updateAccessNotFoundTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND) ));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),404);
+        }
+    }
+
+    @Test
+    public void updateAccessBadRequestTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        try {
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -365,21 +694,66 @@ public class ClientUnitTest {
 
 
     @Test
-    public void forbiddenTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedObject = savedObjectMono.block();
+    public void forbiddenTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(""))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.FORBIDDEN, new Error("", HttpStatus.FORBIDDEN)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
-        Mono responseObjectMono = clientDRS.getObject(savedObject.getId());
-        Assert.assertTrue( responseObjectMono.block() instanceof Object);
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        try {
+            updatedObject.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),403);
+        }
     }
 
     @Test
-    public void internalErrorTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedObject = savedObjectMono.block();
+    public void internalErrorTest() throws NoSuchFieldException {
+        WebClient webClient = mock(WebClient.class);
+        when(webClient
+                .method(HttpMethod.PUT)
+                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(""))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
+                .exchange()).thenReturn(createClientResponse(HttpStatus.INTERNAL_SERVER_ERROR, new Error("", HttpStatus.INTERNAL_SERVER_ERROR)));
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
-        Mono responseObjectMono = clientDRS.getObject(savedObject.getId());
-        Assert.assertTrue( responseObjectMono.block() instanceof Object);
+        clientDRS.updateAccessToken("");
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        try {
+            updatedObject.block();
+            throw new Error("", 0);
+        }catch (Error error){
+            Assert.assertEquals(error.getStatusCode(),500);
+        }
+    }
+
+
+
+    private <T> Mono<ClientResponse> createClientResponse(HttpStatus status, T entity){
+        ClientResponse clientResponse = mock(ClientResponse.class);
+        Mono mono;
+        if(entity instanceof Error) {
+             mono = Mono.error((Error)entity);
+        }else if (entity == null){
+            mono = Mono.empty();
+        }
+        else  {
+            mono = Mono.just(entity);
+
+        }
+        when(clientResponse.bodyToMono(entity.getClass())).thenReturn(mono);
+        when(clientResponse.statusCode()).thenReturn(status);
+        return Mono.just(clientResponse);
     }
 
 }
