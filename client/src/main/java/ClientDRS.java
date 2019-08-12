@@ -16,12 +16,18 @@ public class ClientDRS {
 
     private WebClient restTemplate = WebClient.create() ;
     private String drsServerUri;
+    private String token = "";
 
     public ClientDRS(String drsServerHost){
         drsServerUri = drsServerHost;
     }
+
+    public ClientDRS(String drsServerHost, String bearerToken){
+        drsServerUri = drsServerHost;
+        token =  bearerToken;
+    }
     
-    Mono<Object> getObject(Long objectId){
+    public Mono<Object> getObject(Long objectId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}").build())
@@ -32,10 +38,11 @@ public class ClientDRS {
         return responseMono.flatMap(response-> handleResponse(response, Object.class));
     }
 
-    Mono<Bundle> getBundle(Long bundleId){
+    public Mono<Bundle> getBundle(Long bundleId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/bundles/{bundle_id}").build(bundleId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
 
@@ -43,10 +50,11 @@ public class ClientDRS {
 
     }
 
-    Mono<AccessMethods> getAccessMethod(Long objectId, Long accessId){
+    public Mono<AccessMethods> getAccessMethod(Long objectId, Long accessId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}/access/{access_id}").build(objectId, accessId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
 
@@ -57,10 +65,11 @@ public class ClientDRS {
 
 
 
-    Mono<Object> saveObject(Mono<Object> object){
+    public Mono<Object> saveObject(Mono<Object> object){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.POST)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(object, Object.class))
                 .exchange();
@@ -68,10 +77,11 @@ public class ClientDRS {
         return responseMono.flatMap(response->handleResponse(response, Object.class));
     }
 
-    Mono<Bundle> saveBundle(Mono<Bundle> bundle){
+    public Mono<Bundle> saveBundle(Mono<Bundle> bundle){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.POST)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/bundles").build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(bundle, Bundle.class))
                 .exchange();
@@ -79,10 +89,11 @@ public class ClientDRS {
         return responseMono.flatMap(response->handleResponse(response, Bundle.class));
     }
 
-    Mono<AccessMethods> saveAccessMethod(Long objectId,Mono<AccessMethods> accessMethods){
+    public Mono<AccessMethods> saveAccessMethod(Long objectId,Mono<AccessMethods> accessMethods){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.POST)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}/access").build(objectId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(accessMethods, AccessMethods.class))
                 .exchange();
@@ -91,29 +102,32 @@ public class ClientDRS {
     }
 
 
-    Mono<Void> deleteObject(Long objectId){
+    public Mono<Void> deleteObject(Long objectId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.DELETE)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}").build(objectId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
         return responseMono.flatMap(response->handleResponse(response, Void.class));
     }
 
-    Mono<Void> deleteBundle(Long bundleId){
+    public Mono<Void> deleteBundle(Long bundleId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.DELETE)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/bundles/{bundle_id}").build(bundleId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
 
         return responseMono.flatMap(response->handleResponse(response, Void.class));
     }
 
-    Mono<Void> deleteAccessMethod(Long objectId, Long accessId){
+    public Mono<Void> deleteAccessMethod(Long objectId, Long accessId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.DELETE)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}/access/{access_id}").build(objectId, accessId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
 
@@ -121,10 +135,11 @@ public class ClientDRS {
     }
 
 
-    Mono<Object> updateObject(Long objectId,Mono<Object> object){
+    public Mono<Object> updateObject(Long objectId,Mono<Object> object){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.PUT)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}").build(objectId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(object, Object.class))
                 .exchange();
@@ -132,10 +147,11 @@ public class ClientDRS {
         return responseMono.flatMap(response->handleResponse(response, Object.class));
     }
 
-    Mono<Bundle> updateBundle(Long bundleId,Mono<Bundle> bundle){
+    public Mono<Bundle> updateBundle(Long bundleId,Mono<Bundle> bundle){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.PUT)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/bundles/{bundle_id}").build(bundleId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(bundle, Bundle.class))
                 .exchange();
@@ -143,15 +159,20 @@ public class ClientDRS {
         return responseMono.flatMap(response->handleResponse(response, Bundle.class));
     }
 
-    Mono<AccessMethods> updateAccessMethod(Long objectId,Long accessId,Mono<AccessMethods> accessMethods){
+    public Mono<AccessMethods> updateAccessMethod(Long objectId,Long accessId,Mono<AccessMethods> accessMethods){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.PUT)
                 .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}/access/{access_id}").build(objectId, accessId))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromPublisher(accessMethods, AccessMethods.class))
                 .exchange();
 
         return responseMono.flatMap(response->handleResponse(response, AccessMethods.class));
+    }
+
+    public void updateAccessToken(String token){
+        this.token = token;
     }
 
     private <T> Mono<T> handleResponse(ClientResponse response,Class<? extends T> aClass){
