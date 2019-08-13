@@ -17,7 +17,8 @@ public class ConnectionChecker {
 
     public boolean connect() {
         try {
-            return InetAddress.getByName(host).isReachable(5000);
+            boolean a =  InetAddress.getByName(host).isReachable(5000);
+            return a;
         } catch (Exception e) {
             return false;
 

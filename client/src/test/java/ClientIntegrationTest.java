@@ -4,12 +4,24 @@ import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
 import com.sun.org.apache.xml.internal.utils.URI;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
 public class ClientIntegrationTest {
-    private String host = "";
-    private ClientDRS clientDRS = new ClientDRS(host);
+    private static String host = "http://notworking.notworking"; //TODO change host to real host of drs service
+    private ClientDRS clientDRS ;
+
+    @ClassRule
+    public static AssumingConnection assumingConnection =
+            new AssumingConnection(new ConnectionChecker(host));
+
+    @Before
+    public void testPreparing(){
+        String token = "";  //TODO add token retreiving
+        clientDRS = new ClientDRS(host, token);
+    }
 
     @Test
     public void getObjectOkTest(){
@@ -33,17 +45,6 @@ public class ClientIntegrationTest {
 
     }
 
-    @Test
-    public void getObjectBadRequestTest(){
-
-
-        Mono responseObjectMono = clientDRS.getObject(0L);
-        try {
-            responseObjectMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }    }
 
     @Test
     public void getBundleTest() throws URI.MalformedURIException {
@@ -64,15 +65,7 @@ public class ClientIntegrationTest {
             Assert.assertEquals(error.getStatusCode(),404);
         }    }
 
-    @Test
-    public void getBundleBadRequestTest(){
-        Mono responseBundleMono = clientDRS.getBundle(0L);
-        try {
-            responseBundleMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }       }
+
 
     @Test
     public void getAccessTest(){
@@ -94,16 +87,7 @@ public class ClientIntegrationTest {
         }
     }
 
-    @Test
-    public void getAccessBadRequestTest(){
-        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(0L,1L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
+
 
 
 
@@ -122,8 +106,9 @@ public class ClientIntegrationTest {
     @Test
     public void saveObjectBadRequestTest(){
         Mono savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
+
         try {
-            responseAccessMethodstMono.block();
+            savedObjectMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -137,10 +122,10 @@ public class ClientIntegrationTest {
     }
 
     @Test
-    public void saveBundleBadRequestTest(){
+    public void saveBundleBadRequestTest() throws URI.MalformedURIException {
         Mono savedBundleMono = clientDRS.saveBundle(Mono.just(TestObjectCreator.getBundle()));
         try {
-            responseAccessMethodstMono.block();
+            savedBundleMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -158,7 +143,7 @@ public class ClientIntegrationTest {
     public void saveAccessBadRequestTest(){
         Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
         try {
-            responseAccessMethodstMono.block();
+            savedObjectMono.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -180,23 +165,13 @@ public class ClientIntegrationTest {
     public void deleteObjectNotFoundTest(){
         Mono<Void> deleted =  clientDRS.deleteObject(0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
-    @Test
-    public void deleteObjectBadRequestTest(){
-        Mono<Void> deleted =  clientDRS.deleteObject(0L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
 
     @Test
     public void deleteBundleOkTest(){
@@ -208,23 +183,13 @@ public class ClientIntegrationTest {
     public void deleteBundleNotFoundTest(){
         Mono<Void> deleted =  clientDRS.deleteBundle(0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
-    @Test
-    public void deleteBundleBadRequestTest(){
-        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
 
     @Test
     public void deleteAccessOkTest(){
@@ -236,23 +201,13 @@ public class ClientIntegrationTest {
     public void deleteAccessNotFoundTest(){
         Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
         try {
-            responseAccessMethodstMono.block();
+            deleted.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
-    @Test
-    public void deleteAccessBadRequestTest(){
-        Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
-        try {
-            responseAccessMethodstMono.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
 
 
 
@@ -272,7 +227,7 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -285,7 +240,7 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -307,7 +262,7 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -320,7 +275,7 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -342,7 +297,7 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
@@ -355,32 +310,13 @@ public class ClientIntegrationTest {
         object.setId(0L);
         Mono<Object> updatedObject = clientDRS.updateObject(object.getId(), Mono.just(object));
         try {
-            responseAccessMethodstMono.block();
+            updatedObject.block();
             throw new Error("", 0);
         }catch (Error error){
             Assert.assertEquals(error.getStatusCode(),400);
         }
     }
 
-
-
-    @Test
-    public void forbiddenTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedObject = savedObjectMono.block();
-
-        Mono responseObjectMono = clientDRS.getObject(savedObject.getId());
-        Assert.assertTrue( responseObjectMono.block() instanceof Object);
-    }
-
-    @Test
-    public void internalErrorTest(){
-        Mono<Object> savedObjectMono = clientDRS.saveObject(Mono.just(TestObjectCreator.getObject()));
-        Object savedObject = savedObjectMono.block();
-
-        Mono responseObjectMono = clientDRS.getObject(savedObject.getId());
-        Assert.assertTrue( responseObjectMono.block() instanceof Object);
-    }
     
 
 }
