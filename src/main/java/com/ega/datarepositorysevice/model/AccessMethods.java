@@ -14,26 +14,28 @@ import java.util.Objects;
 @JsonInclude
 public class AccessMethods {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accessId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "type must not be null")
     private AccessMethodType type;
 
     @Column(nullable = false)
     private String region;
 
 
-    @OneToOne(mappedBy = "methods", cascade = CascadeType.ALL)
-    @NotNull
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "accessURL_id")
+    @NotNull(message = "accessURL must not be null")
     private AccessURL accessURL;
 
 
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "object")
     private Object object;
+
 
     public AccessMethods() {
     }
@@ -47,14 +49,15 @@ public class AccessMethods {
         accessURL.setMethods(this);
     }
 
+
     @JsonProperty("access_id")
     public Long getAccessId() {
         return accessId;
     }
 
     @JsonProperty("type")
-    public String getType() {
-        return type.toString();
+    public AccessMethodType getType() {
+        return type;
     }
 
     @JsonProperty("region")
@@ -72,8 +75,26 @@ public class AccessMethods {
         return object;
     }
 
+    public void setAccessId(Long accessId) {
+        this.accessId = accessId;
+    }
+
+    public void setType(AccessMethodType type) {
+        this.type = type;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public void setAccessURL(AccessURL accessURL) {
+        this.accessURL = accessURL;
+    }
+
     public void setObject(Object object) {
         this.object = object;
+        object.addAccessMethod(this);
+
     }
 
     @Override
@@ -81,8 +102,7 @@ public class AccessMethods {
         if (this == o) return true;
         if (!(o instanceof AccessMethods)) return false;
         AccessMethods that = (AccessMethods) o;
-        return Objects.equals(getAccessId(), that.getAccessId()) &&
-                getType().equals(that.getType()) &&
+        return getType().equals(that.getType()) &&
                 Objects.equals(getRegion(), that.getRegion()) &&
                 Objects.equals(getAccessURL(), that.getAccessURL());
     }
@@ -90,6 +110,6 @@ public class AccessMethods {
     @Override
     public int hashCode() {
 
-        return Objects.hash(getAccessId(), getType(), getRegion(), getAccessURL(), getObject());
+        return Objects.hash(getAccessId(), getType(), getRegion(), getAccessURL());
     }
 }

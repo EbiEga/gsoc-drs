@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
@@ -26,7 +27,7 @@ public class ObjectHandlerTest {
 
         Object object = mock(Object.class);
         when(objectService.getObjectById(1L)).thenReturn(Mono.just(object));
-        when(objectService.getObjectById(2L)).thenReturn(Mono.empty());
+        when(objectService.getObjectById(0L)).thenReturn(Mono.error(new EmptyResultDataAccessException(1)));
 
         objectHandler = new ObjectHandler(objectService);
     }
@@ -42,7 +43,7 @@ public class ObjectHandlerTest {
     @Test
     public void notFoundTest() {
         ServerRequest request = mock(ServerRequest.class);
-        when(request.pathVariable("object_id")).thenReturn("2");
+        when(request.pathVariable("object_id")).thenReturn("0");
 
         Assert.assertEquals(objectHandler.getObject(request).block().statusCode(), HttpStatus.NOT_FOUND);
     }

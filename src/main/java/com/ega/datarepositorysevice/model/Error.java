@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import java.util.Objects;
 
 @JsonInclude
-public class Error {
+public class Error extends Throwable {
     private String msg;
     private HttpStatus statusCode;
 
@@ -38,8 +38,17 @@ public class Error {
         return statusCode.value();
     }
 
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public void setStatusCode(HttpStatus statusCode) {
+        this.statusCode = statusCode;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
+        System.out.println("jkafsdf");
         if (this == o) return true;
         if (!(o instanceof Error)) return false;
         Error error = (Error) o;

@@ -24,11 +24,11 @@ public class Bundle {
     private String name;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "size must not be null")
     private int size;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "created must not be null")
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
@@ -40,7 +40,7 @@ public class Bundle {
 
 
     @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL)
-    @NotEmpty
+    @NotEmpty(message = "checksums must contains at least one element")
     @ElementCollection
     private List<Checksum> checksums;
 
@@ -50,7 +50,7 @@ public class Bundle {
     private List<String> aliases;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bundle")
-    @NotEmpty
+    @NotEmpty(message = "contents must contains at least one element")
     @ElementCollection
     private List<BundleObject> contents;
 
@@ -70,6 +70,9 @@ public class Bundle {
         this.description = description;
         this.aliases = aliases;
         this.contents = contents;
+        if (contents!=null){
+            contents.forEach( content -> content.setBundle(this));
+        }
     }
 
     @JsonProperty("id")
@@ -122,13 +125,55 @@ public class Bundle {
         return contents;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
+    public void setUpdated(OffsetDateTime updated) {
+        this.updated = updated;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setChecksums(List<Checksum> checksums) {
+        this.checksums = checksums;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
+    public void setContents(List<BundleObject> contents) {
+        this.contents = contents;
+        if (contents!=null){
+            contents.forEach( content -> content.setBundle(this));
+        }
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
         if (!(o instanceof Bundle)) return false;
         Bundle bundle = (Bundle) o;
         return getSize() == bundle.getSize() &&
-                Objects.equals(getId(), bundle.getId()) &&
                 Objects.equals(getName(), bundle.getName()) &&
                 getCreated().isEqual(bundle.getCreated()) &&
                 getUpdated().isEqual(bundle.getUpdated()) &&

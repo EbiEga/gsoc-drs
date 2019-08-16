@@ -16,7 +16,7 @@ import java.util.Objects;
 public class AccessURL {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
@@ -25,8 +25,7 @@ public class AccessURL {
     @ElementCollection
     private Map<String, String> headers;
 
-    @OneToOne
-    @JoinColumn
+    @OneToOne(mappedBy = "accessURL")
     private AccessMethods methods;
 
     public AccessURL() {
@@ -66,6 +65,18 @@ public class AccessURL {
 
     public void setMethods(AccessMethods methods) {
         this.methods = methods;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     @Override

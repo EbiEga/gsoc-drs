@@ -22,17 +22,17 @@ import java.util.Objects;
 public class Object {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "size must not be null")
     private int size;
 
     @Column(nullable = false)
-    @NotNull
+    @NotNull(message = "created must not be null")
     @JsonSerialize(using = OffsetDateTimeSerializer.class)
     private OffsetDateTime created;
 
@@ -44,11 +44,11 @@ public class Object {
     private String mime_type;
 
     @OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
-    @NotEmpty
+    @NotEmpty(message = "checksums must contains at least one element")
     private List<Checksum> checksums;
 
-    @NotEmpty
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "object")
+    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
+    @NotEmpty(message = "accessMethods must contains at least one element")
     @ElementCollection
     private List<AccessMethods> accessMethods;
 
@@ -73,11 +73,22 @@ public class Object {
         this.checksums = checksums;
         checksums.forEach(checksum -> checksum.setObject(this));
         this.accessMethods = accessMethods;
-        accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
+        if (accessMethods != null) {
+            accessMethods.forEach(accessMethod -> accessMethod.setObject(this));
+        }
         this.description = description;
         this.aliases = aliases == null ? null : new ArrayList<>();
     }
 
+//    @PrePersist
+//    @PreUpdate
+//    public void updateAddressAssociation(){
+//        for(AccessMethods address : this.accessMethods){
+//            if(address.getObject()==null) {
+//                address.setObject(this);
+//            }
+//        }
+//    }
     @JsonProperty("id")
     public Long getId() {
         return id;
@@ -133,13 +144,72 @@ public class Object {
         return aliases;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
+    public void setUpdated(OffsetDateTime updated) {
+        this.updated = updated;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setMime_type(String mime_type) {
+        this.mime_type = mime_type;
+    }
+
+    public void setChecksums(List<Checksum> checksums) {
+        this.checksums = checksums;
+    }
+
+    public void setAccessMethods(List<AccessMethods> accessMethods) {
+        this.accessMethods = accessMethods;
+        if(accessMethods!= null){
+            accessMethods.forEach( method -> {method.setObject(this); });
+        }
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAliases(List<String> aliases) {
+        this.aliases = aliases;
+    }
+
+    public void addAccessMethod(AccessMethods methods){
+        if (accessMethods != null && !accessMethods.contains(methods)){
+            accessMethods.add(methods);
+        }
+    }
+
+    public boolean deleteAccessMethod(Long id){
+        if (accessMethods != null){
+            return accessMethods.removeIf(accessMethod -> accessMethod.getAccessId().equals(id));
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(java.lang.Object o) {
         if (this == o) return true;
         if (!(o instanceof Object)) return false;
         Object object = (Object) o;
         return getSize() == object.getSize() &&
-                Objects.equals(getId(), object.getId()) &&
                 Objects.equals(getName(), object.getName()) &&
                 getCreated().isEqual(object.getCreated()) &&
                 getUpdated().isEqual(object.getUpdated()) &&

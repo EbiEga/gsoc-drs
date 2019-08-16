@@ -7,6 +7,7 @@ import com.ega.datarepositorysevice.service.impl.BundleServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -52,7 +53,7 @@ public class BundleServiceTest {
 
     }
 
-    @Test
+    @Test(expected = EmptyResultDataAccessException.class)
     public void testEmptyValue() {
         Mono<Bundle> bundleMono = bundleService.getBundleById(2L);
         Optional<Bundle> bundleOptional = bundleMono.blockOptional();
