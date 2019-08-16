@@ -14,42 +14,30 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
+
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-
 import java.io.IOException;
-import java.net.URI;
 
-import static org.mockito.Mockito.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ClientUnitTest {
-    private String host = "";
     private final MockWebServer mockWebServer = new MockWebServer();
-    private JacksonTester<Object> json;
-
-
     private ClientDRS clientDRS;
     private String defaultToken = "token";
-    private String defaultHost = "host";
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    WebClient webClient;
-
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Before
-    public void createClient(){
+    public void createClient() {
         clientDRS = new ClientDRS(mockWebServer.getHostName(), defaultToken);
     }
+
     @Test
     public void getObjectOkTest() throws NoSuchFieldException, IOException {
         mockWebServer.enqueue(
@@ -57,17 +45,16 @@ public class ClientUnitTest {
                         .setResponseCode(200)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(objectMapper.writeValueAsString(TestObjectCreator.getObject())
-        ));
+                        ));
+
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
 
         Mono<Object> responseObjectMono = clientDRS.getObject(1L);
         Object object = responseObjectMono.block();
-        Assert.assertTrue( object instanceof Object);
+        Assert.assertTrue(object instanceof Object);
 
     }
 
@@ -78,8 +65,8 @@ public class ClientUnitTest {
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))));
-        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
 
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -87,8 +74,8 @@ public class ClientUnitTest {
         try {
             responseObjectMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
 
     }
@@ -100,10 +87,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
-        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
 
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -111,8 +98,8 @@ public class ClientUnitTest {
         try {
             responseObjectMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -126,12 +113,11 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
         Mono responseBundleMono = clientDRS.getBundle(1L);
-        Assert.assertTrue( responseBundleMono.block() instanceof Bundle);
+        Assert.assertTrue(responseBundleMono.block() instanceof Bundle);
     }
 
     @Test
@@ -141,11 +127,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
+
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -153,8 +138,8 @@ public class ClientUnitTest {
         try {
             responseBundleMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -165,11 +150,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -177,8 +161,8 @@ public class ClientUnitTest {
         try {
             responseBundleMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -196,7 +180,7 @@ public class ClientUnitTest {
         clientDRS.updateAccessToken(defaultToken);
 
         Mono responseAccessMethodsMono = clientDRS.getAccessMethod(1L, 1L);
-        Assert.assertTrue( responseAccessMethodsMono.block() instanceof AccessMethods);
+        Assert.assertTrue(responseAccessMethodsMono.block() instanceof AccessMethods);
     }
 
     @Test
@@ -205,22 +189,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(1L,1L);
+        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(1L, 1L);
         try {
             responseAccessMethodstMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -230,28 +211,21 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(0L,1L);
+        Mono responseAccessMethodstMono = clientDRS.getAccessMethod(0L, 1L);
         try {
             responseAccessMethodstMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
-
-
-
-
-
 
 
     @Test
@@ -265,7 +239,6 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -281,12 +254,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -294,8 +265,8 @@ public class ClientUnitTest {
         try {
             savedObjectMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -310,9 +281,6 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -327,13 +295,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -341,8 +306,8 @@ public class ClientUnitTest {
         try {
             savedBundleMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -357,9 +322,6 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -374,13 +336,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -388,8 +347,8 @@ public class ClientUnitTest {
         try {
             savedAccessMono.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -400,17 +359,14 @@ public class ClientUnitTest {
                         .setResponseCode(200)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody("{}")
-                        );
+        );
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-       Mono<Void> deleted =  clientDRS.deleteObject(0L);
-       deleted.block();
+        Mono<Void> deleted = clientDRS.deleteObject(0L);
+        deleted.block();
 
     }
 
@@ -421,21 +377,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteObject(0L);
+        Mono<Void> deleted = clientDRS.deleteObject(0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -445,21 +399,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteObject(0L);
+        Mono<Void> deleted = clientDRS.deleteObject(0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -470,15 +422,13 @@ public class ClientUnitTest {
                         .setResponseCode(200)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody("{}")
-                        );
+        );
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
+        Mono<Void> deleted = clientDRS.deleteBundle(0L);
         deleted.block();
     }
 
@@ -489,21 +439,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
+        Mono<Void> deleted = clientDRS.deleteBundle(0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -514,22 +462,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteBundle(0L);
+        Mono<Void> deleted = clientDRS.deleteBundle(0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -540,16 +485,13 @@ public class ClientUnitTest {
                         .setResponseCode(200)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .setBody("{}")
-                        );
+        );
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
+        Mono<Void> deleted = clientDRS.deleteAccessMethod(0L, 0L);
         deleted.block();
     }
 
@@ -560,22 +502,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
+        Mono<Void> deleted = clientDRS.deleteAccessMethod(0L, 0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -585,25 +524,20 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
-        Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
+        Mono<Void> deleted = clientDRS.deleteAccessMethod(0L, 0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
-
-
-
 
 
     @Test
@@ -617,14 +551,11 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
         Mono<Object> updatedObject = clientDRS.updateObject(1L, Mono.just(TestObjectCreator.getObject()));
-        Assert.assertTrue(updatedObject.block() instanceof  Object);
+        Assert.assertTrue(updatedObject.block() instanceof Object);
     }
 
     @Test
@@ -633,13 +564,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -647,8 +575,8 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -658,13 +586,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -672,8 +597,8 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -690,13 +615,11 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
         Mono<Bundle> updatedBundle = clientDRS.updateBundle(1L, Mono.just(TestObjectCreator.getBundle()));
-        Assert.assertTrue(updatedBundle.block() instanceof  Bundle);
+        Assert.assertTrue(updatedBundle.block() instanceof Bundle);
     }
 
     @Test
@@ -707,12 +630,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -720,8 +641,8 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -732,14 +653,10 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -747,8 +664,8 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
 
@@ -764,14 +681,11 @@ public class ClientUnitTest {
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
-        Mono<AccessMethods> updatedAccess =  clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
-        Assert.assertTrue(updatedAccess.block() instanceof  AccessMethods);
+        Mono<AccessMethods> updatedAccess = clientDRS.updateAccessMethod(0L, 0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Assert.assertTrue(updatedAccess.block() instanceof AccessMethods);
     }
 
     @Test
@@ -781,24 +695,20 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
-        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L, 0L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
-                updatedObject.block();
+            updatedObject.block();
 
             throw new Error("", 500);
-        }catch (Throwable error){
-            Assert.assertEquals( ((Error)error.getCause()).getStatusCode(),404);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 404);
         }
     }
 
@@ -809,26 +719,21 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(400)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.BAD_REQUEST))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
-        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L, 0L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 400);
         }
     }
-
 
 
     @Test
@@ -838,23 +743,19 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(404)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.FORBIDDEN))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.FORBIDDEN))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
-        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L, 0L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),403);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 403);
         }
     }
 
@@ -865,24 +766,21 @@ public class ClientUnitTest {
                 new MockResponse()
                         .setResponseCode(500)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.INTERNAL_SERVER_ERROR))
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.INTERNAL_SERVER_ERROR))
                         ));
 
         WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
-
-
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken("");
-        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L, 0L, Mono.just(TestObjectCreator.getAccessMethods()));
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Throwable error){
-            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),500);
+        } catch (Throwable error) {
+            Assert.assertEquals(((Error) error.getCause()).getStatusCode(), 500);
         }
     }
-
 
 
 }
