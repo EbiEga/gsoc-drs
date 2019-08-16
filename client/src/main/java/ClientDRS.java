@@ -2,7 +2,6 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,23 +13,25 @@ import reactor.core.publisher.Mono;
 
 public class ClientDRS {
 
-    private WebClient restTemplate = WebClient.create() ;
+    private WebClient restTemplate ;
     private String drsServerUri;
     private String token = "";
 
     public ClientDRS(String drsServerHost){
         drsServerUri = drsServerHost;
+        restTemplate = WebClient.create(drsServerHost);
     }
 
     public ClientDRS(String drsServerHost, String bearerToken){
         drsServerUri = drsServerHost;
         token =  bearerToken;
+        restTemplate = WebClient.create(drsServerHost);
     }
     
     public Mono<Object> getObject(Long objectId){
         Mono<ClientResponse> responseMono = restTemplate
                 .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}").build())
+                .uri(uriBuilder -> uriBuilder.host(drsServerUri).path("/objects/{object_id}").build(objectId))
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange();
@@ -156,7 +157,9 @@ public class ClientDRS {
                 .body(BodyInserters.fromPublisher(bundle, Bundle.class))
                 .exchange();
 
-        return responseMono.flatMap(response->handleResponse(response, Bundle.class));
+        return responseMono.flatMap(response->{
+            return handleResponse(response, Bundle.class);
+        });
     }
 
     public Mono<AccessMethods> updateAccessMethod(Long objectId,Long accessId,Mono<AccessMethods> accessMethods){
@@ -184,9 +187,7 @@ public class ClientDRS {
                 case BAD_REQUEST:
                 case INTERNAL_SERVER_ERROR:
                 case FORBIDDEN:
-                    return response
-                            .bodyToMono(Error.class)
-                            .flatMap(Mono::error);
+                    return response.bodyToMono(Error.class).flatMap(Mono::error);
                 default:
                     return Mono.error(new Error("Unsupported error", HttpStatus.INTERNAL_SERVER_ERROR));
             }
