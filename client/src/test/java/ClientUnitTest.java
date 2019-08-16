@@ -2,11 +2,21 @@ import com.ega.datarepositorysevice.model.AccessMethods;
 import com.ega.datarepositorysevice.model.Bundle;
 import com.ega.datarepositorysevice.model.Error;
 import com.ega.datarepositorysevice.model.Object;
-import com.sun.org.apache.xml.internal.utils.URI;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
 import org.mockito.internal.util.reflection.FieldSetter;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,43 +25,61 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.net.URI;
+
+import static org.mockito.Mockito.*;
+@RunWith(MockitoJUnitRunner.class)
 public class ClientUnitTest {
     private String host = "";
+    private final MockWebServer mockWebServer = new MockWebServer();
+    private JacksonTester<Object> json;
+
 
     private ClientDRS clientDRS;
     private String defaultToken = "token";
     private String defaultHost = "host";
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    WebClient webClient;
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
 
+    @Before
+    public void createClient(){
+        clientDRS = new ClientDRS(mockWebServer.getHostName(), defaultToken);
+    }
     @Test
-    public void getObjectOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK,TestObjectCreator.getObject()));
+    public void getObjectOkTest() throws NoSuchFieldException, IOException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getObject())
+        ));
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
         clientDRS.updateAccessToken(defaultToken);
 
-        Mono responseObjectMono = clientDRS.getObject(1L);
-        Assert.assertTrue( responseObjectMono.block() instanceof Object);
+        Mono<Object> responseObjectMono = clientDRS.getObject(1L);
+        Object object = responseObjectMono.block();
+        Assert.assertTrue( object instanceof Object);
 
     }
 
     @Test
-    public void getObjectNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+    public void getObjectNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("", HttpStatus.NOT_FOUND))));
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -59,22 +87,23 @@ public class ClientUnitTest {
         try {
             responseObjectMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
 
     }
 
     @Test
-    public void getObjectBadRequestTest() throws NoSuchFieldException {
+    public void getObjectBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
 
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -82,19 +111,22 @@ public class ClientUnitTest {
         try {
             responseObjectMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }    }
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        }
+    }
 
     @Test
-    public void getBundleTest() throws URI.MalformedURIException, NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getBundle()));
+    public void getBundleTest() throws com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getBundle())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -103,15 +135,17 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void getBundleNotFoundTest() throws NoSuchFieldException {
+    public void getBundleNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
 
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -119,20 +153,23 @@ public class ClientUnitTest {
         try {
             responseBundleMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
-        }    }
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
+        }
+    }
 
     @Test
-    public void getBundleBadRequestTest() throws NoSuchFieldException {
+    public void getBundleBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
 
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -140,19 +177,21 @@ public class ClientUnitTest {
         try {
             responseBundleMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }       }
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
+        }
+    }
 
     @Test
-    public void getAccessTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getAccessMethods()));
+    public void getAccessTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getAccessMethods())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -161,14 +200,17 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void getAccessNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus. NOT_FOUND, new Error("",HttpStatus.NOT_FOUND)));
+    public void getAccessNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
 
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
@@ -177,20 +219,23 @@ public class ClientUnitTest {
         try {
             responseAccessMethodstMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void getAccessBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("",HttpStatus.BAD_REQUEST)));
+    public void getAccessBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -198,8 +243,8 @@ public class ClientUnitTest {
         try {
             responseAccessMethodstMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
@@ -210,15 +255,17 @@ public class ClientUnitTest {
 
 
     @Test
-    public void saveObjectOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getObject() ));
+    public void saveObjectOkTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getObject())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -229,15 +276,17 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveObjectBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+    public void saveObjectBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -245,21 +294,25 @@ public class ClientUnitTest {
         try {
             savedObjectMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
     @Test
-    public void saveBundleOkTest() throws URI.MalformedURIException, NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getObject() ));
+    public void saveBundleOkTest() throws NoSuchFieldException, com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getBundle())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -268,15 +321,19 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveBundleBadRequestTest() throws NoSuchFieldException, URI.MalformedURIException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+    public void saveBundleBadRequestTest() throws NoSuchFieldException, com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -284,21 +341,25 @@ public class ClientUnitTest {
         try {
             savedBundleMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
     @Test
-    public void saveAccessOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getObject()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.CREATED, TestObjectCreator.getAccessMethods()));
+    public void saveAccessOkTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getAccessMethods())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -307,15 +368,19 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void saveAccessBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.POST)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1/access").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromObject(TestObjectCreator.getAccessMethods()))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, TestObjectCreator.getAccessMethods()));
+    public void saveAccessBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -323,20 +388,24 @@ public class ClientUnitTest {
         try {
             savedAccessMono.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
     @Test
-    public void deleteObjectOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+    public void deleteObjectOkTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{}")
+                        );
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -346,14 +415,18 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void deleteObjectNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, null ));
+    public void deleteObjectNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -361,20 +434,23 @@ public class ClientUnitTest {
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void deleteObjectBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+    public void deleteObjectBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -382,20 +458,23 @@ public class ClientUnitTest {
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
     @Test
-    public void deleteBundleOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+    public void deleteBundleOkTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{}")
+                        );
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -404,14 +483,18 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void deleteBundleNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, null ));
+    public void deleteBundleNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -419,20 +502,25 @@ public class ClientUnitTest {
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void deleteBundleBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, null ));
+    public void deleteBundleBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -440,20 +528,24 @@ public class ClientUnitTest {
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
     @Test
-    public void deleteAccessOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, null ));
+    public void deleteAccessOkTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{}")
+                        );
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -462,14 +554,19 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void deleteAccessNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+    public void deleteAccessNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
 
@@ -477,28 +574,31 @@ public class ClientUnitTest {
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void deleteAccessBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.DELETE)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+    public void deleteAccessBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
         clientDRS.updateAccessToken(defaultToken);
         Mono<Void> deleted =  clientDRS.deleteAccessMethod(0L, 0L);
         try {
             deleted.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
@@ -507,15 +607,19 @@ public class ClientUnitTest {
 
 
     @Test
-    public void updateObjectOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getObject() ));
+    public void updateObjectOkTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getObject())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -524,15 +628,18 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void updateObjectNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+    public void updateObjectNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -540,21 +647,24 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void updateObjectBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND)));
+    public void updateObjectBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -562,22 +672,26 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
 
     @Test
-    public void updateBundleOkTest() throws NoSuchFieldException, URI.MalformedURIException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getBundle()), Bundle.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getBundle() ));
+    public void updateBundleOkTest() throws NoSuchFieldException, com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, JsonProcessingException {
+
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getBundle())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -586,15 +700,19 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void updateBundleNotFoundTest() throws NoSuchFieldException, URI.MalformedURIException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getBundle()), Bundle.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, TestObjectCreator.getBundle() ));
+    public void updateBundleNotFoundTest() throws NoSuchFieldException, com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, JsonProcessingException {
+
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -602,21 +720,26 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),404);
         }
     }
 
     @Test
-    public void updateBundleBadRequestTest() throws NoSuchFieldException, URI.MalformedURIException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/bundles/1").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, TestObjectCreator.getBundle() ));
+    public void updateBundleBadRequestTest() throws NoSuchFieldException, com.sun.org.apache.xml.internal.utils.URI.MalformedURIException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -624,22 +747,26 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
 
     @Test
-    public void updateAccessOkTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.OK, TestObjectCreator.getAccessMethods() ));
+    public void updateAccessOkTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(TestObjectCreator.getAccessMethods())
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -648,15 +775,48 @@ public class ClientUnitTest {
     }
 
     @Test
-    public void updateAccessNotFoundTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getObject()), Object.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.NOT_FOUND, new Error("", HttpStatus.NOT_FOUND) ));
+    public void updateAccessNotFoundTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.NOT_FOUND))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
+
+        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
+
+        clientDRS.updateAccessToken(defaultToken);
+        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
+        try {
+                updatedObject.block();
+
+            throw new Error("", 500);
+        }catch (Throwable error){
+            Assert.assertEquals( ((Error)error.getCause()).getStatusCode(),404);
+        }
+    }
+
+    @Test
+    public void updateAccessBadRequestTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(400)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.BAD_REQUEST))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -664,21 +824,28 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),404);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),400);
         }
     }
 
+
+
     @Test
-    public void updateAccessBadRequestTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(defaultToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.BAD_REQUEST, new Error("", HttpStatus.BAD_REQUEST)));
+    public void forbiddenTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(404)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.FORBIDDEN))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken(defaultToken);
@@ -686,45 +853,24 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),400);
-        }
-    }
-
-
-
-    @Test
-    public void forbiddenTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(""))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.FORBIDDEN, new Error("", HttpStatus.FORBIDDEN)));
-        FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
-
-        clientDRS.updateAccessToken(defaultToken);
-        Mono<AccessMethods> updatedObject = clientDRS.updateAccessMethod(0L,0L, Mono.just(TestObjectCreator.getAccessMethods()));
-        try {
-            updatedObject.block();
-            throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),403);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),403);
         }
     }
 
     @Test
-    public void internalErrorTest() throws NoSuchFieldException {
-        WebClient webClient = mock(WebClient.class);
-        when(webClient
-                .method(HttpMethod.PUT)
-                .uri(uriBuilder -> uriBuilder.host(defaultHost).path("/objects/0/access/0").build())
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(""))
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(TestObjectCreator.getAccessMethods()), AccessMethods.class))
-                .exchange()).thenReturn(createClientResponse(HttpStatus.INTERNAL_SERVER_ERROR, new Error("", HttpStatus.INTERNAL_SERVER_ERROR)));
+    public void internalErrorTest() throws NoSuchFieldException, JsonProcessingException {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(500)
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody(objectMapper.writeValueAsString(new Error("",HttpStatus.INTERNAL_SERVER_ERROR))
+                        ));
+
+        WebClient webClient = WebClient.create((mockWebServer.url("/").toString()));
+
+
         FieldSetter.setField(clientDRS, clientDRS.getClass().getDeclaredField("restTemplate"), webClient);
 
         clientDRS.updateAccessToken("");
@@ -732,28 +878,11 @@ public class ClientUnitTest {
         try {
             updatedObject.block();
             throw new Error("", 0);
-        }catch (Error error){
-            Assert.assertEquals(error.getStatusCode(),500);
+        }catch (Throwable error){
+            Assert.assertEquals(((Error)error.getCause()).getStatusCode(),500);
         }
     }
 
 
-
-    private <T> Mono<ClientResponse> createClientResponse(HttpStatus status, T entity){
-        ClientResponse clientResponse = mock(ClientResponse.class);
-        Mono mono;
-        if(entity instanceof Error) {
-             mono = Mono.error((Error)entity);
-        }else if (entity == null){
-            mono = Mono.empty();
-        }
-        else  {
-            mono = Mono.just(entity);
-
-        }
-        when(clientResponse.bodyToMono(entity.getClass())).thenReturn(mono);
-        when(clientResponse.statusCode()).thenReturn(status);
-        return Mono.just(clientResponse);
-    }
 
 }
